@@ -1,0 +1,49 @@
+project_id = "taniafrika"
+
+[api]
+enabled = true
+port = 54321
+schemas = ["public", "storage", "graphql_public"]
+extra_search_path = ["public", "extensions"]
+max_rows = 1000
+
+[db]
+port = 54322
+major_version = 15
+
+[studio]
+enabled = true
+port = 54323
+
+[auth]
+enabled = true
+site_url = "http://localhost:3000"
+additional_redirect_urls = ["http://localhost:3000/**"]
+enable_signup = true
+
+[functions.payment-initiate]
+verify_jwt = true
+
+[functions.escrow-release]
+verify_jwt = true
+
+[functions.mpesa-callback]
+verify_jwt = false
+
+[functions.mpesa-b2c-callback]
+verify_jwt = false
+
+[functions.payment-reconcile]
+verify_jwt = false
+
+[functions.payout-dispatch]
+verify_jwt = false
+
+[functions.outbox-dispatch]
+verify_jwt = false
+
+[functions.refund-dispatch]
+verify_jwt = false
+
+[functions.mpesa-refund-callback]
+verify_jwt = false

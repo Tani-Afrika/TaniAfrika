@@ -1,0 +1,72 @@
+@import "tailwindcss";
+
+@theme {
+  --color-maroon-50: #FDF2F4;
+  --color-maroon-100: #FBE6EA;
+  --color-maroon-200: #F3C9D2;
+  --color-maroon-500: #A32A42;
+  --color-maroon-600: #8B1A2F;
+  --color-maroon-700: #6E1526;
+  --color-maroon-900: #430D18;
+
+  --color-ink-900: #1C1D20;
+  --color-ink-700: #33353A;
+  --color-ink-600: #52555C;
+  --color-ink-400: #8B8D94;
+  --color-ink-200: #E4E4E7;
+
+  --color-paper: #F7F6F5;
+
+  --font-display: var(--font-poppins), ui-sans-serif, system-ui, sans-serif;
+  --font-body: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+
+  --shadow-card: 0 1px 2px 0 rgba(28, 29, 32, 0.04), 0 12px 24px -16px rgba(28, 29, 32, 0.14);
+  --shadow-card-hover: 0 2px 4px 0 rgba(28, 29, 32, 0.05), 0 18px 32px -16px rgba(28, 29, 32, 0.18);
+  --shadow-sidebar: 1px 0 0 0 rgba(28, 29, 32, 0.06), 8px 0 24px -16px rgba(28, 29, 32, 0.08);
+}
+
+body {
+  background: var(--color-paper);
+  color: var(--color-ink-900);
+  font-family: var(--font-body);
+}
+
+.font-display {
+  font-family: var(--font-display);
+}
+
+/* Shared premium surface treatment: used across stat cards, list cards,
+   and empty states, replacing the old flat border-gray-200 look. */
+.surface {
+  border-radius: 1rem;
+  border: 1px solid rgba(28, 29, 32, 0.06);
+  background: #fff;
+  box-shadow: var(--shadow-card);
+  transition: box-shadow 180ms ease, transform 180ms ease;
+}
+
+.surface-interactive:hover {
+  box-shadow: var(--shadow-card-hover);
+  transform: translateY(-1px);
+}
+
+/* Page shell: centers content and keeps line lengths / card widths sane
+   on large monitors instead of stretching edge-to-edge. */
+.page-shell {
+  max-width: 1440px;
+  margin-inline: auto;
+  width: 100%;
+}
+
+/* Visible keyboard focus, kept everywhere */
+:focus-visible {
+  outline: 2px solid var(--color-maroon-600);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

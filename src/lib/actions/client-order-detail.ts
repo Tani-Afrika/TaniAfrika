@@ -1,0 +1,256 @@
+'use server';
+
+import { revalidatePath } from 'next/cache';
+
+import { createClient } from '@/lib/supabase/server';
+import type { Order, OrderStatusHistory } from '@/types/supabase';
+
+export interface ActionResult {
+  success: boolean;
+  error?: string;
+}
+
+export interface BidderInfo {
+  id: string;
+  full_name: string;
+  avatar_url: string | null;
+}
+
+export interface BidMessageRow {
+  id: string;
+  bid_id: string;
+  sender_id: string;
+  message: string;
+  created_at: string;
+}
+
+export interface ClientBid {
+  id: string;
+  order_id: string;
+  amount: number;
+  message: string | null;
+  status: string;
+  created_at: string;
+  driver: BidderInfo | null;
+  messages: BidMessageRow[];
+}
+
+export interface AssignedDriverInfo {
+  id: string;
+  full_name: string;
+  phone: string | null;
+  avatar_url: string | null;
+  vehicle_type: string | null;
+  plate_number: string | null;
+}
+
+export interface ClientOrderDetail {
+  order: Order;
+  bids: ClientBid[];
+  history: OrderStatusHistory[];
+  driver: AssignedDriverInfo | null;
+  driverLocation: { lat: number; lng: number; updatedAt: string } | null;
+}
+
+/**
+ * Fetches everything the client order-detail screen needs, scoped to the
+ * signed-in client. Returns null if the order doesn't exist or doesn't
+ * belong to the caller (the page should call notFound() in that case).
+ */
+export async function getClientOrderDetail(orderId: string): Promise<ClientOrderDetail | null> {
+  const supabase = await createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) return null;
+
+  const { data: order, error: orderError } = await supabase
+    .from('orders')
+    .select('*')
+    .eq('id', orderId)
+    .eq('client_id', user.id)
+    .single();
+
+  if (orderError || !order) return null;
+
+  const { data: history } = await supabase
+    .from('order_status_history')
+    .select('id, order_id, status, changed_by, notes, created_at')
+    .eq('order_id', orderId)
+    .order('created_at', { ascending: true });
+
+  const isAssigned = Boolean(order.driver_id);
+
+  let driver: AssignedDriverInfo | null = null;
+  let driverLocation: ClientOrderDetail['driverLocation'] = null;
+
+  if (isAssigned && order.driver_id) {
+    // Once assigned, RLS allows the client to read the driver's full
+    // profile row (including phone) — see profiles RLS notes.
+    const [{ data: driverProfile }, { data: vehicle }, { data: location }] = await Promise.all([
+      supabase
+        .from('profiles')
+        .select('id, full_name, phone, avatar_url')
+        .eq('id', order.driver_id)
+        .single(),
+      supabase
+        .from('vehicles')
+        .select('vehicle_type, plate_number')
+        .eq('driver_id', order.driver_id)
+        .eq('is_active', true)
+        .maybeSingle(),
+      supabase
+        .from('driver_locations')
+        .select('latitude, longitude, updated_at')
+        .eq('driver_id', order.driver_id)
+        .maybeSingle(),
+    ]);
+
+    driver = driverProfile
+      ? {
+          id: driverProfile.id,
+          full_name: driverProfile.full_name,
+          phone: driverProfile.phone,
+          avatar_url: driverProfile.avatar_url,
+          vehicle_type: vehicle?.vehicle_type ?? null,
+          plate_number: vehicle?.plate_number ?? null,
+        }
+      : null;
+
+    driverLocation = location
+      ? { lat: location.latitude, lng: location.longitude, updatedAt: location.updated_at }
+      : null;
+  }
+
+  let bids: ClientBid[] = [];
+
+  if (!isAssigned) {
+    const { data: bidRows } = await supabase
+      .from('bids')
+      .select('id, order_id, amount, message, status, created_at, driver_id')
+      .eq('order_id', orderId)
+      .eq('status', 'pending')
+      .order('amount', { ascending: true });
+
+    const driverIds = [...new Set((bidRows ?? []).map((bid) => bid.driver_id))];
+    const bidIds = (bidRows ?? []).map((bid) => bid.id);
+
+    // Pre-assignment, bidder identity must come from `profiles_public`
+    // (no phone exposed) rather than `profiles` directly.
+    const [{ data: bidders }, { data: messages }] = await Promise.all([
+      driverIds.length > 0
+        ? supabase.from('profiles_public').select('id, full_name, avatar_url').in('id', driverIds)
+        : Promise.resolve({ data: [] as BidderInfo[] }),
+      bidIds.length > 0
+        ? supabase
+            .from('bid_messages')
+            .select('id, bid_id, sender_id, message, created_at')
+            .in('bid_id', bidIds)
+            .order('created_at', { ascending: true })
+        : Promise.resolve({ data: [] as BidMessageRow[] }),
+    ]);
+
+    const bidderById = new Map((bidders ?? []).map((bidder) => [bidder.id, bidder]));
+    const messagesByBid = new Map<string, BidMessageRow[]>();
+    (messages ?? []).forEach((message) => {
+      const list = messagesByBid.get(message.bid_id) ?? [];
+      list.push(message);
+      messagesByBid.set(message.bid_id, list);
+    });
+
+    bids = (bidRows ?? []).map((bid) => ({
+      id: bid.id,
+      order_id: bid.order_id,
+      amount: bid.amount,
+      message: bid.message,
+      status: bid.status,
+      created_at: bid.created_at,
+      driver: bidderById.get(bid.driver_id) ?? null,
+      messages: messagesByBid.get(bid.id) ?? [],
+    }));
+  }
+
+  return {
+    order: order as Order,
+    bids,
+    history: (history ?? []) as OrderStatusHistory[],
+    driver,
+    driverLocation,
+  };
+}
+
+export async function acceptBid(orderId: string, bidId: string): Promise<ActionResult> {
+  const supabase = await createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) return { success: false, error: 'Not authenticated.' };
+
+  // Atomic database RPC locks the order and bid, rejects competing bids,
+  // reserves the driver and moves the order to payment_pending.
+  const { error } = await supabase.rpc('accept_bid', {
+    p_order_id: orderId,
+    p_bid_id: bidId,
+  });
+
+  if (error) {
+    return { success: false, error: error.message };
+  }
+
+  revalidatePath(`/client/orders/${orderId}`);
+  return { success: true };
+}
+
+export async function cancelOrder(orderId: string): Promise<ActionResult> {
+  const supabase = await createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) return { success: false, error: 'Not authenticated.' };
+
+  // update_order_status is the only sanctioned way to change orders.status
+  // post-assignment; direct .update() calls are blocked by RLS.
+  const { error } = await supabase.rpc('update_order_status', {
+    p_order_id: orderId,
+    p_new_status: 'cancelled',
+  });
+
+  if (error) {
+    return { success: false, error: error.message };
+  }
+
+  revalidatePath(`/client/orders/${orderId}`);
+  return { success: true };
+}
+
+export async function sendBidMessage(orderId: string, bidId: string, message: string): Promise<ActionResult> {
+  const supabase = await createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) return { success: false, error: 'Not authenticated.' };
+
+  const trimmed = message.trim();
+  if (!trimmed) return { success: false, error: 'Message cannot be empty.' };
+
+  const { error } = await supabase.from('bid_messages').insert({
+    bid_id: bidId,
+    sender_id: user.id,
+    message: trimmed,
+  });
+
+  if (error) {
+    return { success: false, error: error.message };
+  }
+
+  revalidatePath(`/client/orders/${orderId}`);
+  return { success: true };
+}
