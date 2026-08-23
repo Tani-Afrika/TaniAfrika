@@ -1,6 +1,6 @@
 # TaniAfrika Project Architecture, Technology Stack and Delivery Blueprint
 
-**Document status:** Team baseline — staging foundation validated  
+**Document status:** Team baseline â€” staging foundation validated  
 **Version:** 1.0  
 **As of:** 24 August 2026  
 **Audience:** Founders, product, design, engineering, operations, support, finance, compliance and implementation partners  
@@ -16,9 +16,9 @@
 |---|---|
 | Product | TaniAfrika |
 | Working product category | Two-sided marketplace for house moves, business deliveries and parcels |
-| Working brand direction | “Reliable Neighbour”: green-led, Kenyan, dependable, clear and accessible |
+| Working brand direction | â€œReliable Neighbourâ€: green-led, Kenyan, dependable, clear and accessible |
 | Source of truth reviewed | Current Next.js/Supabase source, seven SQL migrations, nine Edge Functions, generated database types, route/build output and the product/brand brief |
-| Staging project | `TaniAfrika-Staging` — project reference `xnhnqbgpezfcvjptufao` |
+| Staging project | `TaniAfrika-Staging` â€” project reference `xnhnqbgpezfcvjptufao` |
 | Staging region | West EU (Ireland) |
 | Validation result | 53 public tables, critical RPC contract, nine Edge Function sources, database lint, type generation and production web build passed |
 | What is not yet live | Edge Functions, external secrets, M-Pesa/payment processing, scheduled workers, role-based end-to-end tests and production |
@@ -30,7 +30,7 @@
 - **Implemented, not activated** means the database or function source exists, but secrets, deployment, scheduling or external provider access is still missing.
 - **Partial** means there is a usable starting implementation but not the complete production workflow.
 - **Planned** means the capability is required for the target product but is not complete.
-- “Escrow” refers to the product’s hold-and-release workflow. It must be implemented through an appropriately licensed payment-service or banking arrangement; the platform must not represent that it independently holds regulated customer funds unless counsel and the provider agreement confirm this.
+- â€œEscrowâ€ refers to the productâ€™s hold-and-release workflow. It must be implemented through an appropriately licensed payment-service or banking arrangement; the platform must not represent that it independently holds regulated customer funds unless counsel and the provider agreement confirm this.
 
 ## 1. Executive summary
 
@@ -65,7 +65,7 @@ This means the schema and application compile together and the staging database 
 
 | Area | Status | Evidence / meaning | Immediate action |
 |---|---|---|---|
-| Product and brand brief | Partial | Target users and “Reliable Neighbour” direction defined; final design system is still in progress | Freeze shared design-token names, not final colours |
+| Product and brand brief | Partial | Target users and â€œReliable Neighbourâ€ direction defined; final design system is still in progress | Freeze shared design-token names, not final colours |
 | Web application | Partial | Next.js production build passes; core client, driver and admin routes exist | Connect all flows to generated database types and complete missing portals |
 | Database schema | Implemented and verified | Seven migrations applied; 53 public tables; local/remote history matches | Protect migration workflow and add integration/RLS tests |
 | Row-level security | Implemented, test depth pending | RLS enabled for exposed tables and Storage; policies and column grants exist | Test every role/action matrix, including negative cases |
@@ -129,7 +129,7 @@ TaniAfrika should let a client arrange a trusted move or delivery with the same 
 
 ### 3.3 Working brand system
 
-The team’s current direction is green-led and should feel familiar, reliable and Kenyan. It can use the trust cues associated with common Kenyan mobile services without copying another company’s protected visual identity.
+The teamâ€™s current direction is green-led and should feel familiar, reliable and Kenyan. It can use the trust cues associated with common Kenyan mobile services without copying another companyâ€™s protected visual identity.
 
 | Token | Working value | Purpose |
 |---|---:|---|
@@ -221,14 +221,14 @@ These are not excluded forever. They require demand, operational maturity, licen
 
 ```mermaid
 flowchart TD
-    Users["Clients · Drivers · Staff"] --> Web["Next.js Web / PWA"]
+    Users["Clients Â· Drivers Â· Staff"] --> Web["Next.js Web / PWA"]
     Web --> Supabase["Supabase Platform"]
-    Supabase --> Data["PostgreSQL · Auth · Realtime · Storage"]
+    Supabase --> Data["PostgreSQL Â· Auth Â· Realtime Â· Storage"]
     Supabase --> Edge["Deno Edge Functions"]
     Edge --> Money["M-Pesa / Licensed PSP"]
-    Edge --> Notify["Push · SMS · Email Provider"]
+    Edge --> Notify["Push Â· SMS Â· Email Provider"]
     Edge --> Data
-    Data --> Observe["Logs · Metrics · Alerts · Audit"]
+    Data --> Observe["Logs Â· Metrics Â· Alerts Â· Audit"]
 ```
 
 The web application is the current client surface. It uses Supabase Auth for identity, the Data API and transactional RPCs for authorized data access, Realtime for live updates and Storage for controlled documents/evidence. Edge Functions form the trusted integration boundary for payment APIs, callbacks, payouts, refunds, reconciliation and notification delivery.
@@ -239,11 +239,11 @@ The web application is the current client surface. It uses Supabase Auth for ide
 
 ```mermaid
 flowchart TD
-    Entry["Web · Staff tools · Edge Functions"] --> Boundary["RLS · RPCs · Validation"]
-    Boundary --> Identity["Identity · Organisations · Fleet"]
-    Boundary --> Market["Orders · Bids · Dispatch · Location"]
-    Boundary --> Money["Payments · Holds · Ledger · Payouts"]
-    Boundary --> Trust["Support · Safety · Privacy · Audit"]
+    Entry["Web Â· Staff tools Â· Edge Functions"] --> Boundary["RLS Â· RPCs Â· Validation"]
+    Boundary --> Identity["Identity Â· Organisations Â· Fleet"]
+    Boundary --> Market["Orders Â· Bids Â· Dispatch Â· Location"]
+    Boundary --> Money["Payments Â· Holds Â· Ledger Â· Payouts"]
+    Boundary --> Trust["Support Â· Safety Â· Privacy Â· Audit"]
     Identity --> DB[("PostgreSQL system of record")]
     Market --> DB
     Money --> DB
@@ -509,7 +509,7 @@ The migrations contain 96 named policy definitions, with 101 policy-creation sta
 
 Required hardening before production:
 
-- Confirm delete policies check record verification state as well as folder ownership. The current driver-document delete policy name implies “unverified”, but its storage-folder condition should be explicitly tested against the database record.
+- Confirm delete policies check record verification state as well as folder ownership. The current driver-document delete policy name implies â€œunverifiedâ€, but its storage-folder condition should be explicitly tested against the database record.
 - Use short-lived signed URLs for private downloads and log staff access where legally appropriate.
 - Scan files, verify actual MIME signatures, normalize filenames and reject executable content.
 - Remove sensitive metadata from images where practical.
@@ -598,13 +598,13 @@ flowchart TD
 
 ### 12.2 Required commercial/legal model
 
-TaniAfrika should not market itself as independently holding “escrow” funds until a Kenyan legal and provider review confirms the structure. The preferred model is:
+TaniAfrika should not market itself as independently holding â€œescrowâ€ funds until a Kenyan legal and provider review confirms the structure. The preferred model is:
 
 - A licensed payment service provider or bank receives/safeguards funds.
 - TaniAfrika records an internal hold-and-release state and an accounting ledger.
 - Release instructions cause the provider to pay the driver and the platform fee according to the signed commercial agreement.
 - Refund and dispute rules are disclosed to both parties.
-- Reconciliation proves that provider money movements match TaniAfrika’s ledger.
+- Reconciliation proves that provider money movements match TaniAfrikaâ€™s ledger.
 
 The internal `escrow_holds` table is a workflow/accounting control; it is not itself a regulated trust account.
 
@@ -623,7 +623,7 @@ The internal `escrow_holds` table is a workflow/accounting control; it is not it
 
 1. **Provider and legal decision:** select the licensed PSP/bank arrangement and confirm settlement, safeguarding, fees, reversals, refunds and dispute responsibilities.
 2. **Sandbox setup:** establish Daraja/partner credentials, verified callbacks and test identifiers.
-3. **Happy-path certification:** STK initiation → callback → held state → delivery → payout.
+3. **Happy-path certification:** STK initiation â†’ callback â†’ held state â†’ delivery â†’ payout.
 4. **Failure matrix:** customer cancellation, timeout, duplicate callback, late callback, wrong amount, payout failure, refund failure, provider outage and reconciliation mismatch.
 5. **Operational controls:** finance queues, retry rules, daily reconciliation, limits, alerts and manual approval thresholds.
 6. **Production certification:** provider onboarding, signed agreements, production credentials, controlled rollout and finance sign-off.
@@ -717,7 +717,7 @@ The product needs configurable Kenyan KYC/KYB requirements, likely including ide
 
 Workflow requirements:
 
-- Draft → submitted → under review → approved/rejected → expiring/expired → suspended/reverification.
+- Draft â†’ submitted â†’ under review â†’ approved/rejected â†’ expiring/expired â†’ suspended/reverification.
 - Separate document status from overall driver approval.
 - Record reviewer, reason, timestamps and audit event.
 - Warn before document expiry and automatically restrict work when a critical document expires.
@@ -802,7 +802,7 @@ Credit terms, postpaid invoicing and lending should remain later work. They requ
 flowchart TD
     Local["Local development"] --> Review["Pull request + CI"]
     Review --> Staging["Hosted staging Supabase + preview web"]
-    Staging --> Gates["RLS · E2E · payment · load · security gates"]
+    Staging --> Gates["RLS Â· E2E Â· payment Â· load Â· security gates"]
     Gates --> Production["Production Supabase + web + providers"]
     Production --> Pilot["Controlled Kenyan pilot + monitoring"]
 ```
@@ -881,11 +881,11 @@ Every objective needs a measurement source, dashboard, alert threshold and owner
 |---|---|
 | Unit | Pricing helpers, status maps, validation, provider payload parsers, notification templates |
 | Database contract | Tables, enums, constraints, functions, triggers, indexes, buckets and expected policies |
-| RLS integration | Each role’s read/insert/update/delete access, cross-tenant denial and staff boundaries |
+| RLS integration | Each roleâ€™s read/insert/update/delete access, cross-tenant denial and staff boundaries |
 | RPC integration | Success, unauthorized, invalid state, duplicate, concurrent and rollback cases |
 | Edge integration | JWT/cron/callback authentication, provider success/failure, timeout and replay |
 | Web E2E | Client, driver and staff journeys on mobile and desktop breakpoints |
-| Money E2E | Payment → hold → delivery → release/payout; refund and dispute branches; reconciliation |
+| Money E2E | Payment â†’ hold â†’ delivery â†’ release/payout; refund and dispute branches; reconciliation |
 | Performance | Nearby-order queries, location writes, Realtime fan-out, bid storms and staff dashboards |
 | Security | OWASP ASVS/MASVS checks, dependency scan, secret scan and independent penetration test |
 | Accessibility | WCAG 2.2 AA automated and manual keyboard/screen-reader checks |
@@ -897,8 +897,8 @@ Create controlled staging users for client, driver (pending/approved/suspended),
 
 ### 20.3 Release-blocking scenarios
 
-- A client cannot read another client’s private order/payment/profile.
-- A driver cannot read unrelated private orders or other drivers’ documents/earnings.
+- A client cannot read another clientâ€™s private order/payment/profile.
+- A driver cannot read unrelated private orders or other driversâ€™ documents/earnings.
 - Support cannot release money; operations cannot perform finance-only adjustments.
 - A duplicate callback cannot duplicate a payment, payout, refund or ledger entry.
 - Two simultaneous bid acceptances produce one winner.
@@ -914,7 +914,7 @@ This section is an engineering checklist, not legal advice. Kenyan counsel and t
 
 ### 21.1 Kenya data protection
 
-The product must map personal-data purpose, lawful basis, notice, consent where used, access control, retention, processor contracts, cross-border transfer, data-subject requests, breach response and security measures under Kenya’s Data Protection Act and General Regulations. Before pilot:
+The product must map personal-data purpose, lawful basis, notice, consent where used, access control, retention, processor contracts, cross-border transfer, data-subject requests, breach response and security measures under Kenyaâ€™s Data Protection Act and General Regulations. Before pilot:
 
 - Complete a data inventory and data-flow map.
 - Determine whether ODPC controller/processor registration is required and complete it where applicable.
@@ -926,7 +926,7 @@ The product must map personal-data purpose, lawful basis, notice, consent where 
 
 ### 21.2 Payments
 
-- Confirm the operating model under Kenya’s National Payment System framework with counsel and the licensed PSP/bank.
+- Confirm the operating model under Kenyaâ€™s National Payment System framework with counsel and the licensed PSP/bank.
 - Do not store card data unless necessary; if cards are later added, use hosted/tokenized provider flows and apply current PCI DSS obligations.
 - Complete M-Pesa/Daraja certification and provider operational controls.
 - Document fees, cancellations, release, refunds, dispute windows and payout timing transparently.
@@ -934,7 +934,7 @@ The product must map personal-data purpose, lawful basis, notice, consent where 
 
 ### 21.3 Transport and marketplace classification
 
-Kenya’s Transport Network Companies, Owners, Drivers and Passengers Regulations address passenger transport. TaniAfrika currently moves goods, not passengers, so counsel must determine the correct classification and applicable NTSA, motor-carrier, commercial-vehicle, insurance, county permit, employment/contractor and consumer-protection obligations. Do not assume passenger TNC licensing is either applicable or irrelevant without formal review.
+Kenyaâ€™s Transport Network Companies, Owners, Drivers and Passengers Regulations address passenger transport. TaniAfrika currently moves goods, not passengers, so counsel must determine the correct classification and applicable NTSA, motor-carrier, commercial-vehicle, insurance, county permit, employment/contractor and consumer-protection obligations. Do not assume passenger TNC licensing is either applicable or irrelevant without formal review.
 
 ### 21.4 Engineering standards baseline
 
@@ -969,7 +969,7 @@ Kenya’s Transport Network Companies, Owners, Drivers and Passengers Regulation
 
 ## 23. Delivery roadmap
 
-### Milestone 0 — Discovery and legacy audit (complete)
+### Milestone 0 â€” Discovery and legacy audit (complete)
 
 - Reviewed the original product/brand brief and legacy application.
 - Chose the modular-monolith/Supabase direction.
@@ -977,7 +977,7 @@ Kenya’s Transport Network Companies, Owners, Drivers and Passengers Regulation
 
 **Exit evidence:** architecture direction and migration plan established.
 
-### Milestone 1 — Backend foundation design (complete)
+### Milestone 1 â€” Backend foundation design (complete)
 
 - Created identity, marketplace, dispatch, payment, ledger, safety, support, governance and privacy schema.
 - Added RLS, Storage buckets, critical RPCs, outbox and Edge Function sources.
@@ -985,7 +985,7 @@ Kenya’s Transport Network Companies, Owners, Drivers and Passengers Regulation
 
 **Exit evidence:** static contract audit passes.
 
-### Milestone 2 — Hosted staging schema deployment and validation (complete)
+### Milestone 2 â€” Hosted staging schema deployment and validation (complete)
 
 - Applied all seven migrations to `TaniAfrika-Staging`.
 - Confirmed local/remote history.
@@ -993,7 +993,7 @@ Kenya’s Transport Network Companies, Owners, Drivers and Passengers Regulation
 
 **Exit evidence:** documented terminal validation received on 24 August 2026.
 
-### Milestone 3 — Staging runtime enablement (next)
+### Milestone 3 â€” Staging runtime enablement (next)
 
 - Create role-based synthetic test users.
 - Configure only staging/sandbox secrets.
@@ -1004,7 +1004,7 @@ Kenya’s Transport Network Companies, Owners, Drivers and Passengers Regulation
 
 **Exit gate:** every function authenticates correctly, scheduled jobs run, replay is safe and no secret appears in browser/log output.
 
-### Milestone 4 — Product workflow completion
+### Milestone 4 â€” Product workflow completion
 
 - Integrate generated DB types and final status maps.
 - Complete client order, payment, tracking, proof, dispute/refund and review flows.
@@ -1015,7 +1015,7 @@ Kenya’s Transport Network Companies, Owners, Drivers and Passengers Regulation
 
 **Exit gate:** all six roles complete their intended staged workflows without direct DB edits.
 
-### Milestone 5 — Payment sandbox, safeguarded-funds and certification
+### Milestone 5 â€” Payment sandbox, safeguarded-funds and certification
 
 - Finalize licensed provider/bank commercial and legal model.
 - Complete M-Pesa STK, payout and supported refund/reversal flows.
@@ -1025,7 +1025,7 @@ Kenya’s Transport Network Companies, Owners, Drivers and Passengers Regulation
 
 **Exit gate:** provider certification, balanced ledger proof, daily reconciliation and finance/legal approval.
 
-### Milestone 6 — Dispatch, communications, safety and operational readiness
+### Milestone 6 â€” Dispatch, communications, safety and operational readiness
 
 - Integrate production mapping/routing and service-area checks.
 - Implement reliable background/offline driver location strategy.
@@ -1035,7 +1035,7 @@ Kenya’s Transport Network Companies, Owners, Drivers and Passengers Regulation
 
 **Exit gate:** simulated order/payment/safety incidents are detected and resolved through staff tools and runbooks.
 
-### Milestone 7 — Production readiness
+### Milestone 7 â€” Production readiness
 
 - Create production project and hosting with least-privilege access.
 - Complete DPIA, legal/provider reviews, privacy notices and contracts.
@@ -1045,7 +1045,7 @@ Kenya’s Transport Network Companies, Owners, Drivers and Passengers Regulation
 
 **Exit gate:** signed production readiness checklist from product, engineering, operations, finance/security and legal/compliance.
 
-### Milestone 8 — Controlled pilot and measured scale
+### Milestone 8 â€” Controlled pilot and measured scale
 
 - Launch in a limited service area with capped users/drivers/orders.
 - Monitor conversion, fulfilment, safety, payment and support metrics daily.
@@ -1088,7 +1088,7 @@ Passing a web build or applying migrations alone is not this definition.
 
 For a small team, one person may hold several roles, but the approval boundaries must remain explicit. High-risk money changes should not be designed, approved and executed by one unchecked account.
 
-## Appendix A — Feature flags and rollout controls
+## Appendix A â€” Feature flags and rollout controls
 
 | Flag | Current state | Activation condition |
 |---|---|---|
@@ -1099,7 +1099,7 @@ For a small team, one person may hold several roles, but the approval boundaries
 
 Additional recommended flags: external push/SMS channel, background tracking, new service area, new pricing rule, driver auto-assignment and production refund automation.
 
-## Appendix B — Retention baseline to approve
+## Appendix B â€” Retention baseline to approve
 
 | Data category | Current/working target | Required decision |
 |---|---:|---|
@@ -1111,7 +1111,7 @@ Additional recommended flags: external push/SMS channel, background tracking, ne
 | Order evidence/incidents | Risk- and case-dependent | Legal hold, dispute/safety need and deletion rules |
 | Audit events | Risk/legal schedule | Protect from ordinary deletion and restrict access |
 
-## Appendix C — Architecture decisions
+## Appendix C â€” Architecture decisions
 
 | Decision | Current position | Owner / due point |
 |---|---|---|
@@ -1124,7 +1124,7 @@ Additional recommended flags: external push/SMS channel, background tracking, ne
 | Notification providers | Open | Product/operations before channel activation |
 | Automatic dispatch | Deferred; bidding/assisted dispatch first | Product/operations after pilot evidence |
 
-## Appendix D — Reference links
+## Appendix D â€” Reference links
 
 Product and platform:
 
@@ -1154,7 +1154,7 @@ Engineering standards:
 - W3C Web Content Accessibility Guidelines 2.2: https://www.w3.org/TR/WCAG22/
 - PCI Security Standards Council: https://www.pcisecuritystandards.org/standards/
 
-## Appendix E — Immediate handoff checklist
+## Appendix E â€” Immediate handoff checklist
 
 The next team working session should begin with these ordered actions:
 
