@@ -17,8 +17,6 @@ create unique index refunds_provider_transaction_key
 create index refunds_dispatch_idx on public.refunds(status, next_attempt_at)
   where status in ('pending', 'failed');
 
-create trigger refunds_touch_updated_at before update on public.refunds
-  for each row execute function private.touch_updated_at();
 
 create or replace function public.queue_order_refund(
   p_order_id uuid,
