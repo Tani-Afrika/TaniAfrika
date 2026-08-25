@@ -1,4 +1,4 @@
-﻿import { createServerClient } from '@supabase/ssr';
+import { createServerClient } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
 
 // Matches the base path itself or a sub-path of it (e.g. '/driver' or
@@ -14,6 +14,42 @@ export async function middleware(request: NextRequest) {
   let supabaseResponse = NextResponse.next({
     request,
   });
+
+  // Optimization 1: Bypass background prefetch requests entirely to prevent unnecessary middleware executions on Vercel
+  const isPrefetch =
+    request.headers.get('x-middleware-prefetch') === '1' ||
+    request.headers.get('purpose') === 'prefetch';
+
+  if (isPrefetch) {
+    return supabaseResponse;
+  }
+
+  const isPublicAuthPage =
+    request.nextUrl.pathname.startsWith('/login') ||
+    request.nextUrl.pathname.startsWith('/signup') ||
+    request.nextUrl.pathname.startsWith('/reset-password');
+
+  const redirectWithCookies = (pathname: string) => {
+    const url = request.nextUrl.clone();
+    url.pathname = pathname;
+    const redirectResponse = NextResponse.redirect(url);
+    supabaseResponse.cookies.getAll().forEach((cookie) => {
+      redirectResponse.cookies.set(cookie.name, cookie.value, cookie);
+    });
+    return redirectResponse;
+  };
+
+  // Optimization 2: Guard against empty session cookies to prevent useless database roundtrips for unauthenticated users
+  const hasSessionCookie = request.cookies.getAll().some((cookie) =>
+    cookie.name.includes('auth-token')
+  );
+
+  if (!hasSessionCookie) {
+    if (isPublicAuthPage) {
+      return supabaseResponse;
+    }
+    return redirectWithCookies('/login');
+  }
 
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -41,21 +77,6 @@ export async function middleware(request: NextRequest) {
   const {
     data: { user },
   } = await supabase.auth.getUser();
-
-  const isPublicAuthPage =
-    request.nextUrl.pathname.startsWith('/login') ||
-    request.nextUrl.pathname.startsWith('/signup') ||
-    request.nextUrl.pathname.startsWith('/reset-password');
-
-  const redirectWithCookies = (pathname: string) => {
-    const url = request.nextUrl.clone();
-    url.pathname = pathname;
-    const redirectResponse = NextResponse.redirect(url);
-    supabaseResponse.cookies.getAll().forEach((cookie) => {
-      redirectResponse.cookies.set(cookie.name, cookie.value, cookie);
-    });
-    return redirectResponse;
-  };
 
   if (!user && !isPublicAuthPage) {
     return redirectWithCookies('/login');
