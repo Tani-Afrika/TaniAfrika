@@ -9,6 +9,7 @@ import type { VehicleType } from '@/types/supabase';
 
 import BidsList from '@/components/client/BidsList';
 import CancelOrderControl from '@/components/client/CancelOrderControl';
+import PaymentHoldPanel from '@/components/client/PaymentHoldPanel';
 import OrderStatusTimeline from '@/components/client/OrderStatusTimeline';
 import OrderTrackingMap from '@/components/client/OrderTrackingMap';
 
@@ -33,7 +34,7 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
   const detail = await getClientOrderDetail(id);
   if (!detail) notFound();
 
-  const { order, bids, history, driver, driverLocation } = detail;
+  const { order, bids, history, driver, driverLocation, paymentHold, mpesaPaymentsEnabled } = detail;
   const isAssigned = Boolean(order.driver_id);
   const canCancel = CANCELLABLE_STATUSES.has(order.status);
 
@@ -107,6 +108,10 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
                 </div>
               ) : null}
             </section>
+
+            {order.status === 'payment_pending' ? (
+              <PaymentHoldPanel orderId={order.id} hold={paymentHold} mpesaEnabled={mpesaPaymentsEnabled} />
+            ) : null}
 
             {isAssigned && driver ? (
               <section className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm sm:p-6">

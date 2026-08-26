@@ -46,13 +46,27 @@ export interface AssignedDriverInfo {
   plate_number: string | null;
 }
 
+export interface PaymentHold {
+  priceAgreed: number | null;
+  platformFeeMinor: number | null;
+  driverEarningsMinor: number | null;
+}
+
 export interface ClientOrderDetail {
   order: Order;
   bids: ClientBid[];
   history: OrderStatusHistory[];
   driver: AssignedDriverInfo | null;
   driverLocation: { lat: number; lng: number; updatedAt: string } | null;
+  paymentHold: PaymentHold;
+  mpesaPaymentsEnabled: boolean;
 }
+
+const toNumberOrNull = (value: unknown): number | null => {
+  if (value == null) return null;
+  const parsed = Number(value);
+  return Number.isFinite(parsed) ? parsed : null;
+};
 
 /**
  * Fetches everything the client order-detail screen needs, scoped to the
@@ -184,12 +198,29 @@ export async function getClientOrderDetail(orderId: string): Promise<ClientOrder
     }));
   }
 
+  const { data: paymentFlag } = await supabase
+    .from('feature_flags')
+    .select('enabled')
+    .eq('key', 'mpesa_payments')
+    .maybeSingle();
+
+  const orderRow = order as Order & {
+    platform_fee_minor?: number | string | null;
+    driver_earnings_minor?: number | string | null;
+  };
+
   return {
     order: order as Order,
     bids,
     history: (history ?? []) as OrderStatusHistory[],
     driver,
     driverLocation,
+    paymentHold: {
+      priceAgreed: toNumberOrNull(orderRow.price_agreed),
+      platformFeeMinor: toNumberOrNull(orderRow.platform_fee_minor),
+      driverEarningsMinor: toNumberOrNull(orderRow.driver_earnings_minor),
+    },
+    mpesaPaymentsEnabled: Boolean(paymentFlag?.enabled),
   };
 }
 
