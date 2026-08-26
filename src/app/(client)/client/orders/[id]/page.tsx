@@ -114,7 +114,7 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
                 <div className="mt-3 flex items-center gap-3">
                   <div className="grid h-12 w-12 shrink-0 place-items-center overflow-hidden rounded-full bg-orange-50 text-base font-semibold text-orange-600">
                     {driver.avatar_url ? (
-                      <img src={driver.avatar_url} alt="" className="h-full w-full object-cover" />
+                      <img src={driver.avatar_url} alt={driver.full_name} className="h-full w-full object-cover" />
                     ) : (
                       driver.full_name.slice(0, 1).toUpperCase()
                     )}
@@ -133,12 +133,14 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
                   </a>
                 ) : null}
               </section>
-            ) : (
+            ) : null}
+
+            {order.status === 'pending' || order.status === 'payment_pending' ? (
               <section>
                 <h2 className="mb-3 text-sm font-semibold text-gray-900">Bids received</h2>
                 <BidsList orderId={order.id} currentUserId={user.id} bids={bids} />
               </section>
-            )}
+            ) : null}
 
             <section className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm sm:p-6">
               <p className="mb-4 text-xs font-semibold uppercase tracking-[0.16em] text-orange-600">Status timeline</p>

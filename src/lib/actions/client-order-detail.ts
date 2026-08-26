@@ -31,6 +31,8 @@ export interface ClientBid {
   message: string | null;
   status: string;
   created_at: string;
+  estimated_pickup_at: string | null;
+  vehicle_type: string | null;
   driver: BidderInfo | null;
   messages: BidMessageRow[];
 }
@@ -126,20 +128,24 @@ export async function getClientOrderDetail(orderId: string): Promise<ClientOrder
 
   let bids: ClientBid[] = [];
 
-  if (!isAssigned) {
+  const showBids = order.status === 'pending' || order.status === 'payment_pending';
+
+  if (showBids) {
     const { data: bidRows } = await supabase
       .from('bids')
-      .select('id, order_id, amount, message, status, created_at, driver_id')
+      .select('id, order_id, amount, message, status, created_at, driver_id, vehicle_id, estimated_pickup_at')
       .eq('order_id', orderId)
-      .eq('status', 'pending')
       .order('amount', { ascending: true });
 
     const driverIds = [...new Set((bidRows ?? []).map((bid) => bid.driver_id))];
     const bidIds = (bidRows ?? []).map((bid) => bid.id);
+    const vehicleIds = [
+      ...new Set((bidRows ?? []).map((bid) => bid.vehicle_id).filter((id): id is string => Boolean(id))),
+    ];
 
     // Pre-assignment, bidder identity must come from `profiles_public`
     // (no phone exposed) rather than `profiles` directly.
-    const [{ data: bidders }, { data: messages }] = await Promise.all([
+    const [{ data: bidders }, { data: messages }, { data: vehicles }] = await Promise.all([
       driverIds.length > 0
         ? supabase.from('profiles_public').select('id, full_name, avatar_url').in('id', driverIds)
         : Promise.resolve({ data: [] as BidderInfo[] }),
@@ -150,9 +156,13 @@ export async function getClientOrderDetail(orderId: string): Promise<ClientOrder
             .in('bid_id', bidIds)
             .order('created_at', { ascending: true })
         : Promise.resolve({ data: [] as BidMessageRow[] }),
+      vehicleIds.length > 0
+        ? supabase.from('vehicles').select('id, vehicle_type').in('id', vehicleIds)
+        : Promise.resolve({ data: [] as { id: string; vehicle_type: string | null }[] }),
     ]);
 
     const bidderById = new Map((bidders ?? []).map((bidder) => [bidder.id, bidder]));
+    const vehicleById = new Map((vehicles ?? []).map((vehicle) => [vehicle.id, vehicle.vehicle_type]));
     const messagesByBid = new Map<string, BidMessageRow[]>();
     (messages ?? []).forEach((message) => {
       const list = messagesByBid.get(message.bid_id) ?? [];
@@ -167,6 +177,8 @@ export async function getClientOrderDetail(orderId: string): Promise<ClientOrder
       message: bid.message,
       status: bid.status,
       created_at: bid.created_at,
+      estimated_pickup_at: bid.estimated_pickup_at,
+      vehicle_type: bid.vehicle_id ? vehicleById.get(bid.vehicle_id) ?? null : null,
       driver: bidderById.get(bid.driver_id) ?? null,
       messages: messagesByBid.get(bid.id) ?? [],
     }));
