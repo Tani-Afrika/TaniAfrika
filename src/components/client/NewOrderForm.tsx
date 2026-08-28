@@ -23,18 +23,44 @@ const LocationPicker = dynamic(
   },
 );
 
-type FieldErrors = Partial<Record<'pickupAddress' | 'dropoffAddress' | 'goodsDescription' | 'pickupPin' | 'dropoffPin', string>>;
+type ScheduleMode = 'asap' | 'scheduled';
+type FieldErrors = Partial<
+  Record<
+    | 'pickupAddress'
+    | 'dropoffAddress'
+    | 'goodsDescription'
+    | 'pickupPin'
+    | 'dropoffPin'
+    | 'scheduledFor'
+    | 'photo',
+    string
+  >
+>;
+
+const PHOTO_ACCEPT = 'image/jpeg,image/png,image/webp';
+const MAX_PHOTO_BYTES = 15 * 1024 * 1024;
+
+const padDatePart = (value: number) => String(value).padStart(2, '0');
+
+const localDateTimeValue = (date: Date) =>
+  `${date.getFullYear()}-${padDatePart(date.getMonth() + 1)}-${padDatePart(date.getDate())}T${padDatePart(date.getHours())}:${padDatePart(date.getMinutes())}`;
 
 export function NewOrderForm() {
   const [pickupAddress, setPickupAddress] = useState('');
   const [dropoffAddress, setDropoffAddress] = useState('');
+  const [pickupAccessNotes, setPickupAccessNotes] = useState('');
   const [goodsDescription, setGoodsDescription] = useState('');
   const [vehicleTypeRequired, setVehicleTypeRequired] = useState('');
+  const [scheduleMode, setScheduleMode] = useState<ScheduleMode>('asap');
+  const [scheduledFor, setScheduledFor] = useState('');
+  const [fragile, setFragile] = useState(false);
+  const [photo, setPhoto] = useState<File | null>(null);
   const [pickupLocation, setPickupLocation] = useState<PickedLocation | null>(null);
   const [dropoffLocation, setDropoffLocation] = useState<PickedLocation | null>(null);
   const [errors, setErrors] = useState<FieldErrors>({});
   const [serverError, setServerError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
+  const minSchedule = localDateTimeValue(new Date());
 
   const isFormComplete = useMemo(
     () =>
@@ -43,22 +69,59 @@ export function NewOrderForm() {
           dropoffAddress.trim() &&
           goodsDescription.trim() &&
           pickupLocation &&
-          dropoffLocation,
+          dropoffLocation &&
+          (scheduleMode === 'asap' || scheduledFor),
       ),
-    [dropoffAddress, dropoffLocation, goodsDescription, pickupAddress, pickupLocation],
+    [
+      dropoffAddress,
+      dropoffLocation,
+      goodsDescription,
+      pickupAddress,
+      pickupLocation,
+      scheduleMode,
+      scheduledFor,
+    ],
   );
 
-  function validate(): FieldErrors {
+  const validate = (): FieldErrors => {
     const nextErrors: FieldErrors = {};
     if (!pickupAddress.trim()) nextErrors.pickupAddress = 'Enter the pickup address.';
     if (!dropoffAddress.trim()) nextErrors.dropoffAddress = 'Enter the drop-off address.';
-    if (!goodsDescription.trim()) nextErrors.goodsDescription = 'Describe the parcel or goods.';
+    if (!goodsDescription.trim()) nextErrors.goodsDescription = 'Describe what you are moving.';
     if (!pickupLocation) nextErrors.pickupPin = 'Place the pickup pin on the map.';
     if (!dropoffLocation) nextErrors.dropoffPin = 'Place the drop-off pin on the map.';
+    if (scheduleMode === 'scheduled') {
+      if (!scheduledFor) nextErrors.scheduledFor = 'Choose a pickup date and time, or switch to as soon as possible.';
+      else if (new Date(scheduledFor).getTime() < Date.now() - 60_000) {
+        nextErrors.scheduledFor = 'Scheduled pickup must be in the future.';
+      }
+    }
+    if (photo && !PHOTO_ACCEPT.split(',').includes(photo.type)) {
+      nextErrors.photo = 'Photos must be JPEG, PNG, or WebP.';
+    }
+    if (photo && photo.size > MAX_PHOTO_BYTES) {
+      nextErrors.photo = 'Photos must be 15 MB or smaller.';
+    }
     return nextErrors;
-  }
+  };
 
-  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+  const handleScheduleAsap = () => {
+    setScheduleMode('asap');
+    setScheduledFor('');
+    setErrors((current) => ({ ...current, scheduledFor: undefined }));
+  };
+
+  const handleScheduleLater = () => {
+    setScheduleMode('scheduled');
+  };
+
+  const handlePhotoChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0] ?? null;
+    setPhoto(file);
+    setErrors((current) => ({ ...current, photo: undefined }));
+  };
+
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setServerError(null);
 
@@ -70,18 +133,21 @@ export function NewOrderForm() {
       pickupAddress,
       pickupLat: pickupLocation.lat,
       pickupLng: pickupLocation.lng,
+      pickupAccessNotes: pickupAccessNotes.trim() || null,
       dropoffAddress,
       dropoffLat: dropoffLocation.lat,
       dropoffLng: dropoffLocation.lng,
       goodsDescription,
       vehicleTypeRequired: vehicleTypeRequired || null,
+      scheduledForIso: scheduleMode === 'scheduled' ? new Date(scheduledFor).toISOString() : null,
+      fragile,
     };
 
     startTransition(async () => {
-      const result = await createClientOrder(input);
+      const result = await createClientOrder(input, photo);
       if (!result.ok) setServerError(result.error);
     });
-  }
+  };
 
   const inputClassName =
     'w-full rounded-lg border border-ink-400/30 bg-white px-3.5 py-3 text-sm text-ink-900 outline-none transition placeholder:text-ink-400 focus:border-orange-600 focus:ring-2 focus:ring-orange-100';
@@ -98,9 +164,9 @@ export function NewOrderForm() {
         <section className="rounded-2xl border border-ink-400/15 bg-white p-5 shadow-sm sm:p-6 lg:sticky lg:top-6">
           <div className="mb-6">
             <p className="text-xs font-semibold uppercase tracking-[0.16em] text-orange-600">Order details</p>
-            <h2 className="mt-2 font-display text-2xl font-semibold text-ink-900">Where should we deliver?</h2>
+            <h2 className="mt-2 font-display text-2xl font-semibold text-ink-900">Where should we pick up and drop off?</h2>
             <p className="mt-2 text-sm leading-6 text-ink-600">
-              Add the route, parcel information, and the vehicle type you prefer. Drivers will send competitive bids.
+              Add the route, what you are moving, and the truck size you need. Drivers will send competitive bids.
             </p>
           </div>
 
@@ -124,6 +190,20 @@ export function NewOrderForm() {
             </label>
 
             <label className="block">
+              <span className="mb-2 block text-sm font-medium text-ink-700">
+                Landmark note <span className="font-normal text-ink-400">(optional)</span>
+              </span>
+              <textarea
+                value={pickupAccessNotes}
+                onChange={(event) => setPickupAccessNotes(event.target.value)}
+                className={`${inputClassName} min-h-20 resize-y`}
+                maxLength={500}
+                placeholder="e.g. Blue gate next to the chemist, call on arrival"
+                aria-label="Pickup landmark note"
+              />
+            </label>
+
+            <label className="block">
               <span className="mb-2 block text-sm font-medium text-ink-700">Drop-off address</span>
               <div className="relative">
                 <span className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-orange-600">●</span>
@@ -141,7 +221,7 @@ export function NewOrderForm() {
             </label>
 
             <label className="block">
-              <span className="mb-2 block text-sm font-medium text-ink-700">What are you sending?</span>
+              <span className="mb-2 block text-sm font-medium text-ink-700">What are you moving?</span>
               <textarea
                 value={goodsDescription}
                 onChange={(event) => {
@@ -149,9 +229,80 @@ export function NewOrderForm() {
                   setErrors((current) => ({ ...current, goodsDescription: undefined }));
                 }}
                 className={`${inputClassName} min-h-32 resize-y`}
-                placeholder="Describe the parcel, quantity, approximate size, and handling needs."
+                placeholder="e.g. Sofa, fridge, 8 gunias of clothes. Two people will help load."
               />
               {errors.goodsDescription ? <p className="mt-2 text-xs text-red-700">{errors.goodsDescription}</p> : null}
+            </label>
+
+            <label className="flex items-start gap-3 rounded-lg border border-ink-400/20 bg-white px-3.5 py-3">
+              <input
+                type="checkbox"
+                checked={fragile}
+                onChange={(event) => setFragile(event.target.checked)}
+                className="mt-1 h-4 w-4 rounded border-ink-400/40 text-orange-600 focus:ring-orange-100"
+              />
+              <span>
+                <span className="block text-sm font-medium text-ink-700">Fragile items</span>
+                <span className="mt-0.5 block text-xs text-ink-500">
+                  Tick this if anything can break (glass, electronics, crockery).
+                </span>
+              </span>
+            </label>
+
+            <fieldset className="space-y-3">
+              <legend className="mb-1 text-sm font-medium text-ink-700">When do you need the truck?</legend>
+              <label className="flex items-center gap-3 text-sm text-ink-700">
+                <input
+                  type="radio"
+                  name="schedule-mode"
+                  checked={scheduleMode === 'asap'}
+                  onChange={handleScheduleAsap}
+                  className="h-4 w-4 border-ink-400/40 text-orange-600 focus:ring-orange-100"
+                />
+                As soon as possible
+              </label>
+              <label className="flex items-center gap-3 text-sm text-ink-700">
+                <input
+                  type="radio"
+                  name="schedule-mode"
+                  checked={scheduleMode === 'scheduled'}
+                  onChange={handleScheduleLater}
+                  className="h-4 w-4 border-ink-400/40 text-orange-600 focus:ring-orange-100"
+                />
+                Schedule for later
+              </label>
+              {scheduleMode === 'scheduled' ? (
+                <label className="block">
+                  <span className="mb-2 block text-sm font-medium text-ink-700">Pickup date and time</span>
+                  <input
+                    type="datetime-local"
+                    value={scheduledFor}
+                    min={minSchedule}
+                    onChange={(event) => {
+                      setScheduledFor(event.target.value);
+                      setErrors((current) => ({ ...current, scheduledFor: undefined }));
+                    }}
+                    className={inputClassName}
+                    aria-label="Scheduled pickup date and time"
+                  />
+                  {errors.scheduledFor ? <p className="mt-2 text-xs text-red-700">{errors.scheduledFor}</p> : null}
+                </label>
+              ) : null}
+            </fieldset>
+
+            <label className="block">
+              <span className="mb-2 block text-sm font-medium text-ink-700">
+                Photo of items <span className="font-normal text-ink-400">(optional)</span>
+              </span>
+              <input
+                type="file"
+                accept={PHOTO_ACCEPT}
+                onChange={handlePhotoChange}
+                className="block w-full text-sm text-ink-700 file:mr-3 file:rounded-lg file:border-0 file:bg-orange-50 file:px-3 file:py-2 file:text-sm file:font-medium file:text-orange-700"
+                aria-label="Photo of items to move"
+              />
+              {photo ? <p className="mt-2 text-xs text-ink-500">{photo.name}</p> : null}
+              {errors.photo ? <p className="mt-2 text-xs text-red-700">{errors.photo}</p> : null}
             </label>
 
             <label className="block">
