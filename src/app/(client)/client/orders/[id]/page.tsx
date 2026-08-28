@@ -9,10 +9,14 @@ import type { VehicleType } from '@/types/supabase';
 
 import BidsList from '@/components/client/BidsList';
 import CancelOrderControl from '@/components/client/CancelOrderControl';
+import DeliveryConfirmNotice from '@/components/client/DeliveryConfirmNotice';
+import DisputeControl from '@/components/client/DisputeControl';
 import OrderLiveRefresh from '@/components/client/OrderLiveRefresh';
+import OrderReceipt from '@/components/client/OrderReceipt';
 import PaymentHoldPanel from '@/components/client/PaymentHoldPanel';
 import OrderStatusTimeline from '@/components/client/OrderStatusTimeline';
 import OrderTrackingMap from '@/components/client/OrderTrackingMap';
+import ReviewForm from '@/components/client/ReviewForm';
 import TripStatusLine from '@/components/client/TripStatusLine';
 
 export const dynamic = 'force-dynamic';
@@ -36,9 +40,13 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
   const detail = await getClientOrderDetail(id);
   if (!detail) notFound();
 
-  const { order, bids, history, driver, driverLocation, paymentHold, mpesaPaymentsEnabled } = detail;
+  const { order, orderNumber, bids, history, driver, driverLocation, paymentHold, mpesaPaymentsEnabled, review } =
+    detail;
   const isAssigned = Boolean(order.driver_id);
   const canCancel = CANCELLABLE_STATUSES.has(order.status);
+  const isPostTrip = order.status === 'delivered' || order.status === 'completed' || order.status === 'disputed';
+  const canRate = order.status === 'delivered' || order.status === 'completed';
+  const orderLabel = orderNumber != null ? `Order #${orderNumber}` : `Order #${order.id.slice(0, 8)}`;
 
   return (
     <main className="min-h-screen bg-gray-50 px-4 py-5 sm:px-6 sm:py-8 lg:px-8">
@@ -62,7 +70,7 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
               <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
                 <div>
                   <p className="text-xs font-semibold uppercase tracking-[0.16em] text-orange-600">
-                    Order #{order.id.slice(0, 8)}
+                    {orderLabel}
                   </p>
                   <p className="mt-1 text-xs text-gray-400">Placed {formatDate(order.created_at)}</p>
                 </div>
@@ -116,6 +124,38 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
 
             {order.status === 'payment_pending' ? (
               <PaymentHoldPanel orderId={order.id} hold={paymentHold} mpesaEnabled={mpesaPaymentsEnabled} />
+            ) : null}
+
+            {order.status === 'delivered' ? <DeliveryConfirmNotice driverName={driver?.full_name ?? null} /> : null}
+
+            {isPostTrip ? (
+              <OrderReceipt
+                orderNumber={orderNumber}
+                pickupAddress={order.pickup_address}
+                dropoffAddress={order.dropoff_address}
+                hold={paymentHold}
+                driverName={driver?.full_name ?? null}
+              />
+            ) : null}
+
+            {canRate ? (
+              <ReviewForm
+                orderId={order.id}
+                existingReview={review}
+                orderCompleted={order.status === 'completed'}
+              />
+            ) : null}
+
+            {order.status === 'delivered' ? (
+              <section className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm sm:p-6">
+                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-orange-600">Something wrong?</p>
+                <p className="mt-2 text-sm leading-6 text-ink-600">
+                  Dispute only if the delivery is not what you agreed. This does not complete the trip.
+                </p>
+                <div className="mt-3">
+                  <DisputeControl orderId={order.id} />
+                </div>
+              </section>
             ) : null}
 
             {isAssigned && driver ? (

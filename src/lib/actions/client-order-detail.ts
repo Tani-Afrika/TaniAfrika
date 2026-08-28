@@ -52,14 +52,22 @@ export interface PaymentHold {
   driverEarningsMinor: number | null;
 }
 
+export interface ClientReview {
+  id: string;
+  rating: number;
+  comment: string | null;
+}
+
 export interface ClientOrderDetail {
   order: Order;
+  orderNumber: number | null;
   bids: ClientBid[];
   history: OrderStatusHistory[];
   driver: AssignedDriverInfo | null;
   driverLocation: { lat: number; lng: number; updatedAt: string } | null;
   paymentHold: PaymentHold;
   mpesaPaymentsEnabled: boolean;
+  review: ClientReview | null;
 }
 
 const toNumberOrNull = (value: unknown): number | null => {
@@ -204,13 +212,22 @@ export async function getClientOrderDetail(orderId: string): Promise<ClientOrder
     .eq('key', 'mpesa_payments')
     .maybeSingle();
 
+  const { data: reviewRow } = await supabase
+    .from('reviews')
+    .select('id, rating, comment')
+    .eq('order_id', orderId)
+    .eq('reviewer_id', user.id)
+    .maybeSingle();
+
   const orderRow = order as Order & {
+    order_number?: number | string | null;
     platform_fee_minor?: number | string | null;
     driver_earnings_minor?: number | string | null;
   };
 
   return {
     order: order as Order,
+    orderNumber: toNumberOrNull(orderRow.order_number),
     bids,
     history: (history ?? []) as OrderStatusHistory[],
     driver,
@@ -221,6 +238,9 @@ export async function getClientOrderDetail(orderId: string): Promise<ClientOrder
       driverEarningsMinor: toNumberOrNull(orderRow.driver_earnings_minor),
     },
     mpesaPaymentsEnabled: Boolean(paymentFlag?.enabled),
+    review: reviewRow
+      ? { id: reviewRow.id, rating: Number(reviewRow.rating), comment: reviewRow.comment }
+      : null,
   };
 }
 
@@ -288,6 +308,90 @@ export async function sendBidMessage(orderId: string, bidId: string, message: st
     bid_id: bidId,
     sender_id: user.id,
     message: trimmed,
+  });
+
+  if (error) {
+    return { success: false, error: error.message };
+  }
+
+  revalidatePath(`/client/orders/${orderId}`);
+  return { success: true };
+}
+
+export async function disputeOrder(orderId: string, notes?: string): Promise<ActionResult> {
+  const supabase = await createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) return { success: false, error: 'Not authenticated.' };
+
+  const { data: order, error: orderError } = await supabase
+    .from('orders')
+    .select('id, client_id, status')
+    .eq('id', orderId)
+    .eq('client_id', user.id)
+    .single();
+
+  if (orderError || !order) return { success: false, error: 'Order not found.' };
+  if (order.status !== 'delivered') {
+    return { success: false, error: 'You can only dispute a delivered order.' };
+  }
+
+  const trimmedNotes = notes?.trim() ?? '';
+  const { error } = await supabase.rpc('update_order_status', {
+    p_order_id: orderId,
+    p_new_status: 'disputed',
+    ...(trimmedNotes ? { p_notes: trimmedNotes } : {}),
+  });
+
+  if (error) {
+    return { success: false, error: error.message };
+  }
+
+  revalidatePath(`/client/orders/${orderId}`);
+  return { success: true };
+}
+
+export async function submitClientReview(
+  orderId: string,
+  rating: number,
+  comment: string,
+): Promise<ActionResult> {
+  const supabase = await createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) return { success: false, error: 'Not authenticated.' };
+
+  if (!Number.isInteger(rating) || rating < 1 || rating > 5) {
+    return { success: false, error: 'Choose a rating from 1 to 5.' };
+  }
+
+  const trimmed = comment.trim();
+  if (trimmed.length > 2000) {
+    return { success: false, error: 'Keep the comment under 2,000 characters.' };
+  }
+
+  const { data: order, error: orderError } = await supabase
+    .from('orders')
+    .select('id, client_id, status')
+    .eq('id', orderId)
+    .eq('client_id', user.id)
+    .single();
+
+  if (orderError || !order) return { success: false, error: 'Order not found.' };
+  if (order.status !== 'delivered' && order.status !== 'completed') {
+    return { success: false, error: 'You can rate this trip after delivery.' };
+  }
+
+  const { error } = await supabase.rpc('submit_review', {
+    p_order_id: orderId,
+    p_rating: rating,
+    p_comment: trimmed || null,
   });
 
   if (error) {
