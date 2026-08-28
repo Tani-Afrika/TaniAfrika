@@ -108,7 +108,7 @@ export async function getClientOrderDetail(orderId: string): Promise<ClientOrder
     const [{ data: driverProfile }, { data: vehicle }, { data: location }] = await Promise.all([
       supabase
         .from('profiles')
-        .select('id, full_name, phone, avatar_url')
+        .select('id, full_name, phone, phone_e164, avatar_url')
         .eq('id', order.driver_id)
         .single(),
       supabase
@@ -128,7 +128,7 @@ export async function getClientOrderDetail(orderId: string): Promise<ClientOrder
       ? {
           id: driverProfile.id,
           full_name: driverProfile.full_name,
-          phone: driverProfile.phone,
+          phone: driverProfile.phone_e164 ?? driverProfile.phone,
           avatar_url: driverProfile.avatar_url,
           vehicle_type: vehicle?.vehicle_type ?? null,
           plate_number: vehicle?.plate_number ?? null,
@@ -142,7 +142,7 @@ export async function getClientOrderDetail(orderId: string): Promise<ClientOrder
 
   let bids: ClientBid[] = [];
 
-  const showBids = order.status === 'pending' || order.status === 'payment_pending';
+  const showBids = order.status === 'pending';
 
   if (showBids) {
     const { data: bidRows } = await supabase

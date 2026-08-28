@@ -9,9 +9,11 @@ import type { VehicleType } from '@/types/supabase';
 
 import BidsList from '@/components/client/BidsList';
 import CancelOrderControl from '@/components/client/CancelOrderControl';
+import OrderLiveRefresh from '@/components/client/OrderLiveRefresh';
 import PaymentHoldPanel from '@/components/client/PaymentHoldPanel';
 import OrderStatusTimeline from '@/components/client/OrderStatusTimeline';
 import OrderTrackingMap from '@/components/client/OrderTrackingMap';
+import TripStatusLine from '@/components/client/TripStatusLine';
 
 export const dynamic = 'force-dynamic';
 
@@ -40,6 +42,7 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
 
   return (
     <main className="min-h-screen bg-gray-50 px-4 py-5 sm:px-6 sm:py-8 lg:px-8">
+      <OrderLiveRefresh orderId={order.id} />
       <div className="mx-auto max-w-[1500px]">
         <header className="mb-6 flex items-center gap-4 sm:mb-8">
           <Link href="/client" aria-label="Back to client home" className="grid h-11 w-11 shrink-0 place-items-center rounded-full border border-gray-200 bg-white text-xl text-gray-700 shadow-sm transition hover:border-orange-200 hover:text-orange-600">
@@ -66,7 +69,9 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
                 <StatusBadge kind="order" status={order.status} />
               </div>
 
-              <dl className="space-y-3 text-sm">
+              <TripStatusLine status={order.status} driverName={driver?.full_name} />
+
+              <dl className="mt-4 space-y-3 text-sm">
                 <div className="flex gap-3">
                   <span className="mt-0.5 text-orange-600">{String.fromCharCode(9679)}</span>
                   <div>
@@ -133,14 +138,20 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
                   </div>
                 </div>
                 {driver.phone ? (
-                  <a href={`tel:${driver.phone}`} className="mt-4 inline-flex items-center gap-2 rounded-lg border border-gray-200 px-3.5 py-2 text-xs font-semibold text-gray-700 transition hover:border-orange-200 hover:text-orange-600">
+                  <a
+                    href={`tel:${driver.phone}`}
+                    aria-label={`Call ${driver.full_name} at ${driver.phone}`}
+                    className="mt-4 inline-flex items-center gap-2 rounded-lg border border-gray-200 px-3.5 py-2 text-xs font-semibold text-gray-700 transition hover:border-orange-200 hover:text-orange-600"
+                  >
                     Call {driver.phone}
                   </a>
-                ) : null}
+                ) : (
+                  <p className="mt-4 text-xs text-gray-500">Phone number is not on file yet.</p>
+                )}
               </section>
             ) : null}
 
-            {order.status === 'pending' || order.status === 'payment_pending' ? (
+            {order.status === 'pending' ? (
               <section>
                 <h2 className="mb-3 text-sm font-semibold text-gray-900">Bids received</h2>
                 <BidsList orderId={order.id} currentUserId={user.id} bids={bids} />

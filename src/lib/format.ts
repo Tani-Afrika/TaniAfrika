@@ -61,3 +61,37 @@ export const VEHICLE_TYPE_LABELS: Record<VehicleType, string> = {
   truck_small: 'Small Truck',
   truck_large: 'Large Truck',
 };
+
+export function getClientOrderStatusLine(status: OrderStatus, driverName?: string | null): string {
+  const label = ORDER_STATUS_STYLES[status].label;
+  const name = driverName?.trim() || 'Your driver';
+
+  switch (status) {
+    case 'draft':
+      return `${label}: this booking is not posted yet.`;
+    case 'pending':
+      return `${label}: drivers nearby can still send bids.`;
+    case 'payment_pending':
+      return `${label}: money stays held until delivery.`;
+    case 'assigned':
+      return `${label}: ${name} has this trip and is getting ready.`;
+    case 'driver_en_route':
+      return `${label}: ${name} is heading to pickup.`;
+    case 'arrived':
+      return `${label}: ${name} is at pickup.`;
+    case 'loading':
+      return `${label}: ${name} is loading your goods.`;
+    case 'picked_up':
+      return `${label}: your goods are on the vehicle.`;
+    case 'in_transit':
+      return `${label}: ${name} is heading to drop-off.`;
+    case 'delivered':
+      return `${label}: your goods have arrived.`;
+    case 'completed':
+      return `${label}: this trip is finished.`;
+    case 'cancelled':
+      return `${label}: this order is no longer active.`;
+    case 'disputed':
+      return `${label}: this order is under review.`;
+  }
+}
