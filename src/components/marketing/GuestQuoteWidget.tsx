@@ -49,10 +49,10 @@ export function GuestQuoteWidget() {
   return (
     <div className="w-full rounded-2xl border border-emerald-950/10 bg-white p-6 shadow-xl shadow-emerald-950/5 sm:p-7">
       <p className="text-xs font-bold uppercase tracking-[0.16em] text-[#1F5F3F]">
-        Get an instant quote
+        Instant Estimate
       </p>
       <h2 className="mt-2 font-display text-xl font-bold text-slate-950">
-        No account needed to browse
+        Calculate delivery rate
       </h2>
 
       <div className="mt-5 space-y-4">

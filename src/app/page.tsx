@@ -43,20 +43,17 @@ export default function HomePage() {
           </span>
 
           <h1 className="mt-5 font-display text-4xl font-bold leading-tight tracking-tight text-slate-950 sm:text-5xl">
-            Send anything, anywhere.<br />No account needed to start.
+            Reliable moving &amp; cargo delivery across Kenya.
           </h1>
 
           <p className="mt-4 max-w-lg text-base leading-7 text-slate-600">
-            Get an instant delivery estimate below — browse freely, no sign-in required.
-            We only ask you to create a free account or log in the moment you&apos;re
-            ready to confirm a booking, just like the ride and delivery apps you
-            already use.
+            Get an instant delivery estimate below. Connect with verified drivers, compare transparent bids, and track your shipment in real time.
           </p>
 
           <div className="mt-8 grid grid-cols-2 gap-4 border-t border-slate-200 pt-6 sm:grid-cols-3">
-            <Stat label="Cargo Shippers" value="Post moves & compare bids" />
-            <Stat label="Verified Drivers" value="Instant loads & fast payouts" />
-            <Stat label="Live Tracking" value="Know exactly where it is" />
+            <Stat label="Verified Drivers" value="Vetted vehicles &amp; background checks" />
+            <Stat label="Live Tracking" value="Real-time GPS trip monitoring" />
+            <Stat label="Secure Escrow" value="Pay only after safe delivery" />
           </div>
 
           <div className="mt-10 hidden sm:block">
@@ -65,13 +62,13 @@ export default function HomePage() {
             </p>
             <ol className="mt-3 space-y-3 text-sm text-slate-600">
               <li className="flex gap-3">
-                <StepNumber n={1} /> Enter your pickup and drop-off to see an estimate — no account needed.
+                <StepNumber n={1} /> Enter pickup and drop-off to calculate your estimate.
               </li>
               <li className="flex gap-3">
-                <StepNumber n={2} /> Sign up or log in only when you&apos;re ready to confirm the delivery.
+                <StepNumber n={2} /> Receive competitive bids from available drivers.
               </li>
               <li className="flex gap-3">
-                <StepNumber n={3} /> Verified drivers bid on your job; you pick, track, and pay securely.
+                <StepNumber n={3} /> Select your driver, track the trip, and pay securely.
               </li>
             </ol>
           </div>

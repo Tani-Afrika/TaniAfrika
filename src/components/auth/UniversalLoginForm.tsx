@@ -5,9 +5,6 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
 import { loginAsDevUserFormAction } from '@/lib/actions/dev-auth';
-// Import from constants (not dev-session) — dev-session.ts pulls in
-// next/headers, which is server-only and breaks when a Client Component
-// imports it, even just for a re-exported string constant.
 import { DEV_ROLE_COOKIE } from '@/lib/auth/constants';
 
 export function UniversalLoginForm() {
@@ -21,12 +18,9 @@ export function UniversalLoginForm() {
 function UniversalLoginFormInner() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  // Where to send the user after a successful sign-in — set by any page that
-  // sent a guest here mid-transaction (e.g. "Book this delivery" from the
-  // public quote widget on the homepage). Falls back to the role's home.
   const redirectTo = searchParams.get('redirectTo');
   const intentNotice = searchParams.get('intent') === 'order'
-    ? 'Sign in (or create a free account) to confirm this delivery.'
+    ? 'Sign in to confirm your delivery booking.'
     : null;
 
   const [activeTab, setActiveTab] = useState<'quick' | 'email'>(redirectTo ? 'email' : 'quick');
@@ -41,13 +35,12 @@ function UniversalLoginFormInner() {
     setError(null);
 
     if (!email.trim() || !password) {
-      setError('Please enter both email and password.');
+      setError('Please enter your email and password.');
       return;
     }
 
     setLoading(true);
     try {
-      // Clear any dev session cookie so the real authenticated session is recognized by proxy
       document.cookie = `${DEV_ROLE_COOKIE}=; path=/; max-age=0`;
 
       const supabase = createClient();
@@ -68,7 +61,6 @@ function UniversalLoginFormInner() {
         return;
       }
 
-      // Query user profile from database to determine role & destination
       const { data: profile } = await supabase
         .from('profiles')
         .select('role, approval_status')
@@ -90,7 +82,7 @@ function UniversalLoginFormInner() {
       router.push(safeRedirect || destination);
       router.refresh();
     } catch {
-      setError('An unexpected error occurred during sign in. Please try again.');
+      setError('An unexpected error occurred. Please try again.');
       setLoading(false);
     }
   }
@@ -104,15 +96,12 @@ function UniversalLoginFormInner() {
             T
           </span>
           <span className="font-display text-lg font-bold text-[#1F5F3F]">TaniAfrika</span>
-          <span className="ml-auto rounded-full bg-emerald-50 px-2.5 py-0.5 text-[10px] font-semibold text-[#1F5F3F] border border-emerald-200">
-            Universal Portal
-          </span>
         </div>
         <h2 className="mt-3 text-2xl font-bold tracking-tight text-slate-900 font-display">
           Welcome back
         </h2>
         <p className="mt-1 text-xs text-slate-500">
-          Universal access for clients, drivers, and fleet operators.
+          Sign in to your TaniAfrika account.
         </p>
         {intentNotice && (
           <p className="mt-3 rounded-xl border border-emerald-100 bg-emerald-50 px-3.5 py-2.5 text-xs font-medium text-[#1F5F3F]">
@@ -135,7 +124,7 @@ function UniversalLoginFormInner() {
               : 'text-slate-600 hover:text-slate-900'
           }`}
         >
-          ⚡ Fast Demo Access
+          ⚡ Quick Demo
         </button>
         <button
           type="button"
@@ -149,39 +138,30 @@ function UniversalLoginFormInner() {
               : 'text-slate-600 hover:text-slate-900'
           }`}
         >
-          ✉️ Email & Password
+          ✉️ Email Sign In
         </button>
       </div>
 
-      {/* TAB 1: Fast One-Click Dev / Staging Access */}
+      {/* TAB 1: Fast One-Click Demo Access */}
       {activeTab === 'quick' ? (
         <form action={loginAsDevUserFormAction} className="space-y-2.5">
-          <p className="mb-2 text-[11px] text-slate-500">
-            Select an active persona to enter without typing credentials:
-          </p>
-
-          {/* Client / Shipper Card */}
+          {/* Client Card */}
           <button
             name="role"
             value="client"
             type="submit"
             className="w-full flex items-center justify-between rounded-xl border border-slate-200/80 bg-[#f8faf8] p-3 text-left hover:border-emerald-400 hover:bg-emerald-50/60 transition cursor-pointer group"
           >
-            <div className="flex items-start gap-3">
-              <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-emerald-100 text-emerald-800 text-sm font-bold">
+            <div className="flex items-center gap-3">
+              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-emerald-100 text-emerald-800 text-sm font-bold">
                 📦
               </span>
               <div>
-                <div className="flex items-center gap-1.5">
-                  <span className="text-sm font-bold text-slate-900 group-hover:text-[#1F5F3F] transition">
-                    Client (Shipper)
-                  </span>
-                  <span className="rounded bg-emerald-100/70 px-1.5 py-0.2 text-[10px] font-semibold text-emerald-800">
-                    Alice
-                  </span>
-                </div>
+                <span className="block text-sm font-bold text-slate-900 group-hover:text-[#1F5F3F] transition">
+                  Client / Shipper
+                </span>
                 <span className="block text-xs text-slate-500">
-                  Book moves, post cargo & view driver bids
+                  Book moves, post cargo &amp; view bids
                 </span>
               </div>
             </div>
@@ -197,21 +177,16 @@ function UniversalLoginFormInner() {
             type="submit"
             className="w-full flex items-center justify-between rounded-xl border border-slate-200/80 bg-[#f8faf8] p-3 text-left hover:border-blue-400 hover:bg-blue-50/60 transition cursor-pointer group"
           >
-            <div className="flex items-start gap-3">
-              <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-blue-100 text-blue-800 text-sm font-bold">
+            <div className="flex items-center gap-3">
+              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-blue-100 text-blue-800 text-sm font-bold">
                 🚚
               </span>
               <div>
-                <div className="flex items-center gap-1.5">
-                  <span className="text-sm font-bold text-slate-900 group-hover:text-blue-700 transition">
-                    Driver (Approved)
-                  </span>
-                  <span className="rounded bg-blue-100/70 px-1.5 py-0.2 text-[10px] font-semibold text-blue-800">
-                    John
-                  </span>
-                </div>
+                <span className="block text-sm font-bold text-slate-900 group-hover:text-blue-700 transition">
+                  Driver (Approved)
+                </span>
                 <span className="block text-xs text-slate-500">
-                  Verified vehicle, job feed, place bids & earnings
+                  Available job feed &amp; active bids
                 </span>
               </div>
             </div>
@@ -227,21 +202,16 @@ function UniversalLoginFormInner() {
             type="submit"
             className="w-full flex items-center justify-between rounded-xl border border-slate-200/80 bg-[#f8faf8] p-3 text-left hover:border-amber-400 hover:bg-amber-50/60 transition cursor-pointer group"
           >
-            <div className="flex items-start gap-3">
-              <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-amber-100 text-amber-800 text-sm font-bold">
+            <div className="flex items-center gap-3">
+              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-amber-100 text-amber-800 text-sm font-bold">
                 📋
               </span>
               <div>
-                <div className="flex items-center gap-1.5">
-                  <span className="text-sm font-bold text-slate-900 group-hover:text-amber-800 transition">
-                    Driver (Pending KYC)
-                  </span>
-                  <span className="rounded bg-amber-100/70 px-1.5 py-0.2 text-[10px] font-semibold text-amber-800">
-                    Sam
-                  </span>
-                </div>
+                <span className="block text-sm font-bold text-slate-900 group-hover:text-amber-800 transition">
+                  Driver (Pending KYC)
+                </span>
                 <span className="block text-xs text-slate-500">
-                  Document uploads, vehicle license & onboarding
+                  Document upload &amp; verification
                 </span>
               </div>
             </div>
@@ -257,21 +227,16 @@ function UniversalLoginFormInner() {
             type="submit"
             className="w-full flex items-center justify-between rounded-xl border border-slate-200/80 bg-[#f8faf8] p-3 text-left hover:border-emerald-400 hover:bg-emerald-50/60 transition cursor-pointer group"
           >
-            <div className="flex items-start gap-3">
-              <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-emerald-800 text-white text-sm font-bold">
+            <div className="flex items-center gap-3">
+              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-emerald-800 text-white text-sm font-bold">
                 🛡️
               </span>
               <div>
-                <div className="flex items-center gap-1.5">
-                  <span className="text-sm font-bold text-slate-900 group-hover:text-[#1F5F3F] transition">
-                    Admin Operations
-                  </span>
-                  <span className="rounded bg-emerald-100/70 px-1.5 py-0.2 text-[10px] font-semibold text-[#1F5F3F]">
-                    Wilfred
-                  </span>
-                </div>
+                <span className="block text-sm font-bold text-slate-900 group-hover:text-[#1F5F3F] transition">
+                  Admin Dashboard
+                </span>
                 <span className="block text-xs text-slate-500">
-                  Fleet verifications, live bids, orders & settlements
+                  Fleet, compliance &amp; order operations
                 </span>
               </div>
             </div>
@@ -376,11 +341,8 @@ function UniversalLoginFormInner() {
             href={redirectTo ? `/signup?redirectTo=${encodeURIComponent(redirectTo)}` : '/signup'}
             className="font-semibold text-[#1F5F3F] hover:underline"
           >
-            Create an account (Client or Driver)
+            Create an account
           </Link>
-        </p>
-        <p className="mt-2 text-[10px] text-slate-400">
-          Unified Account Architecture • Nicholas (Client) & Wilfred (Driver/Admin)
         </p>
       </div>
     </div>

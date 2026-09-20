@@ -37,23 +37,12 @@ export default function LoginPage() {
             </h1>
 
             <p className="mt-3 text-sm text-emerald-100/90 leading-relaxed">
-              Universal marketplace connecting clients, verified drivers, and fleet operators across Africa with real-time tracking, transparent bidding, and secure payments.
+              Kenya&apos;s two-sided moving and cargo marketplace. Transparent driver bidding, real-time trip tracking, and verified escrow payments.
             </p>
-
-            <div className="mt-8 grid grid-cols-2 gap-4 border-t border-white/15 pt-6">
-              <div>
-                <p className="text-xs font-medium text-emerald-200">Cargo Shippers</p>
-                <p className="text-sm font-semibold text-white">Post moves & compare bids</p>
-              </div>
-              <div>
-                <p className="text-xs font-medium text-emerald-200">Verified Drivers</p>
-                <p className="text-sm font-semibold text-white">Instant loads & quick payouts</p>
-              </div>
-            </div>
           </div>
 
           <p className="text-xs text-emerald-200/80">
-            Simple. Reliable. Kenyan Logistics Standard.
+            Simple. Reliable. African.
           </p>
         </div>
       </section>
