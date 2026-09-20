@@ -11,12 +11,12 @@ import { getDevRoleFromRequest, MOCK_USERS } from '@/lib/auth/dev-session';
 const isPathOrSubpath = (pathname: string, base: string) =>
   pathname === base || pathname.startsWith(base + '/');
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   let supabaseResponse = NextResponse.next({
     request,
   });
 
-  // Optimization 1: Bypass background prefetch requests entirely to prevent unnecessary middleware executions on Vercel
+  // Optimization 1: Bypass background prefetch requests entirely to prevent unnecessary proxy executions on Vercel
   const isPrefetch =
     request.headers.get('x-middleware-prefetch') === '1' ||
     request.headers.get('purpose') === 'prefetch';
@@ -78,9 +78,12 @@ export async function middleware(request: NextRequest) {
     return redirectWithCookies('/login');
   }
 
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co';
+  const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder-anon-key';
+
   const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    supabaseUrl,
+    supabaseKey,
     {
       cookies: {
         getAll() {
@@ -117,7 +120,7 @@ export async function middleware(request: NextRequest) {
       .eq('id', user.id)
       .single();
 
-    console.log('MIDDLEWARE PROFILE CHECK (auth page)', {
+    console.log('PROXY PROFILE CHECK (auth page)', {
       pathname: request.nextUrl.pathname,
       userId: user.id,
       profile,
@@ -134,12 +137,7 @@ export async function middleware(request: NextRequest) {
 
     // IMPORTANT: never redirect an authenticated user back to /login from
     // here. /login is a public auth page, so a redirect to it re-enters
-    // this exact branch on the next request — if the profile fetch fails
-    // or the role is unmapped every time (stale/missing profile row, RLS
-    // still blocking the read, null role, etc.), that's an infinite
-    // redirect loop (ERR_TOO_MANY_REDIRECTS). If we can't resolve a
-    // destination, just let the request through and render /login as-is
-    // instead of looping.
+    // this exact branch on the next request.
     if (!destination) {
       return supabaseResponse;
     }
@@ -147,15 +145,6 @@ export async function middleware(request: NextRequest) {
     return redirectWithCookies(destination);
   }
 
-  // Cross-role guard: prevent a client from hitting /driver/* and vice versa,
-  // and keep both out of the admin dashboard root. Each (group)/layout.tsx
-  // still does its own authoritative check server-side — this is a fast
-  // early bounce so users don't even reach a page that will just redirect.
-  //
-  // NOTE: these checks use isPathOrSubpath(), not startsWith(), so that the
-  // admin-only management pages '/drivers' and '/clients' (plural) are not
-  // mistaken for the driver/client app sections '/driver' and '/client'
-  // (singular).
   if (user) {
     const pathname = request.nextUrl.pathname;
     const isClientAppRoute = isPathOrSubpath(pathname, '/client');
@@ -169,19 +158,13 @@ export async function middleware(request: NextRequest) {
         .eq('id', user.id)
         .single();
 
-      console.log('MIDDLEWARE PROFILE CHECK (route guard)', {
+      console.log('PROXY PROFILE CHECK (route guard)', {
         pathname,
         userId: user.id,
         profile,
         profileError,
       });
 
-      // Same principle as above: if the role can't be resolved, don't
-      // send the user to /login here either while they're already
-      // authenticated on a protected route — that risks re-entering the
-      // auth-page branch and looping if the profile fetch keeps failing.
-      // Let them through to the route; that route's own layout.tsx does
-      // the authoritative check and will redirect just once if needed.
       if (!profile) {
         return supabaseResponse;
       }
@@ -218,6 +201,9 @@ export async function middleware(request: NextRequest) {
 
   return supabaseResponse;
 }
+
+// Backward compatibility export
+export { proxy as middleware };
 
 export const config = {
   matcher: [

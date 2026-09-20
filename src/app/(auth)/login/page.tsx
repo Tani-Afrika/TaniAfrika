@@ -1,6 +1,8 @@
 import Image from 'next/image';
 import { loginAsDevUserFormAction } from '@/lib/actions/dev-auth';
 
+export const dynamic = 'force-dynamic';
+
 export default function LoginPage() {
   return (
     <main className="h-screen w-full overflow-hidden bg-slate-50 lg:grid lg:grid-cols-[1.1fr_0.9fr]">

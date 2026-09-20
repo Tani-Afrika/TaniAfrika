@@ -10,6 +10,8 @@ import { useRouter, useSearchParams } from 'next/navigation';
 
 import { createClient } from '@/lib/supabase/client';
 
+export const dynamic = 'force-dynamic';
+
 const MINIMUM_PASSWORD_LENGTH = 8;
 
 export default function ResetPasswordPage() {
