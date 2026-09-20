@@ -1,6 +1,6 @@
 import { createServerClient } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
-import { getDevRoleFromRequest, MOCK_USERS } from '@/lib/auth/dev-session';
+import { getDevRoleFromRequest, MOCK_USERS } from '@/lib/auth/constants';
 
 // Matches the base path itself or a sub-path of it (e.g. '/driver' or
 // '/driver/123'), but NOT a sibling route that merely shares the same

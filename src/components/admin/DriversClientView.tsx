@@ -35,8 +35,8 @@ export default function DriversClientView({
       ? allDrivers
       : allDrivers.filter((d) => d.approval_status === activeFilter);
 
-  const onlineDrivers = allDrivers.filter((d: any) => d.is_online).length;
-  const activeDrivers = allDrivers.filter((d: any) => d.is_active).length;
+  const onlineDrivers = allDrivers.filter((d) => d.is_online).length;
+  const activeDrivers = allDrivers.filter((d) => d.is_active).length;
   const pendingCount = allDrivers.filter((d) => d.approval_status === 'pending').length;
 
   async function handleQuickVerifyVehicle(vehicleId: string) {

@@ -17,6 +17,8 @@ export interface DriverVerificationData {
   phone: string | null;
   approval_status: ApprovalStatus;
   created_at: string;
+  is_online?: boolean;
+  is_active?: boolean;
   driverProfile?: {
     rejection_reason: string | null;
     national_id_last4: string | null;
