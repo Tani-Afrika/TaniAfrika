@@ -28,7 +28,7 @@ export function BidForm({ orderId }: { orderId: string }) {
       className="space-y-4"
     >
       <label className="block">
-        <span className="text-sm font-semibold text-slate-800">Your delivery fee (KES)</span>
+        <span className="text-xs font-semibold text-slate-800">Your delivery fee (KES)</span>
         <input
           type="number"
           min="1"
@@ -36,22 +36,51 @@ export function BidForm({ orderId }: { orderId: string }) {
           value={amount}
           onChange={(event) => setAmount(event.target.value)}
           placeholder="e.g. 1,450"
-          className="mt-2 w-full rounded-xl border border-orange-100 bg-white px-4 py-3 text-sm outline-none transition focus:border-orange-400 focus:ring-4 focus:ring-orange-100"
+          className="mt-1.5 w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm outline-none transition focus:border-trust focus:ring-4 focus:ring-trust/15"
           required
         />
+        <div className="mt-2 flex items-center gap-1.5">
+          <span className="text-[10px] font-medium text-slate-400">Quick add:</span>
+          {[500, 1000, 1500, 2500].map((preset) => (
+            <button
+              key={preset}
+              type="button"
+              onClick={() => {
+                const current = Number(amount) || 0;
+                setAmount(String(current + preset));
+              }}
+              className="native-press rounded-lg border border-slate-200 bg-paper-light px-2 py-1 text-[11px] font-semibold text-trust hover:border-trust/40 hover:bg-trust-light/40"
+            >
+              +{preset.toLocaleString()}
+            </button>
+          ))}
+          {amount ? (
+            <button
+              type="button"
+              onClick={() => setAmount('')}
+              className="text-[10px] text-slate-400 hover:text-slate-600 underline ml-auto"
+            >
+              Clear
+            </button>
+          ) : null}
+        </div>
       </label>
       <label className="block">
-        <span className="text-sm font-semibold text-slate-800">Message to customer <span className="font-normal text-slate-400">(optional)</span></span>
+        <span className="text-xs font-semibold text-slate-800">Message to customer <span className="font-normal text-slate-400">(optional)</span></span>
         <textarea
           value={message}
           onChange={(event) => setMessage(event.target.value)}
-          rows={4}
+          rows={3}
           placeholder="Confirm vehicle, availability or estimated pickup time."
-          className="mt-2 w-full resize-none rounded-xl border border-orange-100 bg-white px-4 py-3 text-sm outline-none transition focus:border-orange-400 focus:ring-4 focus:ring-orange-100"
+          className="mt-1.5 w-full resize-none rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm outline-none transition focus:border-trust focus:ring-4 focus:ring-trust/15"
         />
       </label>
-      {error ? <p className="rounded-xl border border-red-100 bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p> : null}
-      <button type="submit" disabled={isPending || !amount} className="w-full rounded-xl bg-orange-600 px-4 py-3 text-sm font-semibold text-white shadow-lg shadow-orange-200 transition hover:bg-orange-700 disabled:cursor-not-allowed disabled:opacity-60">
+      {error ? <p className="rounded-xl border border-red-100 bg-red-50 px-3 py-2 text-xs text-red-700">{error}</p> : null}
+      <button
+        type="submit"
+        disabled={isPending || !amount}
+        className="w-full rounded-xl bg-trust px-4 py-3 text-sm font-semibold text-white shadow-md shadow-trust/20 transition hover:bg-trust-deep disabled:cursor-not-allowed disabled:opacity-60 native-press"
+      >
         {isPending ? 'Submitting bid…' : 'Submit bid'}
       </button>
     </form>

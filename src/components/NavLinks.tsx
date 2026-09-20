@@ -25,12 +25,12 @@ export default function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
             onClick={onNavigate}
             className={`relative rounded-lg px-4 py-2.5 text-sm transition-colors ${
               isActive
-                ? 'bg-maroon-50 font-semibold text-maroon-600'
-                : 'font-medium text-ink-600 hover:bg-ink-200/40'
+                ? 'bg-[#1F5F3F]/10 font-bold text-[#1F5F3F]'
+                : 'font-medium text-ink-600 hover:bg-[#1F5F3F]/5 hover:text-[#1F5F3F]'
             }`}
           >
             {isActive && (
-              <span className="absolute left-0 top-1/2 h-4 w-1 -translate-y-1/2 rounded-full bg-maroon-600" />
+              <span className="absolute left-0 top-1/2 h-4 w-1 -translate-y-1/2 rounded-full bg-[#1F5F3F]" />
             )}
             {link.label}
           </Link>
