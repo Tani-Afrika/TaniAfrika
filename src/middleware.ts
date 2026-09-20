@@ -43,13 +43,13 @@ export async function middleware(request: NextRequest) {
       return NextResponse.redirect(new URL(mockUser.redirectUrl, request.url));
     }
 
-    if (isClientAppRoute && mockUser.role !== 'client') {
+    if (isClientAppRoute && (mockUser.role as string) !== 'client') {
       return NextResponse.redirect(new URL(mockUser.redirectUrl, request.url));
     }
-    if (isDriverAppRoute && mockUser.role !== 'driver') {
+    if (isDriverAppRoute && (mockUser.role as string) !== 'driver') {
       return NextResponse.redirect(new URL(mockUser.redirectUrl, request.url));
     }
-    if (isAdminRoute && mockUser.role !== 'admin') {
+    if (isAdminRoute && (mockUser.role as string) !== 'admin') {
       return NextResponse.redirect(new URL(mockUser.redirectUrl, request.url));
     }
 
