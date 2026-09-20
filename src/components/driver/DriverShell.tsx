@@ -33,7 +33,7 @@ type DriverShellProps = {
   profile: {
     fullName: string;
     email: string;
-    avatarUrl: string | null;
+    avatarUrl?: string | null;
   };
 };
 

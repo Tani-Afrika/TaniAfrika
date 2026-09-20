@@ -5,10 +5,14 @@ import { getDevSession } from '@/lib/auth/dev-session';
 
 export default async function DriverLayout({ children }: { children: React.ReactNode }) {
   const devSession = await getDevSession();
-  let driverProfile = {
+  let driverProfile: {
+    fullName: string;
+    email: string;
+    avatarUrl?: string | null;
+  } = {
     fullName: 'John Driver',
     email: 'driver@taniafrika.local',
-    avatarUrl: null as string | null | undefined,
+    avatarUrl: null,
   };
 
   if (devSession) {
@@ -34,7 +38,7 @@ export default async function DriverLayout({ children }: { children: React.React
     driverProfile = {
       fullName: profile?.full_name ?? 'Driver',
       email: authData.user?.email ?? '',
-      avatarUrl: profile?.avatar_url,
+      avatarUrl: profile?.avatar_url ?? null,
     };
   }
 
