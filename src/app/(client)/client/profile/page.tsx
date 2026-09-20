@@ -2,12 +2,15 @@ import { ClientIcon, type ClientIconName } from '@/components/client/ClientIcons
 import LogoutButton from '@/components/LogoutButton';
 import { createClient } from '@/lib/supabase/server';
 
+import { getDevSession } from '@/lib/auth/dev-session';
+
 export default async function ClientProfilePage() {
+  const devSession = await getDevSession();
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const { data: { user: authUser } } = await supabase.auth.getUser();
+  const user = devSession ? { id: devSession.id, email: devSession.email } : authUser;
   if (!user) return null;
-  const { data: profile } = await supabase.from('profiles').select('full_name').eq('id', user.id).single();
-  const name = profile?.full_name ?? 'TaniAfrika Client';
+  const name = devSession?.full_name ?? 'TaniAfrika Client';
   const initials = name.split(' ').filter(Boolean).slice(0, 2).map((part: string) => part[0]).join('').toUpperCase();
 
   const rows: Array<{ icon: ClientIconName; title: string; text: string }> = [

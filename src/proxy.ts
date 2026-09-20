@@ -1,6 +1,6 @@
 import { createServerClient } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
-import { getDevRoleFromRequest, MOCK_USERS } from '@/lib/auth/constants';
+import { getDevRoleFromRequest, MOCK_USERS, DEV_ROLE_COOKIE } from '@/lib/auth/constants';
 
 // Matches the base path itself or a sub-path of it (e.g. '/driver' or
 // '/driver/123'), but NOT a sibling route that merely shares the same
@@ -107,20 +107,39 @@ export async function proxy(request: NextRequest) {
   // Dev Session Check: Instant 1-click test access
   const devRole = getDevRoleFromRequest(request);
   if (devRole) {
-    const mockUser = MOCK_USERS[devRole];
-
+    // 1. If visiting an auth page (/login, /signup, etc.), NEVER block or redirect!
+    // Allow the user to see the login page, switch accounts, log out, or pick another demo role.
     if (isPublicAuthPage) {
-      return NextResponse.redirect(new URL(mockUser.redirectUrl, request.url));
+      return supabaseResponse;
     }
 
-    if (isClientAppRoute && (mockUser.role as string) !== 'client') {
-      return NextResponse.redirect(new URL(mockUser.redirectUrl, request.url));
+    // 2. If visiting an app route that doesn't match the current dev role,
+    // seamlessly auto-switch the dev role to match the target route so the user is never trapped!
+    if (isDriverAppRoute) {
+      if (devRole !== 'approved_driver' && devRole !== 'pending_driver') {
+        const response = NextResponse.next({ request });
+        response.cookies.set(DEV_ROLE_COOKIE, 'approved_driver', { path: '/' });
+        return response;
+      }
+      return NextResponse.next({ request });
     }
-    if (isDriverAppRoute && (mockUser.role as string) !== 'driver') {
-      return NextResponse.redirect(new URL(mockUser.redirectUrl, request.url));
+
+    if (isAdminAppRoute) {
+      if (devRole !== 'admin') {
+        const response = NextResponse.next({ request });
+        response.cookies.set(DEV_ROLE_COOKIE, 'admin', { path: '/' });
+        return response;
+      }
+      return NextResponse.next({ request });
     }
-    if (isAdminAppRoute && (mockUser.role as string) !== 'admin') {
-      return NextResponse.redirect(new URL(mockUser.redirectUrl, request.url));
+
+    if (isClientAppRoute) {
+      if (devRole !== 'client') {
+        const response = NextResponse.next({ request });
+        response.cookies.set(DEV_ROLE_COOKIE, 'client', { path: '/' });
+        return response;
+      }
+      return NextResponse.next({ request });
     }
 
     // Public marketing pages and anything else outside the three app
@@ -196,18 +215,14 @@ export async function proxy(request: NextRequest) {
     const isSafeRedirect =
       requestedRedirect?.startsWith('/') && !requestedRedirect.startsWith('//');
 
-    const destination = isSafeRedirect
-      ? requestedRedirect
-      : HOME_BY_ROLE[profile?.role ?? ''];
-
-    // IMPORTANT: never redirect an authenticated user back to /login from
-    // here. /login is a public auth page, so a redirect to it re-enters
-    // this exact branch on the next request.
-    if (!destination) {
-      return supabaseResponse;
+    // If the user was redirected to login with a specific target (e.g. from an order flow),
+    // redirect them to that target. If they intentionally navigated to /login, allow them
+    // to view the login page so they can switch accounts or choose a different demo profile.
+    if (isSafeRedirect) {
+      return redirectWithCookies(requestedRedirect);
     }
 
-    return redirectWithCookies(destination);
+    return supabaseResponse;
   }
 
   if (user && isProtectedRoute) {

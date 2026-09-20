@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { ClientIcon, type ClientIconName } from '@/components/client/ClientIcons';
 import { formatDate } from '@/lib/format';
 import { createClient } from '@/lib/supabase/server';
+import { getDevSession } from '@/lib/auth/dev-session';
 import type { OrderStatus } from '@/types/supabase';
 
 export const dynamic = 'force-dynamic';
@@ -149,10 +150,13 @@ function RoutePreview({ order }: { order: ClientOrder | undefined }) {
 }
 
 export default async function ClientHomePage() {
+  const devSession = await getDevSession();
   const supabase = await createClient();
   const {
-    data: { user },
+    data: { user: authUser },
   } = await supabase.auth.getUser();
+
+  const user = devSession ? { id: devSession.id, email: devSession.email } : authUser;
   if (!user) return null;
 
   const { data: orderRows, error } = await supabase

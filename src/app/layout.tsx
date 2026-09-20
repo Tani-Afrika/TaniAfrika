@@ -2,6 +2,8 @@ import type { Metadata } from 'next';
 import { Poppins, Inter } from 'next/font/google';
 import './globals.css';
 
+import RoleSwitcherFloating from '@/components/RoleSwitcherFloating';
+
 const poppins = Poppins({
   subsets: ['latin'],
   weight: ['500', '600', '700'],
@@ -22,7 +24,10 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={`${poppins.variable} ${inter.variable}`}>
-      <body>{children}</body>
+      <body>
+        {children}
+        <RoleSwitcherFloating />
+      </body>
     </html>
   );
 }
