@@ -1,30 +1,40 @@
 import Link from 'next/link';
+import { redirect } from 'next/navigation';
 
 import NavLinks from '@/components/NavLinks';
 import LogoutButton from '@/components/LogoutButton';
 import MobileNav from '@/components/MobileNav';
 import { createClient } from '@/lib/supabase/server';
 import { getDashboardStats } from '@/lib/queries';
-import { redirect } from 'next/navigation';
+import { getDevSession } from '@/lib/auth/dev-session';
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const devSession = await getDevSession();
+  let user: { id: string; email?: string } | null = null;
+  let profile: { full_name?: string | null; role?: string } | null = null;
 
-  if (!user) redirect('/login');
+  if (devSession) {
+    if (devSession.role !== 'admin') redirect('/login');
+    user = { id: devSession.id, email: devSession.email };
+    profile = { full_name: devSession.full_name, role: devSession.role };
+  } else {
+    const supabase = await createClient();
+    const { data: authData } = await supabase.auth.getUser();
+    if (!authData?.user) redirect('/login');
+    user = authData.user;
 
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('role, full_name')
-    .eq('id', user.id)
-    .single();
+    const { data: profileData } = await supabase
+      .from('profiles')
+      .select('role, full_name')
+      .eq('id', user.id)
+      .single();
 
-  if (profile?.role !== 'admin') redirect('/login');
+    if (profileData?.role !== 'admin') redirect('/login');
+    profile = profileData;
+  }
 
   const { pendingDriverApprovals } = await getDashboardStats();
-  const initial = (profile?.full_name ?? 'A').trim().charAt(0).toUpperCase();
+  const initial = (profile?.full_name ?? user?.email ?? 'A').trim().charAt(0).toUpperCase();
 
   return (
     <div className="min-h-screen bg-[var(--color-paper)]">
@@ -37,16 +47,16 @@ export default async function DashboardLayout({ children }: { children: React.Re
         style={{ boxShadow: 'var(--shadow-sidebar)' }}
       >
         <div className="mb-8 flex items-center gap-3 px-1">
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-maroon-500 to-maroon-700 text-white shadow-sm">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#1F5F3F] text-white shadow-sm">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
               <path d="M3 11l8-7 8 7M5 10v9a1 1 0 0 0 1 1h3v-6h6v6h3a1 1 0 0 0 1-1v-9" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
           </div>
           <div className="min-w-0">
             <span className="block truncate font-display text-lg font-semibold leading-tight text-ink-900">
-              TaniAfrika
+              Tani<span className="text-[#1F5F3F]">Afrika</span>
             </span>
-            <p className="text-xs text-ink-400">Admin Dashboard</p>
+            <p className="text-[11px] font-semibold uppercase tracking-wider text-[#7A9080]">Admin Operations</p>
           </div>
         </div>
 
@@ -58,10 +68,10 @@ export default async function DashboardLayout({ children }: { children: React.Re
         {pendingDriverApprovals > 0 && (
           <Link
             href="/drivers?status=pending"
-            className="mt-6 flex items-center justify-between gap-3 rounded-xl border border-maroon-100 bg-maroon-50 px-4 py-3 text-sm transition hover:border-maroon-200 hover:bg-maroon-100"
+            className="mt-6 flex items-center justify-between gap-3 rounded-xl border border-amber-200 bg-amber-50/70 px-4 py-3 text-sm transition hover:border-amber-300 hover:bg-amber-100/70"
           >
-            <span className="font-medium text-ink-700">Pending approvals</span>
-            <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-maroon-600 px-1.5 text-xs font-semibold text-white">
+            <span className="font-semibold text-amber-950">Pending approvals</span>
+            <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-amber-600 px-1.5 text-xs font-bold text-white">
               {pendingDriverApprovals}
             </span>
           </Link>
@@ -71,20 +81,22 @@ export default async function DashboardLayout({ children }: { children: React.Re
         <div className="flex-1" />
 
         <div className="flex items-center gap-3 border-t border-ink-200/60 pt-4">
-          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-maroon-100 text-sm font-semibold text-maroon-600">
+          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#1F5F3F]/10 text-sm font-semibold text-[#1F5F3F]">
             {initial}
           </div>
           <p className="min-w-0 flex-1 truncate text-sm font-medium text-ink-700">
-            {profile?.full_name}
+            {profile?.full_name ?? user?.email ?? 'Preview Admin'}
           </p>
         </div>
-        <div className="mt-3">
-          <LogoutButton />
-        </div>
+        {user && (
+          <div className="mt-3">
+            <LogoutButton />
+          </div>
+        )}
       </aside>
 
-      {/* Main content — offset by the sidebar's width on desktop so it never sits underneath the fixed sidebar */}
-      <main className="px-4 py-6 sm:px-6 md:ml-72 lg:px-10 lg:py-10">
+      {/* Main content — offset by the sidebar's width on desktop, with safe mobile bottom spacing */}
+      <main className="px-3.5 py-4 pb-mobile-nav sm:px-6 md:ml-72 md:pb-8 lg:px-10 lg:py-8">
         <div className="page-shell">{children}</div>
       </main>
     </div>

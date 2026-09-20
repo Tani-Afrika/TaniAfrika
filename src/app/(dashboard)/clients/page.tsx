@@ -23,29 +23,29 @@ export default async function ClientsPage() {
         </p>
       </header>
 
-      <div className="grid grid-cols-2 gap-3 sm:max-w-lg">
-        <div className="surface p-4">
-          <p className="text-xs font-medium text-ink-400">
+      <div className="grid grid-cols-2 gap-2.5 sm:max-w-lg">
+        <div className="native-card surface p-3.5 sm:p-4 rounded-2xl">
+          <p className="text-[11px] font-medium text-ink-400 sm:text-xs">
             Total clients
           </p>
 
-          <p className="mt-1 font-display text-2xl font-semibold text-ink-900">
+          <p className="mt-1 font-display text-xl font-bold text-ink-900 sm:text-2xl">
             {clients.length}
           </p>
         </div>
 
-        <div className="surface p-4">
-          <p className="text-xs font-medium text-ink-400">
+        <div className="native-card surface p-3.5 sm:p-4 rounded-2xl">
+          <p className="text-[11px] font-medium text-ink-400 sm:text-xs">
             Active clients
           </p>
 
-          <p className="mt-1 font-display text-2xl font-semibold text-green-700">
+          <p className="mt-1 font-display text-xl font-bold text-trust sm:text-2xl">
             {activeClients}
           </p>
         </div>
       </div>
 
-      <section className="overflow-hidden surface">
+      <section className="overflow-hidden surface rounded-2xl">
         {/* Desktop table */}
         <div className="hidden overflow-x-auto md:block">
           <table className="w-full min-w-[700px] text-left">
@@ -70,10 +70,10 @@ export default async function ClientsPage() {
               {clients.map((client) => (
                 <tr
                   key={client.id}
-                  className="transition hover:bg-maroon-50/40"
+                  className="transition hover:bg-trust-light/30"
                 >
                   <td className="px-5 py-4">
-                    <p className="font-medium text-ink-900">
+                    <p className="font-semibold text-ink-900">
                       {client.full_name}
                     </p>
                   </td>
@@ -97,52 +97,48 @@ export default async function ClientsPage() {
           </table>
         </div>
 
-        {/* Mobile cards */}
-        <div className="divide-y divide-ink-400/15 md:hidden">
+        {/* Mobile 2-column card grid */}
+        <div className="grid grid-cols-1 gap-2.5 p-3 sm:grid-cols-2 md:hidden">
           {clients.map((client) => (
             <article
               key={client.id}
-              className="p-4"
+              className="native-card flex flex-col justify-between rounded-2xl border border-slate-200/80 bg-white p-3.5 shadow-xs"
             >
-              <div className="flex items-start justify-between gap-3">
-                <div className="min-w-0">
-                  <h2 className="truncate text-sm font-semibold text-ink-900">
-                    {client.full_name}
-                  </h2>
+              <div>
+                <div className="flex items-start justify-between gap-2.5">
+                  <div className="min-w-0">
+                    <h2 className="truncate text-xs font-semibold text-ink-900 sm:text-sm">
+                      {client.full_name}
+                    </h2>
 
-                  <p className="mt-1 text-sm text-ink-600">
-                    {client.phone ??
-                      'No phone number provided'}
-                  </p>
+                    <p className="mt-0.5 truncate text-[11px] text-ink-600">
+                      {client.phone ?? 'No phone number'}
+                    </p>
+                  </div>
+
+                  <ClientStatus
+                    active={client.is_active}
+                  />
                 </div>
-
-                <ClientStatus
-                  active={client.is_active}
-                />
               </div>
 
-              <div className="mt-4 rounded-lg bg-ink-900/[0.02] p-3">
-                <p className="text-xs text-ink-400">
-                  Date joined
-                </p>
-
-                <p className="mt-1 text-sm text-ink-600">
-                  {formatDate(client.created_at)}
-                </p>
+              <div className="mt-3 flex items-center justify-between border-t border-ink-400/10 pt-2 text-[10px] text-ink-400">
+                <span>Joined</span>
+                <span>{formatDate(client.created_at)}</span>
               </div>
             </article>
           ))}
         </div>
 
         {clients.length === 0 && (
-          <div className="flex flex-col items-center px-4 py-14 text-center">
-            <div className="mb-3 flex h-11 w-11 items-center justify-center rounded-full bg-maroon-50 text-maroon-600">
+          <div className="flex flex-col items-center px-4 py-12 text-center">
+            <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-full bg-trust-light/60 text-trust sm:h-11 sm:w-11">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
                 <path d="M17 20h5v-2a4 4 0 0 0-3-3.87M9 20H4v-2a4 4 0 0 1 3-3.87m5-4.13a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6-1a4 4 0 1 0-3-6.7" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
             </div>
 
-            <p className="font-medium text-ink-600">
+            <p className="font-semibold text-ink-700">
               No clients found
             </p>
 

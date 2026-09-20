@@ -17,7 +17,7 @@ export default async function EarningsPage() {
         description="Track income from completed TaniAfrika deliveries."
       />
 
-      <div className="grid gap-3 sm:grid-cols-3">
+      <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 sm:gap-3.5">
         <StatCard
           icon={WalletIcon}
           value={formatCurrency(total)}
@@ -30,39 +30,41 @@ export default async function EarningsPage() {
           label="Completed"
           helper="Successfully delivered"
         />
-        <StatCard
-          icon={WalletIcon}
-          value={formatCurrency(avg)}
-          label="Average delivery"
-          helper="Mean earning per order"
-        />
+        <div className="col-span-2 sm:col-span-1">
+          <StatCard
+            icon={WalletIcon}
+            value={formatCurrency(avg)}
+            label="Average delivery"
+            helper="Mean earning per order"
+          />
+        </div>
       </div>
 
-      <section className="mt-5 overflow-hidden rounded-2xl border border-orange-100 bg-white shadow-sm">
-        <div className="border-b border-orange-100 px-5 py-3.5">
-          <h2 className="text-sm font-bold uppercase tracking-[0.06em] text-slate-500">
+      <section className="native-card mt-4 overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-xs sm:mt-5">
+        <div className="border-b border-slate-100 px-4 py-3 sm:px-5 sm:py-3.5">
+          <h2 className="text-xs font-bold uppercase tracking-[0.06em] text-slate-500 sm:text-sm">
             Payment history
           </h2>
         </div>
 
         {rows.length ? (
-          <div className="divide-y divide-orange-100">
+          <div className="divide-y divide-slate-100">
             {rows.map((row) => (
               <div
                 key={row.id}
-                className="grid grid-cols-1 items-center gap-2 px-5 py-4 sm:grid-cols-[1fr_auto] sm:gap-4"
+                className="grid grid-cols-1 items-center gap-1.5 px-4 py-3 sm:grid-cols-[1fr_auto] sm:gap-4 sm:px-5 sm:py-4"
               >
                 <div className="min-w-0">
-                  <p className="truncate text-sm font-semibold text-slate-950">
+                  <p className="truncate text-xs font-semibold text-slate-900 sm:text-sm">
                     {row.pickup_address} → {row.dropoff_address}
                   </p>
-                  <p className="mt-1 text-xs text-slate-400">
+                  <p className="mt-0.5 text-[11px] text-slate-400">
                     Delivered {formatDate(row.delivered_at ?? row.created_at)}
                   </p>
                 </div>
 
-                <p className="text-base font-bold text-emerald-600 sm:text-right sm:text-lg">
-                  {formatCurrency(row.price_agreed)}
+                <p className="text-sm font-bold text-trust sm:text-right sm:text-base">
+                  +{formatCurrency(row.price_agreed)}
                 </p>
               </div>
             ))}

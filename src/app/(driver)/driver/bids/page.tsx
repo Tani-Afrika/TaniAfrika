@@ -19,47 +19,51 @@ export default async function DriverBidsPage() {
       />
 
       {bids.length ? (
-        <div className="overflow-hidden rounded-2xl border border-orange-100 bg-white shadow-sm">
-          <div className="divide-y divide-orange-100">
-            {bids.map((bid) => (
-              <Link
-                key={bid.id}
-                href={`/driver/orders/${bid.order_id}`}
-                className="grid grid-cols-1 items-center gap-3 px-5 py-4 transition hover:bg-orange-50/40 focus-visible:bg-orange-50/60 focus-visible:outline-none md:grid-cols-[auto_1fr_auto_auto] md:gap-5"
-              >
-                <span className="hidden h-9 w-9 shrink-0 place-items-center rounded-lg bg-orange-50 text-orange-600 md:grid">
-                  <GavelIcon className="h-4 w-4" />
-                </span>
+        <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2 lg:grid-cols-3 sm:gap-3.5">
+          {bids.map((bid) => (
+            <Link
+              key={bid.id}
+              href={`/driver/orders/${bid.order_id}`}
+              className="native-card group flex flex-col justify-between rounded-2xl border border-slate-200/80 bg-white p-3.5 shadow-xs transition hover:border-trust/40 hover:shadow-sm sm:p-4 native-press"
+            >
+              <div>
+                <div className="flex items-center justify-between gap-2">
+                  <div className="flex items-center gap-2">
+                    <span className="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-trust-light/60 text-trust">
+                      <GavelIcon className="h-4 w-4" />
+                    </span>
+                    <p className="text-[10px] font-bold uppercase tracking-[0.1em] text-slate-400">
+                      #{bid.order_id.slice(0, 8).toUpperCase()}
+                    </p>
+                  </div>
+                  <StatusBadge kind="bid" status={bid.status} />
+                </div>
 
-                <div className="min-w-0">
-                  <p className="text-[11px] font-bold uppercase tracking-[0.1em] text-orange-600">
-                    #{bid.order_id.slice(0, 8).toUpperCase()}
-                  </p>
-                  <p className="mt-1 truncate text-sm font-semibold text-slate-950">
+                <div className="mt-3 space-y-1 border-t border-slate-100 pt-2.5">
+                  <p className="text-[10px] font-medium text-slate-400">Route</p>
+                  <p className="line-clamp-2 text-xs font-semibold text-slate-900">
                     {bid.order
                       ? `${bid.order.pickup_address} → ${bid.order.dropoff_address}`
                       : 'Delivery order'}
                   </p>
-                  <p className="mt-1 text-xs text-slate-400">
-                    Submitted {formatDate(bid.created_at)}
-                  </p>
                 </div>
+              </div>
 
-                <div className="md:text-right">
-                  <p className="text-[11px] uppercase tracking-[0.06em] text-slate-400">
-                    Your bid
+              <div className="mt-3.5 flex items-center justify-between border-t border-slate-100 pt-3">
+                <div>
+                  <p className="text-[10px] uppercase tracking-[0.06em] text-slate-400">
+                    Your offer
                   </p>
-                  <p className="mt-1 text-base font-bold text-slate-950 md:text-lg">
+                  <p className="text-sm font-bold text-trust sm:text-base">
                     {formatCurrency(bid.amount)}
                   </p>
                 </div>
-
-                <div className="md:justify-self-end">
-                  <StatusBadge kind="bid" status={bid.status} />
-                </div>
-              </Link>
-            ))}
-          </div>
+                <span className="text-[11px] text-slate-400">
+                  {formatDate(bid.created_at)}
+                </span>
+              </div>
+            </Link>
+          ))}
         </div>
       ) : (
         <EmptyState

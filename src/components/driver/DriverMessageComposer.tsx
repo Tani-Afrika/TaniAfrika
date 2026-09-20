@@ -29,7 +29,7 @@ export default function DriverMessageComposer({ bidId, orderId }: { bidId: strin
             }
           }}
           placeholder="Write a message…"
-          className="min-h-11 flex-1 rounded-xl border border-orange-100 bg-white px-4 text-sm outline-none focus:border-orange-400 focus:ring-4 focus:ring-orange-100"
+          className="min-h-11 flex-1 rounded-xl border border-slate-200 bg-white px-4 text-sm outline-none focus:border-trust focus:ring-4 focus:ring-trust/15"
         />
         <button
           type="button"
@@ -39,7 +39,7 @@ export default function DriverMessageComposer({ bidId, orderId }: { bidId: strin
             if (!result.success) setError(result.error ?? 'Could not send message.');
             else { setMessage(''); setError(''); router.refresh(); }
           })}
-          className="rounded-xl bg-orange-600 px-5 text-sm font-semibold text-white hover:bg-orange-700 disabled:opacity-60"
+          className="native-press rounded-xl bg-trust px-5 text-sm font-semibold text-white shadow-xs hover:bg-trust-deep disabled:opacity-60"
         >
           {isPending ? 'Sending…' : 'Send'}
         </button>

@@ -9,6 +9,7 @@ import {
   VEHICLE_TYPE_LABELS,
 } from '@/lib/format';
 import { getOrderById } from '@/lib/queries';
+import ConfirmPaymentButton from '@/components/admin/ConfirmPaymentButton';
 
 export const dynamic = 'force-dynamic';
 
@@ -56,7 +57,7 @@ export default async function OrderDetailPage({
         <div className="min-w-0">
           <Link
             href="/orders"
-            className="inline-flex items-center gap-1 rounded-md text-sm font-medium text-maroon-600 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-maroon-200"
+            className="inline-flex items-center gap-1 rounded-md text-sm font-semibold text-trust hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-trust/20"
           >
             <span aria-hidden="true">←</span>
             Back to orders
@@ -77,6 +78,10 @@ export default async function OrderDetailPage({
         />
       </header>
 
+      {order.status === 'payment_pending' && (
+        <ConfirmPaymentButton orderId={order.id} />
+      )}
+
       <div className="grid gap-5 xl:grid-cols-3">
         <section className="space-y-5 xl:col-span-2">
           <article className="surface p-4 sm:p-5">
@@ -85,7 +90,7 @@ export default async function OrderDetailPage({
                 Route and shipment
               </h2>
 
-              <p className="text-sm font-semibold text-maroon-600">
+              <p className="text-sm font-bold text-trust">
                 {formatCurrency(order.price_agreed)}
               </p>
             </div>
@@ -180,7 +185,7 @@ export default async function OrderDetailPage({
                       className="flex gap-3"
                     >
                       <div className="flex flex-col items-center">
-                        <span className="mt-1.5 h-3 w-3 shrink-0 rounded-full border-2 border-white bg-maroon-600 ring-2 ring-maroon-100" />
+                        <span className="mt-1.5 h-3 w-3 shrink-0 rounded-full border-2 border-white bg-trust ring-2 ring-trust/20" />
 
                         {!isLast && (
                           <span className="min-h-12 w-px flex-1 bg-ink-200" />
@@ -306,7 +311,7 @@ export default async function OrderDetailPage({
                   >
                     <div className="flex items-start justify-between gap-3">
                       <div className="flex min-w-0 items-center gap-2.5">
-                        <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-maroon-100 text-xs font-semibold text-maroon-600">
+                        <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-trust-light/60 text-xs font-semibold text-trust">
                           {driverInitial}
                         </div>
                         <div className="min-w-0">
@@ -323,7 +328,7 @@ export default async function OrderDetailPage({
                     </div>
 
                     <div className="mt-2.5 flex items-center justify-between gap-3">
-                      <p className="font-display text-base font-semibold text-maroon-600">
+                      <p className="font-display text-base font-bold text-trust">
                         {formatCurrency(bid.amount)}
                       </p>
                       <p className="text-xs text-ink-400">
@@ -341,13 +346,13 @@ export default async function OrderDetailPage({
               })}
 
               {bids.length === 0 && (
-                <div className="flex flex-col items-center rounded-lg bg-ink-900/[0.02] px-4 py-8 text-center">
-                  <div className="mb-2 flex h-9 w-9 items-center justify-center rounded-full bg-maroon-50 text-maroon-600">
+                <div className="flex flex-col items-center rounded-xl bg-ink-900/[0.02] px-4 py-8 text-center">
+                  <div className="mb-2 flex h-9 w-9 items-center justify-center rounded-full bg-trust-light/60 text-trust">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
                       <path d="M9 12l2 2 4-4m6 2a9 9 0 1 1-18 0 9 9 0 0 1 18 0z" strokeLinecap="round" strokeLinejoin="round" />
                     </svg>
                   </div>
-                  <p className="text-sm text-ink-400">
+                  <p className="text-xs font-medium text-ink-400">
                     No driver bids have been submitted.
                   </p>
                 </div>

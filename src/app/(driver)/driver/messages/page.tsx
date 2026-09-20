@@ -19,30 +19,30 @@ export default async function DriverMessagesPage() {
       />
 
       {threads.length ? (
-        <div className="overflow-hidden rounded-2xl border border-orange-100 bg-white shadow-sm">
-          <div className="divide-y divide-orange-100">
+        <div className="native-card overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-xs">
+          <div className="divide-y divide-slate-100">
             {threads.map((b) => (
               <Link
                 key={b.id}
                 href={`/driver/orders/${b.order_id}`}
-                className="flex items-center gap-3.5 px-5 py-4 transition hover:bg-orange-50/40 focus-visible:bg-orange-50/60 focus-visible:outline-none"
+                className="flex items-center gap-3 px-4 py-3.5 transition hover:bg-trust-light/30 focus-visible:bg-trust-light/40 focus-visible:outline-none sm:gap-3.5 sm:px-5 sm:py-4 native-press"
               >
-                <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-orange-50 text-orange-600">
+                <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-trust-light/60 text-trust sm:h-10 sm:w-10">
                   <MessageIcon className="h-4 w-4" />
                 </span>
 
                 <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm font-semibold text-slate-950">
+                  <p className="truncate text-xs font-semibold text-slate-900 sm:text-sm">
                     {b.order
                       ? `${b.order.pickup_address} → ${b.order.dropoff_address}`
                       : `Order #${b.order_id.slice(0, 8)}`}
                   </p>
-                  <p className="mt-0.5 truncate text-xs text-slate-400">
+                  <p className="mt-0.5 truncate text-[11px] text-slate-400">
                     {b.message ?? 'Open conversation'}
                   </p>
                 </div>
 
-                <span className="shrink-0 text-xs text-slate-400">
+                <span className="shrink-0 text-[11px] text-slate-400">
                   {formatRelativeTime(b.updated_at)}
                 </span>
               </Link>

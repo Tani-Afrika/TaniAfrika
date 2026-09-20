@@ -1,5 +1,6 @@
 import { createServerClient } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
+import { getDevRoleFromRequest, MOCK_USERS } from '@/lib/auth/dev-session';
 
 // Matches the base path itself or a sub-path of it (e.g. '/driver' or
 // '/driver/123'), but NOT a sibling route that merely shares the same
@@ -28,6 +29,32 @@ export async function middleware(request: NextRequest) {
     request.nextUrl.pathname.startsWith('/login') ||
     request.nextUrl.pathname.startsWith('/signup') ||
     request.nextUrl.pathname.startsWith('/reset-password');
+
+  // Dev Session Check: Instant 1-click test access
+  const devRole = getDevRoleFromRequest(request);
+  if (devRole) {
+    const mockUser = MOCK_USERS[devRole];
+    const pathname = request.nextUrl.pathname;
+    const isClientAppRoute = isPathOrSubpath(pathname, '/client');
+    const isDriverAppRoute = isPathOrSubpath(pathname, '/driver');
+    const isAdminRoute = !isClientAppRoute && !isDriverAppRoute && !isPublicAuthPage;
+
+    if (isPublicAuthPage) {
+      return NextResponse.redirect(new URL(mockUser.redirectUrl, request.url));
+    }
+
+    if (isClientAppRoute && mockUser.role !== 'client') {
+      return NextResponse.redirect(new URL(mockUser.redirectUrl, request.url));
+    }
+    if (isDriverAppRoute && mockUser.role !== 'driver') {
+      return NextResponse.redirect(new URL(mockUser.redirectUrl, request.url));
+    }
+    if (isAdminRoute && mockUser.role !== 'admin') {
+      return NextResponse.redirect(new URL(mockUser.redirectUrl, request.url));
+    }
+
+    return NextResponse.next({ request });
+  }
 
   const redirectWithCookies = (pathname: string) => {
     const url = request.nextUrl.clone();
