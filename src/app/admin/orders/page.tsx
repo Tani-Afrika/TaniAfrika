@@ -55,7 +55,7 @@ export default async function OrdersPage({ searchParams }: OrdersPageProps) {
     });
     if (targetStatus !== 'all') sp.set('status', targetStatus);
     const query = sp.toString();
-    return query ? `/orders?${query}` : '/orders';
+    return query ? `/admin/orders?${query}` : '/admin/orders';
   };
 
   const hasActiveFilters = Boolean(search || dateFrom || dateTo);
@@ -102,7 +102,7 @@ export default async function OrdersPage({ searchParams }: OrdersPageProps) {
       {/* Search + date range filter — plain GET form, no client JS needed */}
       <form
         method="get"
-        action="/orders"
+        action="/admin/orders"
         className="flex flex-wrap items-end gap-3 surface p-3.5 sm:p-4 rounded-2xl"
       >
         {selectedStatus !== 'all' && (
@@ -168,7 +168,7 @@ export default async function OrdersPage({ searchParams }: OrdersPageProps) {
 
           {hasActiveFilters && (
             <Link
-              href={selectedStatus !== 'all' ? `/orders?status=${selectedStatus}` : '/orders'}
+              href={selectedStatus !== 'all' ? `/admin/orders?status=${selectedStatus}` : '/admin/orders'}
               className="rounded-xl border border-ink-400/25 px-3.5 py-2 text-xs sm:text-sm font-medium text-ink-600 transition hover:bg-ink-900/[0.03]"
             >
               Clear
@@ -329,7 +329,7 @@ export default async function OrdersPage({ searchParams }: OrdersPageProps) {
               dateFrom,
               dateTo,
             }}
-            basePath="/orders"
+            basePath="/admin/orders"
           />
         )}
       </section>

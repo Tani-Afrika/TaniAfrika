@@ -1,15 +1,35 @@
 'use client';
 
-import { useState, FormEvent } from 'react';
-import { useRouter } from 'next/navigation';
+import { Suspense, useState, FormEvent } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
 import { loginAsDevUserFormAction } from '@/lib/actions/dev-auth';
-import { DEV_ROLE_COOKIE } from '@/lib/auth/dev-session';
+// Import from constants (not dev-session) — dev-session.ts pulls in
+// next/headers, which is server-only and breaks when a Client Component
+// imports it, even just for a re-exported string constant.
+import { DEV_ROLE_COOKIE } from '@/lib/auth/constants';
 
 export function UniversalLoginForm() {
+  return (
+    <Suspense fallback={null}>
+      <UniversalLoginFormInner />
+    </Suspense>
+  );
+}
+
+function UniversalLoginFormInner() {
   const router = useRouter();
-  const [activeTab, setActiveTab] = useState<'quick' | 'email'>('quick');
+  const searchParams = useSearchParams();
+  // Where to send the user after a successful sign-in — set by any page that
+  // sent a guest here mid-transaction (e.g. "Book this delivery" from the
+  // public quote widget on the homepage). Falls back to the role's home.
+  const redirectTo = searchParams.get('redirectTo');
+  const intentNotice = searchParams.get('intent') === 'order'
+    ? 'Sign in (or create a free account) to confirm this delivery.'
+    : null;
+
+  const [activeTab, setActiveTab] = useState<'quick' | 'email'>(redirectTo ? 'email' : 'quick');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -63,10 +83,11 @@ export function UniversalLoginForm() {
       } else if (userRole === 'driver') {
         destination = profile?.approval_status === 'approved' ? '/driver' : '/driver/profile';
       } else if (userRole === 'admin') {
-        destination = '/';
+        destination = '/admin';
       }
 
-      router.push(destination);
+      const safeRedirect = redirectTo?.startsWith('/') && !redirectTo.startsWith('//') ? redirectTo : null;
+      router.push(safeRedirect || destination);
       router.refresh();
     } catch {
       setError('An unexpected error occurred during sign in. Please try again.');
@@ -93,6 +114,11 @@ export function UniversalLoginForm() {
         <p className="mt-1 text-xs text-slate-500">
           Universal access for clients, drivers, and fleet operators.
         </p>
+        {intentNotice && (
+          <p className="mt-3 rounded-xl border border-emerald-100 bg-emerald-50 px-3.5 py-2.5 text-xs font-medium text-[#1F5F3F]">
+            {intentNotice}
+          </p>
+        )}
       </div>
 
       {/* Tabs Switcher */}
@@ -347,7 +373,7 @@ export function UniversalLoginForm() {
         <p className="text-xs text-slate-500">
           Don&apos;t have an account?{' '}
           <Link
-            href="/signup"
+            href={redirectTo ? `/signup?redirectTo=${encodeURIComponent(redirectTo)}` : '/signup'}
             className="font-semibold text-[#1F5F3F] hover:underline"
           >
             Create an account (Client or Driver)

@@ -67,7 +67,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
 
         {pendingDriverApprovals > 0 && (
           <Link
-            href="/drivers?status=pending"
+            href="/admin/drivers?status=pending"
             className="mt-6 flex items-center justify-between gap-3 rounded-xl border border-amber-200 bg-amber-50/70 px-4 py-3 text-sm transition hover:border-amber-300 hover:bg-amber-100/70"
           >
             <span className="font-semibold text-amber-950">Pending approvals</span>

@@ -1,8 +1,8 @@
 'use client';
 
-import { FormEvent, useState } from 'react';
+import { FormEvent, Suspense, useState } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 import { createClient } from '@/lib/supabase/client';
 
@@ -11,14 +11,33 @@ export const dynamic = 'force-dynamic';
 type SignupRole = 'client' | 'driver';
 
 export default function SignupPage() {
+  return (
+    <Suspense fallback={null}>
+      <SignupPageInner />
+    </Suspense>
+  );
+}
+
+function SignupPageInner() {
   const router = useRouter();
   const supabase = createClient();
+  const searchParams = useSearchParams();
+
+  // Carried over from the public guest quote widget or the driver CTA on
+  // the homepage — preselects the role and, after account creation, sends
+  // the person straight back to finish the transaction they started as a
+  // guest (e.g. confirming the delivery they already quoted).
+  const requestedRole = searchParams.get('role') === 'driver' ? 'driver' : 'client';
+  const redirectTo = searchParams.get('redirectTo');
+  const intentNotice = searchParams.get('intent') === 'order'
+    ? 'Create a free account to confirm the delivery you just quoted.'
+    : null;
 
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [role, setRole] = useState<SignupRole>('client');
+  const [role, setRole] = useState<SignupRole>(requestedRole);
 
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmation, setShowConfirmation] = useState(false);
@@ -85,7 +104,8 @@ export default function SignupPage() {
       }
 
       // If user session is active, route based on role
-      router.push(role === 'client' ? '/client' : '/driver/profile');
+      const safeRedirect = redirectTo?.startsWith('/') && !redirectTo.startsWith('//') ? redirectTo : null;
+      router.push(safeRedirect || (role === 'client' ? '/client' : '/driver/profile'));
       router.refresh();
     } catch {
       setError('Unable to create your account. Please try again.');
@@ -140,6 +160,12 @@ export default function SignupPage() {
               <p className="mt-2 text-sm leading-6 text-slate-500">
                 Select your account role to continue:
               </p>
+
+              {intentNotice ? (
+                <p className="mt-4 rounded-xl border border-emerald-100 bg-emerald-50 px-3.5 py-2.5 text-xs font-medium text-[#1F5F3F]">
+                  {intentNotice}
+                </p>
+              ) : null}
             </div>
 
             <form onSubmit={handleSignup} className="mt-8 space-y-5">
@@ -257,7 +283,7 @@ export default function SignupPage() {
             <p className="mt-7 text-center text-sm text-slate-500">
               Already have an account?{' '}
               <Link
-                href="/login"
+                href={redirectTo ? `/login?redirectTo=${encodeURIComponent(redirectTo)}` : '/login'}
                 className="font-semibold text-[#1F5F3F] hover:underline"
               >
                 Log in

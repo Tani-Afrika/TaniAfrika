@@ -56,7 +56,7 @@ export default async function OrderDetailPage({
       <header className="flex flex-wrap items-start justify-between gap-4">
         <div className="min-w-0">
           <Link
-            href="/orders"
+            href="/admin/orders"
             className="inline-flex items-center gap-1 rounded-md text-sm font-semibold text-trust hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-trust/20"
           >
             <span aria-hidden="true">←</span>

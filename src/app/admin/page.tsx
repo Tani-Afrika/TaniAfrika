@@ -31,7 +31,7 @@ export default async function DashboardPage() {
 
       {stats.pendingDriverApprovals > 0 && (
         <Link
-          href="/drivers?status=pending"
+          href="/admin/drivers?status=pending"
           className="flex items-center justify-between gap-4 rounded-2xl border border-amber-200 bg-amber-50 p-4 transition hover:border-amber-300 hover:bg-amber-100"
         >
           <div>
@@ -69,7 +69,7 @@ export default async function DashboardPage() {
         <div className="native-card surface p-3.5 sm:p-5 lg:col-span-3">
           <div className="mb-3 flex items-center justify-between">
             <h2 className="font-display text-xs font-bold uppercase tracking-[0.06em] text-ink-700 sm:text-sm">Recent orders</h2>
-            <Link href="/orders" className="text-xs font-semibold text-trust hover:underline">
+            <Link href="/admin/orders" className="text-xs font-semibold text-trust hover:underline">
               View all
             </Link>
           </div>
