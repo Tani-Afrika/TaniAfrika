@@ -213,12 +213,12 @@ export async function proxy(request: NextRequest) {
     // person lands back exactly where they left off.
     const requestedRedirect = request.nextUrl.searchParams.get('redirectTo');
     const isSafeRedirect =
-      requestedRedirect?.startsWith('/') && !requestedRedirect.startsWith('//');
+      Boolean(requestedRedirect && requestedRedirect.startsWith('/') && !requestedRedirect.startsWith('//'));
 
     // If the user was redirected to login with a specific target (e.g. from an order flow),
     // redirect them to that target. If they intentionally navigated to /login, allow them
     // to view the login page so they can switch accounts or choose a different demo profile.
-    if (isSafeRedirect) {
+    if (requestedRedirect && isSafeRedirect) {
       return redirectWithCookies(requestedRedirect);
     }
 
