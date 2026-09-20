@@ -1,13 +1,13 @@
 import Image from 'next/image';
-import { loginAsDevUserFormAction } from '@/lib/actions/dev-auth';
+import { UniversalLoginForm } from '@/components/auth/UniversalLoginForm';
 
 export const dynamic = 'force-dynamic';
 
 export default function LoginPage() {
   return (
-    <main className="h-screen w-full overflow-hidden bg-slate-50 lg:grid lg:grid-cols-[1.1fr_0.9fr]">
+    <main className="min-h-screen w-full bg-[#fbfdfa] lg:grid lg:grid-cols-[1.1fr_0.9fr]">
       {/* Left hero banner */}
-      <section className="relative hidden h-full lg:block overflow-hidden">
+      <section className="relative hidden min-h-screen lg:block overflow-hidden">
         <Image
           src="/images/auth/truck-hero.webp"
           alt="TaniAfrika logistics delivery"
@@ -17,79 +17,50 @@ export default function LoginPage() {
           className="object-cover object-center"
         />
 
-        <div className="absolute inset-0 bg-gradient-to-r from-[#14422b]/90 via-[#1F5F3F]/70 to-[#1F5F3F]/30" />
+        <div className="absolute inset-0 bg-gradient-to-r from-[#14422b]/95 via-[#1F5F3F]/80 to-[#1F5F3F]/40" />
 
-        <div className="absolute inset-0 flex flex-col justify-center px-12 text-white">
-          <span className="rounded-full bg-white/10 backdrop-blur px-3 py-1 w-fit text-[11px] font-semibold tracking-widest uppercase">
-            Trusted African Logistics
-          </span>
+        <div className="absolute inset-0 flex flex-col justify-between p-12 text-white">
+          <div className="flex items-center gap-2">
+            <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-white text-[#1F5F3F] font-black text-sm shadow-md">
+              T
+            </span>
+            <span className="font-display text-xl font-bold tracking-tight">TaniAfrika</span>
+          </div>
 
-          <h1 className="mt-4 max-w-lg text-4xl font-bold leading-tight font-display">
-            Deliver Anywhere.<br />Track Everything.
-          </h1>
+          <div className="max-w-lg">
+            <span className="rounded-full bg-white/10 backdrop-blur px-3 py-1 w-fit text-[11px] font-semibold tracking-widest uppercase text-emerald-100 border border-white/20">
+              Trusted African Logistics
+            </span>
 
-          <p className="mt-3 max-w-md text-sm text-emerald-50">
-            Connecting businesses, verified drivers, and shippers across Africa with secure real-time logistics.
+            <h1 className="mt-4 text-4xl font-bold leading-tight font-display">
+              Deliver Anywhere.<br />Track Everything.
+            </h1>
+
+            <p className="mt-3 text-sm text-emerald-100/90 leading-relaxed">
+              Universal marketplace connecting clients, verified drivers, and fleet operators across Africa with real-time tracking, transparent bidding, and secure payments.
+            </p>
+
+            <div className="mt-8 grid grid-cols-2 gap-4 border-t border-white/15 pt-6">
+              <div>
+                <p className="text-xs font-medium text-emerald-200">Cargo Shippers</p>
+                <p className="text-sm font-semibold text-white">Post moves & compare bids</p>
+              </div>
+              <div>
+                <p className="text-xs font-medium text-emerald-200">Verified Drivers</p>
+                <p className="text-sm font-semibold text-white">Instant loads & quick payouts</p>
+              </div>
+            </div>
+          </div>
+
+          <p className="text-xs text-emerald-200/80">
+            Simple. Reliable. Kenyan Logistics Standard.
           </p>
         </div>
       </section>
 
-      {/* Right container — 100% Server Component, zero client bundle, no scrolling */}
-      <section className="flex h-full w-full items-center justify-center p-4 sm:p-6 overflow-y-auto">
-        <div className="w-full max-w-sm rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-          {/* Header */}
-          <div className="mb-5">
-            <span className="font-display text-lg font-bold text-[#1F5F3F]">TaniAfrika</span>
-            <h2 className="mt-1 text-xl font-bold tracking-tight text-slate-900 font-display">Fast Dev Access</h2>
-            <p className="text-xs text-slate-500">Select a workspace to enter instantly:</p>
-          </div>
-
-          {/* Native HTML Form calling Server Action (Pure Server Component) */}
-          <form action={loginAsDevUserFormAction} className="space-y-2.5">
-            <button
-              name="role"
-              value="admin"
-              type="submit"
-              className="w-full flex items-center justify-between rounded-lg border border-slate-200 bg-emerald-50/50 p-3 text-left hover:bg-emerald-100/70 hover:border-emerald-300 transition cursor-pointer"
-            >
-              <div>
-                <span className="block text-sm font-bold text-slate-900">Admin Dashboard</span>
-                <span className="block text-xs text-slate-500">Fleet, verifications, orders & payments</span>
-              </div>
-              <span className="text-xs font-semibold text-[#1F5F3F]">Enter →</span>
-            </button>
-
-            <button
-              name="role"
-              value="approved_driver"
-              type="submit"
-              className="w-full flex items-center justify-between rounded-lg border border-slate-200 bg-blue-50/50 p-3 text-left hover:bg-blue-100/70 hover:border-blue-300 transition cursor-pointer"
-            >
-              <div>
-                <span className="block text-sm font-bold text-slate-900">Driver (Approved)</span>
-                <span className="block text-xs text-slate-500">Verified vehicle, active job feed & bids</span>
-              </div>
-              <span className="text-xs font-semibold text-[#1F5F3F]">Enter →</span>
-            </button>
-
-            <button
-              name="role"
-              value="pending_driver"
-              type="submit"
-              className="w-full flex items-center justify-between rounded-lg border border-slate-200 bg-amber-50/50 p-3 text-left hover:bg-amber-100/70 hover:border-amber-300 transition cursor-pointer"
-            >
-              <div>
-                <span className="block text-sm font-bold text-slate-900">Driver (Pending KYC)</span>
-                <span className="block text-xs text-slate-500">Document uploads & onboarding profile</span>
-              </div>
-              <span className="text-xs font-semibold text-[#1F5F3F]">Enter →</span>
-            </button>
-          </form>
-
-          <p className="mt-5 text-center text-[11px] text-slate-400">
-            Wilfred Osozi Dev Scope (Driver & Admin Verticals)
-          </p>
-        </div>
+      {/* Right container — Universal Login Interface */}
+      <section className="flex min-h-screen w-full items-center justify-center p-4 sm:p-6 sm:py-10">
+        <UniversalLoginForm />
       </section>
     </main>
   );

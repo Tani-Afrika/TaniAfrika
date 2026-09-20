@@ -150,12 +150,12 @@ function ResetPasswordPageInner() {
 
   if (checkingSession) {
     return (
-      <main className="relative grid min-h-screen place-items-center overflow-hidden bg-[#fffaf7] px-4">
+      <main className="relative grid min-h-screen place-items-center overflow-hidden bg-[#fbfdfa] px-4">
         <BackgroundDecoration />
 
         <div className="relative z-10 flex flex-col items-center text-center">
-          <div className="grid h-14 w-14 place-items-center rounded-2xl border border-orange-100 bg-white shadow-[0_16px_45px_rgba(249,115,22,0.12)]">
-            <span className="h-7 w-7 animate-spin rounded-full border-[3px] border-orange-100 border-t-orange-500" />
+          <div className="grid h-14 w-14 place-items-center rounded-2xl border border-emerald-950/10 bg-white shadow-xl shadow-emerald-950/5">
+            <span className="h-7 w-7 animate-spin rounded-full border-[3px] border-emerald-100 border-t-[#1F5F3F]" />
           </div>
 
           <p className="mt-4 font-semibold text-slate-900">
@@ -172,17 +172,17 @@ function ResetPasswordPageInner() {
 
   if (!hasRecoverySession) {
     return (
-      <main className="relative grid min-h-screen place-items-center overflow-hidden bg-[#fffaf7] px-4 py-10">
+      <main className="relative grid min-h-screen place-items-center overflow-hidden bg-[#fbfdfa] px-4 py-10">
         <BackgroundDecoration />
 
-        <section className="relative z-10 w-full max-w-md rounded-[28px] border border-orange-100 bg-white p-6 text-center shadow-[0_24px_70px_rgba(249,115,22,0.10)] sm:p-8">
+        <section className="relative z-10 w-full max-w-md rounded-[28px] border border-emerald-950/10 bg-white p-6 text-center shadow-xl shadow-emerald-950/5 sm:p-8">
           <Brand />
 
           <div className="mx-auto mt-8 grid h-16 w-16 place-items-center rounded-2xl bg-red-50 text-red-500">
             <BrokenLinkIcon />
           </div>
 
-          <h1 className="mt-5 text-2xl font-bold tracking-tight text-slate-950">
+          <h1 className="mt-5 text-2xl font-bold tracking-tight text-slate-950 font-display">
             Reset link unavailable
           </h1>
 
@@ -205,7 +205,7 @@ function ResetPasswordPageInner() {
             onClick={() =>
               router.replace('/login?requestReset=true')
             }
-            className="mt-6 inline-flex min-h-12 w-full items-center justify-center rounded-xl bg-orange-500 px-5 py-3 text-sm font-semibold text-white shadow-[0_12px_28px_rgba(249,115,22,0.22)] transition hover:bg-orange-600 focus:outline-none focus:ring-4 focus:ring-orange-100"
+            className="mt-6 inline-flex min-h-12 w-full items-center justify-center rounded-xl bg-[#1F5F3F] px-5 py-3 text-sm font-semibold text-white shadow-md shadow-emerald-950/10 transition hover:bg-[#14422B] focus:outline-none focus:ring-4 focus:ring-emerald-100 cursor-pointer"
           >
             Request another reset link
           </button>
@@ -213,7 +213,7 @@ function ResetPasswordPageInner() {
           <button
             type="button"
             onClick={() => router.replace('/login')}
-            className="mt-3 inline-flex min-h-11 w-full items-center justify-center text-sm font-semibold text-slate-500 transition hover:text-orange-600"
+            className="mt-3 inline-flex min-h-11 w-full items-center justify-center text-sm font-semibold text-slate-500 transition hover:text-[#1F5F3F] cursor-pointer"
           >
             Return to login
           </button>
@@ -223,24 +223,24 @@ function ResetPasswordPageInner() {
   }
 
   return (
-    <main className="relative grid min-h-screen place-items-center overflow-hidden bg-[#fffaf7] px-4 py-10">
+    <main className="relative grid min-h-screen place-items-center overflow-hidden bg-[#fbfdfa] px-4 py-10">
       <BackgroundDecoration />
 
-      <section className="relative z-10 w-full max-w-md overflow-hidden rounded-[28px] border border-orange-100 bg-white shadow-[0_24px_70px_rgba(249,115,22,0.11)]">
-        <header className="border-b border-orange-100 bg-gradient-to-br from-[#fff8f3] via-white to-[#fff0e7] px-6 py-7 sm:px-8">
+      <section className="relative z-10 w-full max-w-md overflow-hidden rounded-[28px] border border-emerald-950/10 bg-white shadow-xl shadow-emerald-950/5">
+        <header className="border-b border-slate-100 bg-gradient-to-br from-emerald-50/50 via-white to-emerald-50/30 px-6 py-7 sm:px-8">
           <Brand />
 
           <div className="mt-8 flex items-start gap-4">
-            <div className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-orange-500 text-white shadow-[0_12px_28px_rgba(249,115,22,0.24)]">
+            <div className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-[#1F5F3F] text-white shadow-md shadow-emerald-950/10">
               <LockIcon />
             </div>
 
             <div>
-              <p className="text-xs font-bold uppercase tracking-[0.18em] text-orange-500">
+              <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#1F5F3F]">
                 Account security
               </p>
 
-              <h1 className="mt-1 text-2xl font-bold tracking-tight text-slate-950">
+              <h1 className="mt-1 text-2xl font-bold tracking-tight text-slate-950 font-display">
                 Create a new password
               </h1>
 
@@ -278,9 +278,9 @@ function ResetPasswordPageInner() {
             }
           />
 
-          <div className="rounded-xl border border-orange-100 bg-orange-50/70 px-4 py-3">
+          <div className="rounded-xl border border-emerald-100 bg-emerald-50/60 px-4 py-3">
             <div className="flex items-start gap-3">
-              <span className="mt-0.5 text-orange-500">
+              <span className="mt-0.5 text-[#1F5F3F]">
                 <ShieldIcon />
               </span>
 
@@ -314,7 +314,7 @@ function ResetPasswordPageInner() {
               confirmPassword.length <
                 MINIMUM_PASSWORD_LENGTH
             }
-            className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-orange-500 px-5 py-3 text-sm font-semibold text-white shadow-[0_12px_30px_rgba(249,115,22,0.22)] transition hover:bg-orange-600 focus:outline-none focus:ring-4 focus:ring-orange-100 disabled:cursor-not-allowed disabled:opacity-50"
+            className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-[#1F5F3F] px-5 py-3 text-sm font-semibold text-white shadow-md shadow-emerald-950/10 transition hover:bg-[#14422B] focus:outline-none focus:ring-4 focus:ring-emerald-100 disabled:cursor-not-allowed disabled:opacity-50 cursor-pointer"
           >
             {loading ? (
               <>
@@ -367,14 +367,14 @@ function PasswordField({
           autoComplete="new-password"
           onChange={(event) => onChange(event.target.value)}
           placeholder="Enter your new password"
-          className="min-h-12 w-full rounded-xl border border-orange-100 bg-white px-4 py-3 pr-12 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 hover:border-orange-200 focus:border-orange-400 focus:ring-4 focus:ring-orange-100"
+          className="min-h-12 w-full rounded-xl border border-slate-200 bg-white px-4 py-3 pr-12 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 hover:border-slate-300 focus:border-[#1F5F3F] focus:ring-4 focus:ring-emerald-100"
         />
 
         <button
           type="button"
           onClick={onToggle}
           aria-label={visible ? `Hide ${label}` : `Show ${label}`}
-          className="absolute inset-y-0 right-0 grid w-12 place-items-center text-slate-400 transition hover:text-orange-500"
+          className="absolute inset-y-0 right-0 grid w-12 place-items-center text-slate-400 transition hover:text-slate-700"
         >
           {visible ? <EyeOffIcon /> : <EyeIcon />}
         </button>
@@ -386,13 +386,13 @@ function PasswordField({
 function Brand() {
   return (
     <div className="flex items-center gap-3">
-      <div className="grid h-11 w-11 place-items-center rounded-xl bg-gradient-to-br from-orange-400 to-orange-500 text-lg font-black text-white shadow-[0_10px_24px_rgba(249,115,22,0.22)]">
+      <div className="grid h-11 w-11 place-items-center rounded-xl bg-[#1F5F3F] text-lg font-black text-white shadow-md">
         T
       </div>
 
       <div className="text-left">
-        <p className="text-xl font-bold tracking-tight text-slate-950">
-          Tani<span className="text-orange-500">Afrika</span>
+        <p className="text-xl font-bold tracking-tight text-slate-950 font-display">
+          TaniAfrika
         </p>
 
         <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-400">
@@ -406,8 +406,8 @@ function Brand() {
 function BackgroundDecoration() {
   return (
     <>
-      <div className="pointer-events-none absolute -left-28 -top-28 h-72 w-72 rounded-full bg-orange-100/60 blur-3xl" />
-      <div className="pointer-events-none absolute -bottom-36 -right-24 h-80 w-80 rounded-full bg-[#ffe5d3]/70 blur-3xl" />
+      <div className="pointer-events-none absolute -left-28 -top-28 h-72 w-72 rounded-full bg-emerald-100/40 blur-3xl" />
+      <div className="pointer-events-none absolute -bottom-36 -right-24 h-80 w-80 rounded-full bg-emerald-50/50 blur-3xl" />
     </>
   );
 }
@@ -463,7 +463,7 @@ function EyeIcon() {
       aria-hidden="true"
     >
       <path
-        d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6Z"
+        d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6Z"
         strokeLinejoin="round"
       />
       <circle cx="12" cy="12" r="2.5" />
