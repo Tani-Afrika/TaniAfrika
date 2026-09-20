@@ -28,6 +28,16 @@
   --color-sage-500: #7A9080;
   --color-sage-700: #4D6052;
 
+  /* Fresh Meadow / Luminous Daylight Green (Daylight & Fresh Energy Balance) */
+  --color-meadow-50: #F3FAF4;
+  --color-meadow-100: #E6F7E8;
+  --color-meadow-200: #CBEFD2;
+  --color-meadow-300: #A0E2A9;
+  --color-meadow-400: #74C67A; /* Direct match from brand reference graphic */
+  --color-meadow-500: #57B35E;
+  --color-meadow-600: #3E9745;
+  --color-meadow-700: #2D7433;
+
   /* Legacy Maroon Aliases (Remapped directly to Trust Green to guarantee zero-red output) */
   --color-maroon-50: #F0FDF4;
   --color-maroon-100: #E8F5EE;
@@ -88,6 +98,14 @@ body {
   border: 1px solid rgba(31, 95, 63, 0.1);
   background: #FFFFFF;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+}
+
+/* Luminous meadow surface for daylight freshness and welcoming profile/hero sections */
+.surface-light-meadow {
+  border-radius: 1rem;
+  border: 1px solid rgba(31, 95, 63, 0.22);
+  background: linear-gradient(135deg, #F3FAF4 0%, #E6F7E8 45%, #D4F2D9 100%);
+  box-shadow: 0 1px 3px 0 rgba(31, 95, 63, 0.05);
 }
 
 /* Native touch response feedback */

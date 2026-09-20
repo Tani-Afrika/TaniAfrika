@@ -20,7 +20,7 @@ export default async function DriverDashboardPage() {
           className={`flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 rounded-2xl p-4 sm:p-5 ${
             isRejected
               ? 'border border-red-200 bg-red-50 text-red-900'
-              : 'border border-[#D4A244]/40 bg-[#FFF8F4] text-[#2A2A28]'
+              : 'border border-[#74C67A]/40 bg-gradient-to-r from-[#F0FAF2] to-white text-[#14422B] shadow-xs'
           }`}
         >
           <div className="flex items-start gap-3">
@@ -32,12 +32,12 @@ export default async function DriverDashboardPage() {
               !
             </span>
             <div>
-              <h3 className="font-display font-semibold text-sm sm:text-base">
+              <h3 className="font-display font-semibold text-sm sm:text-base text-[#14422B]">
                 {isRejected
                   ? 'Application Requires Attention'
                   : 'Account Verification In Progress'}
               </h3>
-              <p className="mt-0.5 text-xs sm:text-sm text-[#5F5E5E]">
+              <p className="mt-0.5 text-xs sm:text-sm text-[#1F5F3F]/80">
                 {isRejected
                   ? data.rejectionReason || 'Please update your documents on your profile.'
                   : 'Upload your National ID, Driving Licence, and Vehicle details to activate bidding.'}
@@ -46,35 +46,39 @@ export default async function DriverDashboardPage() {
           </div>
           <Link
             href="/driver/profile"
-            className="inline-flex min-h-[40px] shrink-0 items-center justify-center rounded-xl bg-[#1F5F3F] px-4 py-2 text-xs sm:text-sm font-bold text-white shadow-sm transition hover:bg-[#184c32]"
+            className="inline-flex min-h-[40px] shrink-0 items-center justify-center rounded-xl bg-[#1F5F3F] px-4 py-2 text-xs sm:text-sm font-bold text-white shadow-sm transition hover:bg-[#14422B] border border-[#14422B]"
           >
             Complete Profile & Uploads →
           </Link>
         </div>
       )}
 
-      {/* Hero Banner (Reliable Neighbour Trust Green) */}
-      <section className="rounded-2xl border border-[#1F5F3F]/15 bg-[#1F5F3F] p-4 text-white shadow-sm sm:rounded-3xl sm:p-6">
-        <div className="flex items-center justify-between">
-          <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#D4A244] sm:text-xs">
+      {/* Luminous Meadow Hero Banner with Reliable Neighbour Borders & Button */}
+      <section className="relative overflow-hidden rounded-2xl border-2 border-[#1F5F3F]/20 bg-gradient-to-br from-[#F1FAF3] via-[#E2F6E6] to-[#CEEFD3] p-4 text-slate-900 shadow-sm sm:rounded-3xl sm:p-6">
+        {/* Subtle decorative road contour lines reflecting brand graphic */}
+        <div className="pointer-events-none absolute -right-10 -top-12 h-52 w-52 rounded-full border-[18px] border-[#74C67A]/20" />
+        <div className="pointer-events-none absolute -right-4 -bottom-16 h-44 w-44 rounded-full border-[12px] border-[#1F5F3F]/10" />
+
+        <div className="relative z-10 flex items-center justify-between">
+          <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#1F5F3F] sm:text-xs">
             Driver Workspace
           </p>
-          <span className="inline-flex items-center gap-1 rounded-full bg-white/10 px-2 py-0.5 text-[10px] font-semibold text-emerald-200">
-            <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" /> Live Feed
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-white/90 border border-[#1F5F3F]/20 px-2.5 py-0.5 text-[10px] font-bold text-[#14422B] shadow-2xs">
+            <span className="h-2 w-2 rounded-full bg-[#74C67A] animate-pulse" /> Live Feed
           </span>
         </div>
-        <div className="mt-2 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+        <div className="relative z-10 mt-2 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <h1 className="font-display text-xl font-bold tracking-tight sm:text-3xl">
+            <h1 className="font-display text-xl font-bold tracking-tight text-[#14422B] sm:text-3xl">
               Ready for your next delivery?
             </h1>
-            <p className="mt-1 max-w-xl text-xs text-white/80 sm:text-sm">
+            <p className="mt-1 max-w-xl text-xs text-[#1F5F3F]/85 sm:text-sm">
               Browse nearby delivery requests, submit bids, and keep customers informed from pickup to delivery.
             </p>
           </div>
           <Link
             href="/driver/orders"
-            className="native-press inline-flex h-9 shrink-0 items-center justify-center gap-1.5 rounded-xl bg-white px-4 text-xs font-bold text-[#1F5F3F] shadow-xs transition hover:bg-slate-50 sm:h-11 sm:px-5 sm:text-sm"
+            className="native-press inline-flex h-9 shrink-0 items-center justify-center gap-1.5 rounded-xl bg-[#1F5F3F] px-4 text-xs font-bold text-white shadow-sm transition hover:bg-[#14422B] border border-[#14422B] sm:h-11 sm:px-5 sm:text-sm"
           >
             <SearchIcon className="h-3.5 w-3.5 sm:h-4 sm:w-4" /> Find deliveries
           </Link>

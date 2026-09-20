@@ -9,11 +9,7 @@ import {
 } from '@/lib/actions/driver-orders';
 import { VEHICLE_TYPE_LABELS } from '@/lib/format';
 import type { VehicleType } from '@/types/supabase';
-import {
-  CheckIcon,
-  TruckIcon,
-  UserIcon,
-} from './DriverIcons';
+import { CheckIcon, UserIcon } from './DriverIcons';
 
 interface DriverProfileFormProps {
   initialData: DriverProfileData;
@@ -34,7 +30,6 @@ export default function DriverProfileForm({ initialData }: DriverProfileFormProp
 
   const { profile, driverProfile, documents, vehicle, vehicleDocuments } = initialData;
 
-  // Feedback states
   const [docFeedback, setDocFeedback] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
   const [vehicleFeedback, setVehicleFeedback] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
   const [uploadingDocType, setUploadingDocType] = useState<string | null>(null);
@@ -49,7 +44,6 @@ export default function DriverProfileForm({ initialData }: DriverProfileFormProp
   const [capacityKg, setCapacityKg] = useState(vehicle?.capacity_kg ? String(vehicle.capacity_kg) : '');
   const [volumeM3, setVolumeM3] = useState(vehicle?.volume_m3 ? String(vehicle.volume_m3) : '');
 
-  // Find latest document status helper
   function getDocStatus(type: string) {
     const doc = documents.find((d) => d.document_type === type);
     return doc ? doc.verification_status : 'not_submitted';
@@ -60,7 +54,6 @@ export default function DriverProfileForm({ initialData }: DriverProfileFormProp
     return doc ? doc.verification_status : 'not_submitted';
   }
 
-  // Handle single KYC doc upload
   async function handleDocUpload(documentType: 'national_id' | 'driving_licence' | 'profile_photo', file: File) {
     setDocFeedback(null);
     setUploadingDocType(documentType);
@@ -76,7 +69,7 @@ export default function DriverProfileForm({ initialData }: DriverProfileFormProp
       if (res.success) {
         setDocFeedback({
           type: 'success',
-          message: `${documentType.replace('_', ' ').toUpperCase()} uploaded successfully for verification.`,
+          message: `${documentType.replace('_', ' ').toUpperCase()} uploaded successfully.`,
         });
         router.refresh();
       } else {
@@ -88,7 +81,6 @@ export default function DriverProfileForm({ initialData }: DriverProfileFormProp
     });
   }
 
-  // Handle vehicle submission
   async function handleVehicleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setVehicleFeedback(null);
@@ -102,7 +94,7 @@ export default function DriverProfileForm({ initialData }: DriverProfileFormProp
       if (res.success) {
         setVehicleFeedback({
           type: 'success',
-          message: 'Vehicle and documents saved successfully. Awaiting admin verification.',
+          message: 'Vehicle information saved. Awaiting admin review.',
         });
         router.refresh();
       } else {
@@ -117,69 +109,37 @@ export default function DriverProfileForm({ initialData }: DriverProfileFormProp
   const isApproved = profile.approval_status === 'approved';
   const isRejected = profile.approval_status === 'rejected';
 
-  return (
-    <div className="space-y-6">
-      {/* 1. Top Onboarding & Verification Status Banner */}
-      {isApproved ? (
-        <div className="flex items-start gap-4 rounded-2xl border border-[#1F5F3F]/20 bg-[#1F5F3F]/10 p-4 sm:p-5 text-[#1F5F3F]">
-          <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-[#1F5F3F] text-white shadow-sm">
-            <CheckIcon className="h-5 w-5" />
-          </span>
-          <div>
-            <h3 className="font-display font-semibold text-[#1F5F3F]">Verified Driver Account</h3>
-            <p className="mt-0.5 text-sm text-[#1F5F3F]/90">
-              Your profile and vehicle are approved. You have full access to bid on available delivery orders.
-            </p>
-          </div>
-        </div>
-      ) : isRejected ? (
-        <div className="rounded-2xl border border-red-200 bg-red-50 p-4 sm:p-5 text-red-900">
-          <div className="flex items-start gap-3">
-            <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-red-600 text-white font-bold">
-              !
-            </span>
-            <div className="min-w-0">
-              <h3 className="font-display font-semibold text-red-900">Application Needs Attention</h3>
-              <p className="mt-1 text-sm text-red-700">
-                {driverProfile?.rejection_reason || 'Some details or documents did not meet compliance requirements.'}
-              </p>
-              <p className="mt-2 text-xs font-semibold text-red-800">
-                Please re-upload the requested documents or update your vehicle information below for re-review.
-              </p>
-            </div>
-          </div>
-        </div>
-      ) : (
-        <div className="flex items-start gap-4 rounded-2xl border border-[#D4A244]/30 bg-[#FFF8F4] p-4 sm:p-5 text-[#2A2A28]">
-          <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-[#D4A244] text-white font-bold shadow-sm">
-            i
-          </span>
-          <div>
-            <h3 className="font-display font-semibold text-[#1C1D20]">Verification Under Review</h3>
-            <p className="mt-0.5 text-sm text-[#3F4943]">
-              To begin bidding on jobs, please complete your National ID, Driving Licence, and Vehicle registration below. Our team reviews submissions quickly.
-            </p>
-          </div>
-        </div>
-      )}
+  // Checklist status helpers
+  const idStatus = getDocStatus('national_id');
+  const licenceStatus = getDocStatus('driving_licence');
+  const logbookStatus = getVehicleDocStatus('vehicle_logbook');
+  const insuranceStatus = getVehicleDocStatus('vehicle_insurance');
 
-      {/* 2. Driver Profile Summary Header (Reliable Neighbour Trust Green) */}
-      <section className="overflow-hidden rounded-3xl border border-[#1F5F3F]/15 bg-white shadow-sm">
-        <div className="bg-[#1F5F3F] p-5 sm:p-7 text-white">
-          <div className="flex flex-wrap items-center gap-4 sm:gap-6">
+  return (
+    <div className="space-y-4">
+      {/* 1. Luminous Meadow Top Banner with Reliable Neighbour Borders & Controls */}
+      <section className="relative overflow-hidden rounded-2xl border-2 border-[#1F5F3F]/20 bg-gradient-to-br from-[#F1FAF3] via-[#E2F6E6] to-[#CEEFD3] p-5 text-slate-900 shadow-sm">
+        {/* Subtle decorative road contours reflecting brand graphic */}
+        <div className="pointer-events-none absolute -right-8 -top-12 h-44 w-44 rounded-full border-[14px] border-[#74C67A]/25" />
+        <div className="pointer-events-none absolute -right-4 -bottom-16 h-40 w-40 rounded-full border-[10px] border-[#1F5F3F]/10" />
+
+        <div className="relative z-10 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          {/* Driver identity */}
+          <div className="flex items-center gap-3.5">
             <div className="relative">
-              <span className="grid h-20 w-20 shrink-0 place-items-center overflow-hidden rounded-2xl bg-white/95 text-2xl font-bold text-[#1F5F3F] shadow-md">
+              <span className="grid h-14 w-14 shrink-0 place-items-center overflow-hidden rounded-2xl border-2 border-[#1F5F3F]/30 bg-white text-base font-bold text-[#1F5F3F] shadow-sm">
                 {profile.avatar_url ? (
                   <img src={profile.avatar_url} alt="" className="h-full w-full object-cover" />
                 ) : (
-                  <UserIcon className="h-9 w-9 text-[#1F5F3F]" />
+                  <UserIcon className="h-7 w-7 text-[#1F5F3F]" />
                 )}
               </span>
               <label
                 htmlFor="profile_photo_input"
-                className="absolute -bottom-2 -right-2 cursor-pointer rounded-lg bg-[#D4A244] px-2 py-1 text-[11px] font-bold text-white shadow hover:bg-[#b88c3a] transition"
+                className="absolute -bottom-1 -right-1 cursor-pointer rounded-md bg-[#1F5F3F] hover:bg-[#14422B] px-1.5 py-0.5 text-[9px] font-bold text-white shadow-sm transition"
+                title="Change photo"
               >
-                {uploadingDocType === 'profile_photo' ? '...' : 'Change'}
+                {uploadingDocType === 'profile_photo' ? '…' : 'Edit'}
                 <input
                   id="profile_photo_input"
                   type="file"
@@ -195,316 +155,305 @@ export default function DriverProfileForm({ initialData }: DriverProfileFormProp
             </div>
 
             <div className="min-w-0">
-              <div className="flex items-center gap-2.5">
-                <h2 className="font-display text-2xl font-bold tracking-tight">{profile.full_name}</h2>
-                <span
-                  className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-semibold ${
-                    isApproved
-                      ? 'bg-emerald-500/20 text-emerald-200'
-                      : isRejected
-                      ? 'bg-red-500/20 text-red-200'
-                      : 'bg-amber-400/20 text-amber-200'
-                  }`}
-                >
-                  {profile.approval_status.toUpperCase()}
-                </span>
-              </div>
-              <p className="mt-1 text-sm text-white/80">{profile.phone ?? 'No phone recorded'}</p>
+              <h1 className="font-display text-lg sm:text-xl font-bold tracking-tight text-[#14422B] truncate">
+                {profile.full_name}
+              </h1>
+              <p className="text-xs font-semibold text-[#1F5F3F]">
+                {profile.phone ?? 'No phone recorded'}
+              </p>
             </div>
+          </div>
 
-            <div className="sm:ml-auto flex items-center gap-3">
-              <span
-                className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold backdrop-blur ${
-                  profile.is_online ? 'bg-emerald-500/25 text-emerald-200' : 'bg-white/15 text-white/75'
-                }`}
-              >
-                <span className={`h-2 w-2 rounded-full ${profile.is_online ? 'bg-emerald-400' : 'bg-slate-400'}`} />
-                {profile.is_online ? 'Online for Dispatch' : 'Offline'}
+          {/* Status Capsule */}
+          <div className="flex flex-col sm:items-end gap-1">
+            {isApproved ? (
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-white border border-[#1F5F3F]/30 px-3 py-1 text-xs font-bold text-[#14422B] shadow-2xs">
+                <span className="h-2 w-2 rounded-full bg-[#74C67A]" />
+                Approved Driver
               </span>
-            </div>
-          </div>
-        </div>
-      </section>
+            ) : isRejected ? (
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-red-100 border border-red-300 px-3 py-1 text-xs font-bold text-red-900 shadow-2xs">
+                <span className="h-2 w-2 rounded-full bg-red-500" />
+                Action Required
+              </span>
+            ) : (
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-white border border-[#D4A244] px-3 py-1 text-xs font-bold text-amber-950 shadow-2xs">
+                <span className="h-2 w-2 rounded-full bg-amber-500 animate-pulse" />
+                Pending Verification
+              </span>
+            )}
 
-      {/* 3. Personal KYC Verification Documents */}
-      <section className="rounded-3xl border border-slate-200 bg-white p-5 sm:p-7 shadow-sm">
-        <div className="mb-5 flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-4">
-          <div>
-            <h3 className="font-display text-lg font-bold text-[#1C1D20]">Driver KYC & Identification</h3>
-            <p className="text-xs sm:text-sm text-[#3F4943]">
-              Mandatory legal credentials stored securely in encrypted private storage.
+            <p className="text-[11px] font-medium text-[#1F5F3F]/85">
+              {isApproved
+                ? 'Active for bidding across marketplace'
+                : isRejected
+                ? driverProfile?.rejection_reason || 'Please update documents'
+                : 'Review takes up to 24h • Bidding unlocks once approved'}
             </p>
           </div>
         </div>
 
-        {docFeedback && (
-          <div
-            className={`mb-5 rounded-xl p-3.5 text-sm font-medium ${
-              docFeedback.type === 'success'
-                ? 'border border-[#1F5F3F]/20 bg-[#1F5F3F]/10 text-[#1F5F3F]'
-                : 'border border-red-200 bg-red-50 text-red-800'
-            }`}
-          >
-            {docFeedback.message}
-          </div>
-        )}
+        {/* Verification Checklist Pills */}
+        <div className="relative z-10 mt-4 border-t border-[#1F5F3F]/15 pt-3 flex flex-wrap items-center gap-2">
+          <span className="text-[10px] font-bold text-[#1F5F3F] uppercase tracking-wider mr-1">
+            Checklist:
+          </span>
+          <ChecklistChip label="National ID" status={idStatus} />
+          <ChecklistChip label="Licence" status={licenceStatus} />
+          <ChecklistChip label="Vehicle Info" status={vehicle ? (vehicle.is_verified ? 'verified' : 'pending') : 'not_submitted'} />
+          <ChecklistChip label="Logbook" status={logbookStatus} />
+          <ChecklistChip label="Insurance" status={insuranceStatus} />
+        </div>
+      </section>
 
-        <div className="grid gap-4 sm:grid-cols-2">
-          {/* National ID Upload Card */}
-          <DocumentCard
-            title="National Identification Card"
-            description="Clear copy of your Kenyan National ID (front & back or PDF)."
-            status={getDocStatus('national_id')}
+      {/* Feedback Alerts */}
+      {docFeedback && (
+        <div
+          role="alert"
+          className={`rounded-xl px-4 py-2.5 text-xs font-semibold ${
+            docFeedback.type === 'success'
+              ? 'border border-emerald-200 bg-emerald-50 text-[#1F5F3F]'
+              : 'border border-red-200 bg-red-50 text-red-800'
+          }`}
+        >
+          {docFeedback.message}
+        </div>
+      )}
+
+      {vehicleFeedback && (
+        <div
+          role="alert"
+          className={`rounded-xl px-4 py-2.5 text-xs font-semibold ${
+            vehicleFeedback.type === 'success'
+              ? 'border border-emerald-200 bg-emerald-50 text-[#1F5F3F]'
+              : 'border border-red-200 bg-red-50 text-red-800'
+          }`}
+        >
+          {vehicleFeedback.message}
+        </div>
+      )}
+
+      {/* 2. Personal Identity & KYC Documents (Side-by-Side Row) */}
+      <section className="rounded-2xl border border-[#1F5F3F]/15 bg-white p-4 sm:p-5 shadow-xs">
+        <div className="flex items-center justify-between border-b border-slate-100 pb-2.5 mb-3">
+          <div className="flex items-center gap-2">
+            <span className="h-2.5 w-2.5 rounded-full bg-[#74C67A]" />
+            <h2 className="font-display text-sm font-bold text-slate-900">
+              1. Identity & KYC
+            </h2>
+          </div>
+          <span className="text-[11px] font-semibold text-[#1F5F3F]">Encrypted Private Storage</span>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <DocumentRow
+            title="National ID"
+            subtitle="Kenyan National ID"
+            status={idStatus}
             isUploading={uploadingDocType === 'national_id'}
-            onFileSelect={(file) => handleDocUpload('national_id', file)}
             disabled={isPending}
+            onSelect={(file) => handleDocUpload('national_id', file)}
           />
-
-          {/* Driving Licence Upload Card */}
-          <DocumentCard
-            title="Valid Driving Licence"
-            description="Current NTSA driving licence showing your approved vehicle class."
-            status={getDocStatus('driving_licence')}
+          <DocumentRow
+            title="Driving Licence"
+            subtitle="NTSA Registered Licence"
+            status={licenceStatus}
             isUploading={uploadingDocType === 'driving_licence'}
-            onFileSelect={(file) => handleDocUpload('driving_licence', file)}
             disabled={isPending}
+            onSelect={(file) => handleDocUpload('driving_licence', file)}
           />
         </div>
       </section>
 
-      {/* 4. Vehicle Details & Fleet Compliance Documents */}
-      <section className="rounded-3xl border border-slate-200 bg-white p-5 sm:p-7 shadow-sm">
-        <div className="mb-5 flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-4">
-          <div>
-            <h3 className="font-display text-lg font-bold text-[#1C1D20]">Vehicle Details & Fleet Registration</h3>
-            <p className="text-xs sm:text-sm text-[#3F4943]">
-              Your active vehicle is automatically attached to bids you place on marketplace orders.
-            </p>
+      {/* 3. Vehicle Registration (Balanced 2-Column Layout to make form shorter) */}
+      <section className="rounded-2xl border border-[#1F5F3F]/15 bg-white p-4 sm:p-5 shadow-xs">
+        <div className="flex items-center justify-between border-b border-slate-100 pb-2.5 mb-4">
+          <div className="flex items-center gap-2">
+            <span className="h-2.5 w-2.5 rounded-full bg-[#74C67A]" />
+            <h2 className="font-display text-sm font-bold text-slate-900">
+              2. Vehicle Registration
+            </h2>
+            {vehicle && (
+              <StatusBadge status={vehicle.is_verified ? 'verified' : 'pending'} />
+            )}
           </div>
-          {vehicle && (
-            <span
-              className={`rounded-full px-3 py-1 text-xs font-semibold ${
-                vehicle.is_verified
-                  ? 'bg-emerald-100 text-emerald-800'
-                  : 'bg-amber-100 text-amber-800'
-              }`}
-            >
-              {vehicle.is_verified ? 'Vehicle Verified' : 'Vehicle Verification Pending'}
-            </span>
-          )}
+          <span className="text-[11px] font-semibold text-[#1F5F3F]">Attached to your marketplace bids</span>
         </div>
 
-        {vehicleFeedback && (
-          <div
-            className={`mb-5 rounded-xl p-3.5 text-sm font-medium ${
-              vehicleFeedback.type === 'success'
-                ? 'border border-[#1F5F3F]/20 bg-[#1F5F3F]/10 text-[#1F5F3F]'
-                : 'border border-red-200 bg-red-50 text-red-800'
-            }`}
-          >
-            {vehicleFeedback.message}
-          </div>
-        )}
+        {/* 2-Column Form Layout: Specs on Left, Compliance Docs on Right */}
+        <form onSubmit={handleVehicleSubmit} className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+          {/* Column 1: Vehicle Specifications (7 cols on desktop) */}
+          <div className="lg:col-span-7 space-y-3">
+            <p className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">
+              Vehicle Specifications
+            </p>
 
-        <form onSubmit={handleVehicleSubmit} className="space-y-6">
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {/* Vehicle Type */}
-            <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">
-                Vehicle Type Category *
-              </label>
-              <select
-                name="vehicle_type"
-                value={vehicleType}
-                onChange={(e) => setVehicleType(e.target.value as VehicleType)}
-                className="mt-1.5 w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-sm font-medium text-slate-900 focus:border-[#1F5F3F] focus:outline-none focus:ring-2 focus:ring-[#1F5F3F]/20"
-                required
+            <div className="grid grid-cols-2 gap-2.5 text-xs">
+              {/* Vehicle Type */}
+              <div>
+                <label className="block font-semibold text-slate-700 mb-1">
+                  Type *
+                </label>
+                <select
+                  name="vehicle_type"
+                  value={vehicleType}
+                  onChange={(e) => setVehicleType(e.target.value as VehicleType)}
+                  className="w-full rounded-xl border border-slate-200 bg-white px-2.5 py-2 text-xs font-medium text-slate-900 focus:border-[#1F5F3F] focus:outline-none focus:ring-2 focus:ring-[#74C67A]/25"
+                  required
+                >
+                  {VEHICLE_OPTIONS.map((opt) => (
+                    <option key={opt.value} value={opt.value}>
+                      {opt.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Number Plate */}
+              <div>
+                <label className="block font-semibold text-slate-700 mb-1">
+                  Number Plate *
+                </label>
+                <input
+                  type="text"
+                  name="plate_number"
+                  value={plateNumber}
+                  onChange={(e) => setPlateNumber(e.target.value.toUpperCase())}
+                  placeholder="KDA 123A"
+                  className="w-full rounded-xl border border-slate-200 px-2.5 py-2 text-xs font-bold text-slate-900 uppercase placeholder:text-slate-400 focus:border-[#1F5F3F] focus:outline-none focus:ring-2 focus:ring-[#74C67A]/25"
+                  required
+                />
+              </div>
+
+              {/* Make */}
+              <div>
+                <label className="block font-semibold text-slate-700 mb-1">
+                  Make
+                </label>
+                <input
+                  type="text"
+                  name="make"
+                  value={make}
+                  onChange={(e) => setMake(e.target.value)}
+                  placeholder="e.g. Isuzu"
+                  className="w-full rounded-xl border border-slate-200 px-2.5 py-2 text-xs text-slate-900 placeholder:text-slate-400 focus:border-[#1F5F3F] focus:outline-none focus:ring-2 focus:ring-[#74C67A]/25"
+                />
+              </div>
+
+              {/* Model */}
+              <div>
+                <label className="block font-semibold text-slate-700 mb-1">
+                  Model
+                </label>
+                <input
+                  type="text"
+                  name="model"
+                  value={model}
+                  onChange={(e) => setModel(e.target.value)}
+                  placeholder="e.g. NPR"
+                  className="w-full rounded-xl border border-slate-200 px-2.5 py-2 text-xs text-slate-900 placeholder:text-slate-400 focus:border-[#1F5F3F] focus:outline-none focus:ring-2 focus:ring-[#74C67A]/25"
+                />
+              </div>
+
+              {/* Year */}
+              <div>
+                <label className="block font-semibold text-slate-700 mb-1">
+                  Year
+                </label>
+                <input
+                  type="number"
+                  name="year"
+                  min="1980"
+                  max="2030"
+                  value={year}
+                  onChange={(e) => setYear(e.target.value)}
+                  placeholder="2020"
+                  className="w-full rounded-xl border border-slate-200 px-2.5 py-2 text-xs text-slate-900 placeholder:text-slate-400 focus:border-[#1F5F3F] focus:outline-none focus:ring-2 focus:ring-[#74C67A]/25"
+                />
+              </div>
+
+              {/* Colour */}
+              <div>
+                <label className="block font-semibold text-slate-700 mb-1">
+                  Colour
+                </label>
+                <input
+                  type="text"
+                  name="colour"
+                  value={colour}
+                  onChange={(e) => setColour(e.target.value)}
+                  placeholder="e.g. White"
+                  className="w-full rounded-xl border border-slate-200 px-2.5 py-2 text-xs text-slate-900 placeholder:text-slate-400 focus:border-[#1F5F3F] focus:outline-none focus:ring-2 focus:ring-[#74C67A]/25"
+                />
+              </div>
+
+              {/* Capacity */}
+              <div>
+                <label className="block font-semibold text-slate-700 mb-1">
+                  Capacity (KG)
+                </label>
+                <input
+                  type="number"
+                  name="capacity_kg"
+                  min="10"
+                  value={capacityKg}
+                  onChange={(e) => setCapacityKg(e.target.value)}
+                  placeholder="e.g. 3000"
+                  className="w-full rounded-xl border border-slate-200 px-2.5 py-2 text-xs text-slate-900 placeholder:text-slate-400 focus:border-[#1F5F3F] focus:outline-none focus:ring-2 focus:ring-[#74C67A]/25"
+                />
+              </div>
+
+              {/* Volume */}
+              <div>
+                <label className="block font-semibold text-slate-700 mb-1">
+                  Volume (m³)
+                </label>
+                <input
+                  type="number"
+                  step="0.1"
+                  name="volume_m3"
+                  value={volumeM3}
+                  onChange={(e) => setVolumeM3(e.target.value)}
+                  placeholder="e.g. 14.5"
+                  className="w-full rounded-xl border border-slate-200 px-2.5 py-2 text-xs text-slate-900 placeholder:text-slate-400 focus:border-[#1F5F3F] focus:outline-none focus:ring-2 focus:ring-[#74C67A]/25"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Column 2: Compliance Documents & Save (5 cols on desktop) */}
+          <div className="lg:col-span-5 flex flex-col justify-between space-y-3">
+            <p className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">
+              Verification Files
+            </p>
+
+            <div className="space-y-2.5">
+              <VehicleFileBox
+                label="Logbook"
+                status={logbookStatus}
+                name="vehicle_logbook"
+              />
+              <VehicleFileBox
+                label="Insurance Certificate"
+                status={insuranceStatus}
+                name="vehicle_insurance"
+              />
+              <VehicleFileBox
+                label="Exterior Photo"
+                status={vehicle?.photo_url ? 'verified' : 'not_submitted'}
+                name="vehicle_photo"
+              />
+            </div>
+
+            <div className="pt-2">
+              <button
+                type="submit"
+                disabled={isPending}
+                className="w-full flex items-center justify-center rounded-xl bg-[#1F5F3F] py-2.5 text-xs font-bold text-white shadow-sm transition hover:bg-[#14422B] border border-[#14422B] disabled:opacity-50 cursor-pointer active:scale-[0.98]"
               >
-                {VEHICLE_OPTIONS.map((opt) => (
-                  <option key={opt.value} value={opt.value}>
-                    {opt.label}
-                  </option>
-                ))}
-              </select>
+                {isPending ? 'Saving Vehicle...' : 'Save Vehicle Info →'}
+              </button>
             </div>
-
-            {/* Registration Plate */}
-            <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">
-                Number Plate *
-              </label>
-              <input
-                type="text"
-                name="plate_number"
-                value={plateNumber}
-                onChange={(e) => setPlateNumber(e.target.value.toUpperCase())}
-                placeholder="e.g. KDA 123A"
-                className="mt-1.5 w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-sm font-semibold text-slate-900 placeholder:text-slate-400 uppercase focus:border-[#1F5F3F] focus:outline-none focus:ring-2 focus:ring-[#1F5F3F]/20"
-                required
-              />
-            </div>
-
-            {/* Make */}
-            <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">
-                Vehicle Make
-              </label>
-              <input
-                type="text"
-                name="make"
-                value={make}
-                onChange={(e) => setMake(e.target.value)}
-                placeholder="e.g. Isuzu, Toyota"
-                className="mt-1.5 w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 focus:border-[#1F5F3F] focus:outline-none focus:ring-2 focus:ring-[#1F5F3F]/20"
-              />
-            </div>
-
-            {/* Model */}
-            <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">
-                Vehicle Model
-              </label>
-              <input
-                type="text"
-                name="model"
-                value={model}
-                onChange={(e) => setModel(e.target.value)}
-                placeholder="e.g. NPR, Hilux, Canter"
-                className="mt-1.5 w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 focus:border-[#1F5F3F] focus:outline-none focus:ring-2 focus:ring-[#1F5F3F]/20"
-              />
-            </div>
-
-            {/* Year */}
-            <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">
-                Year of Manufacture
-              </label>
-              <input
-                type="number"
-                name="year"
-                min="1980"
-                max="2030"
-                value={year}
-                onChange={(e) => setYear(e.target.value)}
-                placeholder="e.g. 2019"
-                className="mt-1.5 w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 focus:border-[#1F5F3F] focus:outline-none focus:ring-2 focus:ring-[#1F5F3F]/20"
-              />
-            </div>
-
-            {/* Colour */}
-            <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">
-                Vehicle Colour
-              </label>
-              <input
-                type="text"
-                name="colour"
-                value={colour}
-                onChange={(e) => setColour(e.target.value)}
-                placeholder="e.g. White, Blue"
-                className="mt-1.5 w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 focus:border-[#1F5F3F] focus:outline-none focus:ring-2 focus:ring-[#1F5F3F]/20"
-              />
-            </div>
-
-            {/* Capacity (kg) */}
-            <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">
-                Load Capacity (KG)
-              </label>
-              <input
-                type="number"
-                name="capacity_kg"
-                min="10"
-                value={capacityKg}
-                onChange={(e) => setCapacityKg(e.target.value)}
-                placeholder="e.g. 3000"
-                className="mt-1.5 w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 focus:border-[#1F5F3F] focus:outline-none focus:ring-2 focus:ring-[#1F5F3F]/20"
-              />
-            </div>
-
-            {/* Volume (m3) */}
-            <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">
-                Cargo Volume (m³)
-              </label>
-              <input
-                type="number"
-                step="0.1"
-                name="volume_m3"
-                value={volumeM3}
-                onChange={(e) => setVolumeM3(e.target.value)}
-                placeholder="e.g. 14.5"
-                className="mt-1.5 w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 focus:border-[#1F5F3F] focus:outline-none focus:ring-2 focus:ring-[#1F5F3F]/20"
-              />
-            </div>
-          </div>
-
-          {/* Vehicle Compliance Uploads */}
-          <div className="mt-6 border-t border-slate-100 pt-5">
-            <h4 className="text-sm font-bold text-[#1C1D20]">Vehicle Verification Evidence</h4>
-            <p className="text-xs text-slate-500 mb-4">Upload the official logbook and insurance documents to complete verification.</p>
-
-            <div className="grid gap-4 sm:grid-cols-3">
-              {/* Logbook */}
-              <div className="rounded-2xl border border-slate-200 bg-slate-50/50 p-4">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold text-slate-800">Vehicle Logbook</span>
-                  <StatusBadge status={getVehicleDocStatus('vehicle_logbook')} />
-                </div>
-                <input
-                  type="file"
-                  name="vehicle_logbook"
-                  accept=".pdf,image/*"
-                  className="mt-3 block w-full text-xs text-slate-500 file:mr-2 file:rounded-lg file:border-0 file:bg-slate-200 file:px-3 file:py-1.5 file:text-xs file:font-semibold file:text-slate-700 hover:file:bg-slate-300"
-                />
-              </div>
-
-              {/* Insurance */}
-              <div className="rounded-2xl border border-slate-200 bg-slate-50/50 p-4">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold text-slate-800">Insurance Certificate</span>
-                  <StatusBadge status={getVehicleDocStatus('vehicle_insurance')} />
-                </div>
-                <input
-                  type="file"
-                  name="vehicle_insurance"
-                  accept=".pdf,image/*"
-                  className="mt-3 block w-full text-xs text-slate-500 file:mr-2 file:rounded-lg file:border-0 file:bg-slate-200 file:px-3 file:py-1.5 file:text-xs file:font-semibold file:text-slate-700 hover:file:bg-slate-300"
-                />
-              </div>
-
-              {/* Vehicle Exterior Photo */}
-              <div className="rounded-2xl border border-slate-200 bg-slate-50/50 p-4">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold text-slate-800">Vehicle Exterior Photo</span>
-                  {vehicle?.photo_url ? (
-                    <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-[11px] font-semibold text-emerald-800">
-                      Uploaded
-                    </span>
-                  ) : (
-                    <span className="rounded-full bg-slate-200 px-2 py-0.5 text-[11px] font-semibold text-slate-600">
-                      Optional
-                    </span>
-                  )}
-                </div>
-                <input
-                  type="file"
-                  name="vehicle_photo"
-                  accept="image/*"
-                  className="mt-3 block w-full text-xs text-slate-500 file:mr-2 file:rounded-lg file:border-0 file:bg-slate-200 file:px-3 file:py-1.5 file:text-xs file:font-semibold file:text-slate-700 hover:file:bg-slate-300"
-                />
-              </div>
-            </div>
-          </div>
-
-          <div className="flex justify-end pt-2">
-            <button
-              type="submit"
-              disabled={isPending}
-              className="inline-flex min-h-[44px] items-center justify-center rounded-xl bg-[#1F5F3F] px-6 py-2.5 text-sm font-bold text-white shadow-sm transition hover:bg-[#184c32] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1F5F3F] disabled:opacity-50"
-            >
-              {isPending ? 'Saving Vehicle...' : 'Save Vehicle & Documents'}
-            </button>
           </div>
         </form>
       </section>
@@ -512,65 +461,137 @@ export default function DriverProfileForm({ initialData }: DriverProfileFormProp
   );
 }
 
-// Subcomponents
+// ---------------------------------------------------------------------------
+// Helper Components
+// ---------------------------------------------------------------------------
+
 function StatusBadge({ status }: { status: string }) {
   if (status === 'verified') {
-    return <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-[11px] font-bold text-emerald-800">Verified</span>;
+    return (
+      <span className="inline-flex items-center gap-1 rounded-full bg-[#EBF8ED] border border-[#74C67A]/50 px-2 py-0.5 text-[10px] font-bold text-[#14422B]">
+        <CheckIcon className="h-3 w-3 text-[#3E9745]" /> Verified
+      </span>
+    );
   }
   if (status === 'pending') {
-    return <span className="rounded-full bg-amber-100 px-2 py-0.5 text-[11px] font-bold text-amber-800">Pending Review</span>;
+    return (
+      <span className="inline-flex items-center rounded-full bg-amber-50 border border-amber-300/60 px-2 py-0.5 text-[10px] font-bold text-amber-900">
+        Pending
+      </span>
+    );
   }
   if (status === 'rejected') {
-    return <span className="rounded-full bg-red-100 px-2 py-0.5 text-[11px] font-bold text-red-800">Rejected</span>;
+    return (
+      <span className="inline-flex items-center rounded-full bg-red-50 border border-red-200 px-2 py-0.5 text-[10px] font-bold text-red-800">
+        Rejected
+      </span>
+    );
   }
-  return <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[11px] font-medium text-slate-600">Not Uploaded</span>;
+  return (
+    <span className="inline-flex items-center rounded-full bg-slate-100 border border-slate-200 px-2 py-0.5 text-[10px] font-medium text-slate-500">
+      Not Uploaded
+    </span>
+  );
 }
 
-function DocumentCard({
+function ChecklistChip({ label, status }: { label: string; status: string }) {
+  const isOk = status === 'verified';
+  const isP = status === 'pending';
+  return (
+    <span
+      className={`inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-[11px] font-semibold transition ${
+        isOk
+          ? 'bg-white text-[#14422B] border border-[#74C67A] shadow-2xs'
+          : isP
+          ? 'bg-white text-amber-900 border border-amber-300 shadow-2xs'
+          : 'bg-white/70 text-slate-600 border border-slate-200'
+      }`}
+    >
+      <span className={isOk ? 'text-[#3E9745] font-bold' : isP ? 'text-amber-600 font-bold' : 'text-slate-400'}>
+        {isOk ? '✓' : isP ? '⏳' : '○'}
+      </span>
+      {label}
+    </span>
+  );
+}
+
+function DocumentRow({
   title,
-  description,
+  subtitle,
   status,
   isUploading,
-  onFileSelect,
   disabled,
+  onSelect,
 }: {
   title: string;
-  description: string;
+  subtitle: string;
   status: string;
   isUploading: boolean;
-  onFileSelect: (file: File) => void;
   disabled: boolean;
+  onSelect: (file: File) => void;
 }) {
+  const isDone = status === 'verified';
   return (
-    <div className="flex flex-col justify-between rounded-2xl border border-slate-200 bg-[#F7F1E5]/30 p-4 sm:p-5">
-      <div>
-        <div className="flex items-center justify-between gap-2">
-          <h4 className="font-display text-sm font-bold text-[#1C1D20]">{title}</h4>
+    <div
+      className={`flex items-center justify-between gap-3 rounded-xl border p-3 transition ${
+        isDone
+          ? 'border-[#74C67A]/40 bg-[#F3FAF4]'
+          : 'border-slate-200/90 bg-white hover:border-[#1F5F3F]/30'
+      }`}
+    >
+      <div className="min-w-0">
+        <div className="flex items-center gap-2">
+          <span className="text-xs font-bold text-slate-900">{title}</span>
           <StatusBadge status={status} />
         </div>
-        <p className="mt-1 text-xs text-[#5F5E5E] leading-relaxed">{description}</p>
+        <p className="text-[11px] text-slate-500 truncate">{subtitle}</p>
       </div>
 
-      <div className="mt-4 pt-3 border-t border-slate-200/60 flex items-center justify-between">
-        <label className="inline-flex cursor-pointer items-center justify-center rounded-xl bg-white border border-slate-300 px-4 py-2 text-xs font-bold text-slate-800 shadow-sm transition hover:bg-slate-50 focus-within:ring-2 focus-within:ring-[#1F5F3F] disabled:opacity-50">
-          <span>{isUploading ? 'Uploading...' : status === 'not_submitted' ? 'Upload Document' : 'Replace File'}</span>
-          <input
-            type="file"
-            accept=".pdf,image/*"
-            className="hidden"
-            disabled={disabled || isUploading}
-            onChange={(e) => {
-              const file = e.target.files?.[0];
-              if (file) onFileSelect(file);
-            }}
-          />
-        </label>
-        {status === 'verified' && (
-          <span className="flex items-center gap-1 text-xs font-semibold text-emerald-700">
-            <CheckIcon className="h-4 w-4" /> Ready
-          </span>
-        )}
+      <label className="shrink-0 cursor-pointer rounded-xl bg-white border border-[#1F5F3F]/40 px-3 py-1.5 text-[11px] font-bold text-[#1F5F3F] shadow-xs transition hover:bg-[#EBF8ED] active:scale-[0.98]">
+        <span>{isUploading ? '…' : status === 'not_submitted' ? 'Upload' : 'Replace'}</span>
+        <input
+          type="file"
+          accept=".pdf,image/*"
+          className="hidden"
+          disabled={disabled || isUploading}
+          onChange={(e) => {
+            const file = e.target.files?.[0];
+            if (file) onSelect(file);
+          }}
+        />
+      </label>
+    </div>
+  );
+}
+
+function VehicleFileBox({
+  label,
+  status,
+  name,
+}: {
+  label: string;
+  status: string;
+  name: string;
+}) {
+  const isDone = status === 'verified';
+  return (
+    <div
+      className={`rounded-xl border p-2.5 transition ${
+        isDone
+          ? 'border-[#74C67A]/40 bg-[#F3FAF4]'
+          : 'border-slate-200 bg-white hover:border-[#1F5F3F]/30'
+      }`}
+    >
+      <div className="flex items-center justify-between mb-1.5">
+        <span className="text-[11px] font-bold text-slate-800">{label}</span>
+        <StatusBadge status={status} />
       </div>
+      <input
+        type="file"
+        name={name}
+        accept=".pdf,image/*"
+        className="block w-full text-[10px] text-slate-600 file:mr-2 file:rounded-lg file:border file:border-[#1F5F3F]/30 file:bg-[#EBF8ED] file:px-2 file:py-1 file:text-[10px] file:font-bold file:text-[#1F5F3F] hover:file:bg-[#DEF4E2] cursor-pointer"
+      />
     </div>
   );
 }

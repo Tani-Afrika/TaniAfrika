@@ -98,9 +98,9 @@ export default function DriverShell({ children, profile }: DriverShellProps) {
       </nav>
 
       <div className="p-4">
-        <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-          <Link href="/driver/profile" className="flex items-center gap-3 border-b border-slate-100 px-4 py-4 hover:bg-slate-50 transition">
-            <span className="grid h-11 w-11 shrink-0 place-items-center overflow-hidden rounded-full bg-[#1F5F3F]/10 font-bold text-[#1F5F3F]">
+        <div className="overflow-hidden rounded-2xl border border-[#1F5F3F]/20 bg-gradient-to-br from-white to-[#F2FAF4] shadow-sm">
+          <Link href="/driver/profile" className="flex items-center gap-3 border-b border-slate-100 px-4 py-3.5 hover:bg-[#EBF8ED]/60 transition">
+            <span className="grid h-11 w-11 shrink-0 place-items-center overflow-hidden rounded-full border-2 border-[#1F5F3F]/25 bg-white font-bold text-[#1F5F3F] shadow-2xs">
               {profile.avatarUrl ? (
                 <img src={profile.avatarUrl} alt="" className="h-full w-full object-cover" />
               ) : (
@@ -108,11 +108,11 @@ export default function DriverShell({ children, profile }: DriverShellProps) {
               )}
             </span>
             <span className="min-w-0">
-              <span className="block truncate text-sm font-semibold text-slate-950">{profile.fullName}</span>
-              <span className="block truncate text-xs text-slate-500">{profile.email}</span>
+              <span className="block truncate text-sm font-bold text-[#14422B]">{profile.fullName}</span>
+              <span className="block truncate text-xs text-[#1F5F3F]/80">{profile.email}</span>
             </span>
           </Link>
-          <div className="px-4 py-2 [&_button]:w-full [&_button]:justify-start [&_button]:border-0 [&_button]:bg-transparent [&_button]:px-0 [&_button]:py-2 [&_button]:text-sm [&_button]:font-medium [&_button]:text-slate-700 [&_button]:shadow-none hover:[&_button]:text-[#1F5F3F]">
+          <div className="px-4 py-2 [&_button]:w-full [&_button]:justify-start [&_button]:border-0 [&_button]:bg-transparent [&_button]:px-0 [&_button]:py-1.5 [&_button]:text-xs [&_button]:font-semibold [&_button]:text-slate-600 [&_button]:shadow-none hover:[&_button]:text-[#1F5F3F]">
             <LogoutButton />
           </div>
         </div>
@@ -177,8 +177,8 @@ export default function DriverShell({ children, profile }: DriverShellProps) {
               </span>
             </Link>
 
-            <span className="hidden items-center gap-1 rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-semibold text-emerald-700 sm:inline-flex">
-              <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
+            <span className="hidden items-center gap-1.5 rounded-full bg-[#EBF8ED] border border-[#74C67A]/40 px-2.5 py-0.5 text-[10px] font-bold text-[#14422B] sm:inline-flex shadow-2xs">
+              <span className="h-1.5 w-1.5 rounded-full bg-[#74C67A] animate-pulse" />
               Online
             </span>
           </div>
@@ -186,7 +186,7 @@ export default function DriverShell({ children, profile }: DriverShellProps) {
           <div className="flex items-center gap-2">
             <Link
               href="/driver/orders"
-              className="hidden h-9 items-center gap-1.5 rounded-lg bg-[#1F5F3F] px-3 text-xs font-semibold text-white shadow-xs transition hover:bg-[#184c32] sm:inline-flex"
+              className="hidden h-9 items-center gap-1.5 rounded-xl bg-[#1F5F3F] px-3.5 text-xs font-bold text-white shadow-xs transition hover:bg-[#14422B] border border-[#14422B] sm:inline-flex"
             >
               <SearchIcon className="h-3.5 w-3.5" /> Find Loads
             </Link>
