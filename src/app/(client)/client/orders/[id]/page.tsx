@@ -9,8 +9,15 @@ import type { VehicleType } from '@/types/supabase';
 
 import BidsList from '@/components/client/BidsList';
 import CancelOrderControl from '@/components/client/CancelOrderControl';
+import DeliveryConfirmNotice from '@/components/client/DeliveryConfirmNotice';
+import DisputeControl from '@/components/client/DisputeControl';
+import OrderLiveRefresh from '@/components/client/OrderLiveRefresh';
+import OrderReceipt from '@/components/client/OrderReceipt';
+import PaymentHoldPanel from '@/components/client/PaymentHoldPanel';
 import OrderStatusTimeline from '@/components/client/OrderStatusTimeline';
 import OrderTrackingMap from '@/components/client/OrderTrackingMap';
+import ReviewForm from '@/components/client/ReviewForm';
+import TripStatusLine from '@/components/client/TripStatusLine';
 
 import { getDevSession } from '@/lib/auth/dev-session';
 
@@ -37,12 +44,17 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
   const detail = await getClientOrderDetail(id);
   if (!detail) notFound();
 
-  const { order, bids, history, driver, driverLocation } = detail;
+  const { order, orderNumber, bids, history, driver, driverLocation, paymentHold, mpesaPaymentsEnabled, review } =
+    detail;
   const isAssigned = Boolean(order.driver_id);
   const canCancel = CANCELLABLE_STATUSES.has(order.status);
+  const isPostTrip = order.status === 'delivered' || order.status === 'completed' || order.status === 'disputed';
+  const canRate = order.status === 'delivered' || order.status === 'completed';
+  const orderLabel = orderNumber != null ? `Order #${orderNumber}` : `Order #${order.id.slice(0, 8)}`;
 
   return (
     <main className="min-h-screen bg-gray-50 px-4 py-5 sm:px-6 sm:py-8 lg:px-8">
+      <OrderLiveRefresh orderId={order.id} />
       <div className="mx-auto max-w-[1500px]">
         <header className="mb-6 flex items-center gap-4 sm:mb-8">
           <Link href="/client" aria-label="Back to client home" className="grid h-11 w-11 shrink-0 place-items-center rounded-full border border-gray-200 bg-white text-xl text-gray-700 shadow-sm transition hover:border-orange-200 hover:text-orange-600">
@@ -62,14 +74,16 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
               <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
                 <div>
                   <p className="text-xs font-semibold uppercase tracking-[0.16em] text-orange-600">
-                    Order #{order.id.slice(0, 8)}
+                    {orderLabel}
                   </p>
                   <p className="mt-1 text-xs text-gray-400">Placed {formatDate(order.created_at)}</p>
                 </div>
                 <StatusBadge kind="order" status={order.status} />
               </div>
 
-              <dl className="space-y-3 text-sm">
+              <TripStatusLine status={order.status} driverName={driver?.full_name} />
+
+              <dl className="mt-4 space-y-3 text-sm">
                 <div className="flex gap-3">
                   <span className="mt-0.5 text-orange-600">{String.fromCharCode(9679)}</span>
                   <div>
@@ -112,13 +126,49 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
               ) : null}
             </section>
 
+            {order.status === 'payment_pending' ? (
+              <PaymentHoldPanel orderId={order.id} hold={paymentHold} mpesaEnabled={mpesaPaymentsEnabled} />
+            ) : null}
+
+            {order.status === 'delivered' ? <DeliveryConfirmNotice driverName={driver?.full_name ?? null} /> : null}
+
+            {isPostTrip ? (
+              <OrderReceipt
+                orderNumber={orderNumber}
+                pickupAddress={order.pickup_address}
+                dropoffAddress={order.dropoff_address}
+                hold={paymentHold}
+                driverName={driver?.full_name ?? null}
+              />
+            ) : null}
+
+            {canRate ? (
+              <ReviewForm
+                orderId={order.id}
+                existingReview={review}
+                orderCompleted={order.status === 'completed'}
+              />
+            ) : null}
+
+            {order.status === 'delivered' ? (
+              <section className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm sm:p-6">
+                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-orange-600">Something wrong?</p>
+                <p className="mt-2 text-sm leading-6 text-ink-600">
+                  Dispute only if the delivery is not what you agreed. This does not complete the trip.
+                </p>
+                <div className="mt-3">
+                  <DisputeControl orderId={order.id} />
+                </div>
+              </section>
+            ) : null}
+
             {isAssigned && driver ? (
               <section className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm sm:p-6">
                 <p className="text-xs font-semibold uppercase tracking-[0.16em] text-orange-600">Your driver</p>
                 <div className="mt-3 flex items-center gap-3">
                   <div className="grid h-12 w-12 shrink-0 place-items-center overflow-hidden rounded-full bg-orange-50 text-base font-semibold text-orange-600">
                     {driver.avatar_url ? (
-                      <img src={driver.avatar_url} alt="" className="h-full w-full object-cover" />
+                      <img src={driver.avatar_url} alt={driver.full_name} className="h-full w-full object-cover" />
                     ) : (
                       driver.full_name.slice(0, 1).toUpperCase()
                     )}
@@ -132,17 +182,25 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
                   </div>
                 </div>
                 {driver.phone ? (
-                  <a href={`tel:${driver.phone}`} className="mt-4 inline-flex items-center gap-2 rounded-lg border border-gray-200 px-3.5 py-2 text-xs font-semibold text-gray-700 transition hover:border-orange-200 hover:text-orange-600">
+                  <a
+                    href={`tel:${driver.phone}`}
+                    aria-label={`Call ${driver.full_name} at ${driver.phone}`}
+                    className="mt-4 inline-flex items-center gap-2 rounded-lg border border-gray-200 px-3.5 py-2 text-xs font-semibold text-gray-700 transition hover:border-orange-200 hover:text-orange-600"
+                  >
                     Call {driver.phone}
                   </a>
-                ) : null}
+                ) : (
+                  <p className="mt-4 text-xs text-gray-500">Phone number is not on file yet.</p>
+                )}
               </section>
-            ) : (
+            ) : null}
+
+            {order.status === 'pending' ? (
               <section>
                 <h2 className="mb-3 text-sm font-semibold text-gray-900">Bids received</h2>
                 <BidsList orderId={order.id} currentUserId={user.id} bids={bids} />
               </section>
-            )}
+            ) : null}
 
             <section className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm sm:p-6">
               <p className="mb-4 text-xs font-semibold uppercase tracking-[0.16em] text-orange-600">Status timeline</p>
