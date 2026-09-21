@@ -30,7 +30,7 @@ export default function OrderReceipt({
 
   return (
     <section className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm sm:p-6">
-      <p className="text-xs font-semibold uppercase tracking-[0.16em] text-orange-600">Receipt</p>
+      <p className="text-xs font-semibold uppercase tracking-[0.16em] text-trust-600">Receipt</p>
       <h2 className="mt-2 font-display text-xl font-semibold text-ink-900">
         {orderNumber != null ? `Order ${orderNumber}` : 'Trip receipt'}
       </h2>

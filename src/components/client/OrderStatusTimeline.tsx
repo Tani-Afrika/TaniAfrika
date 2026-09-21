@@ -18,7 +18,7 @@ export default function OrderStatusTimeline({ history }: OrderStatusTimelineProp
           {index !== history.length - 1 ? (
             <span className="absolute left-[7px] top-4 h-full w-px bg-ink-200" aria-hidden />
           ) : null}
-          <span className="relative z-10 mt-1.5 h-3.5 w-3.5 shrink-0 rounded-full border-2 border-white bg-maroon-600 shadow" />
+          <span className="relative z-10 mt-1.5 h-3.5 w-3.5 shrink-0 rounded-full border-2 border-white bg-trust-600 shadow" />
           <div className="flex-1">
             <div className="flex flex-wrap items-center gap-2">
               <StatusBadge kind="order" status={entry.status} />

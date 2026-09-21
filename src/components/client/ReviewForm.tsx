@@ -48,7 +48,7 @@ export default function ReviewForm({ orderId, existingReview, orderCompleted }: 
 
   return (
     <section className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm sm:p-6">
-      <p className="text-xs font-semibold uppercase tracking-[0.16em] text-orange-600">Rate this trip</p>
+      <p className="text-xs font-semibold uppercase tracking-[0.16em] text-trust-600">Rate this trip</p>
       <h2 className="mt-2 font-display text-xl font-semibold text-ink-900">
         {existingReview ? 'Your rating' : 'How was the driver?'}
       </h2>
@@ -73,8 +73,8 @@ export default function ReviewForm({ orderId, existingReview, orderCompleted }: 
               onClick={() => handleSelectRating(value)}
               className={`grid h-11 w-11 place-items-center rounded-lg border text-sm font-semibold transition ${
                 selected
-                  ? 'border-maroon-600 bg-maroon-600 text-white'
-                  : 'border-ink-400/25 bg-white text-ink-800 hover:border-maroon-200 hover:text-maroon-700'
+                  ? 'border-trust-600 bg-trust-600 text-white'
+                  : 'border-ink-400/25 bg-white text-ink-800 hover:border-trust-200 hover:text-trust-700'
               }`}
             >
               {value}
@@ -92,7 +92,7 @@ export default function ReviewForm({ orderId, existingReview, orderCompleted }: 
         onChange={(event) => setComment(event.target.value)}
         maxLength={2000}
         rows={3}
-        className="mt-1 w-full rounded-lg border border-ink-400/30 bg-white px-3 py-2 text-sm text-ink-800 outline-none focus:border-maroon-600 focus:ring-2 focus:ring-maroon-100"
+        className="mt-1 w-full rounded-lg border border-ink-400/30 bg-white px-3 py-2 text-sm text-ink-800 outline-none focus:border-trust-600 focus:ring-2 focus:ring-trust-100"
       />
 
       {errorMessage ? (
@@ -109,7 +109,7 @@ export default function ReviewForm({ orderId, existingReview, orderCompleted }: 
         type="button"
         onClick={handleSubmit}
         disabled={isPending || rating == null}
-        className="mt-4 rounded-lg bg-maroon-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-maroon-700 disabled:cursor-not-allowed disabled:opacity-60"
+        className="mt-4 rounded-lg bg-trust-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-trust-700 disabled:cursor-not-allowed disabled:opacity-60"
       >
         {isPending ? 'Saving…' : existingReview ? 'Update rating' : 'Save rating'}
       </button>

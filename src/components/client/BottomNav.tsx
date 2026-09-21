@@ -30,7 +30,7 @@ export default function BottomNav() {
                 key={tab.href}
                 href={tab.href}
                 aria-label="Send a Parcel"
-                className="relative -top-4 flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-orange-600 text-white shadow-lg shadow-orange-600/30 transition hover:bg-orange-700"
+                className="relative -top-4 flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-trust-600 text-white shadow-lg shadow-trust-600/30 transition hover:bg-trust-700"
               >
                 <PlusIcon />
               </Link>
@@ -46,10 +46,10 @@ export default function BottomNav() {
               href={tab.href}
               className="flex flex-1 flex-col items-center gap-1 py-2.5"
             >
-              <Icon className={active ? 'text-orange-600' : 'text-gray-400'} />
+              <Icon className={active ? 'text-trust-600' : 'text-gray-400'} />
               <span
                 className={`text-[11px] font-medium ${
-                  active ? 'text-orange-600' : 'text-gray-400'
+                  active ? 'text-trust-600' : 'text-gray-400'
                 }`}
               >
                 {tab.label}

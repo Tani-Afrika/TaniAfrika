@@ -75,7 +75,7 @@ export default function BidsList({ orderId, currentUserId, bids }: BidsListProps
           <div key={bid.id} className="rounded-2xl border border-ink-400/15 bg-white p-4 shadow-sm sm:p-5">
             <div className="flex items-start justify-between gap-3">
               <div className="flex items-center gap-3">
-                <div className="grid h-10 w-10 shrink-0 place-items-center overflow-hidden rounded-full bg-maroon-50 text-sm font-semibold text-maroon-700">
+                <div className="grid h-10 w-10 shrink-0 place-items-center overflow-hidden rounded-full bg-trust-50 text-sm font-semibold text-trust-700">
                   {bid.driver?.avatar_url ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img src={bid.driver.avatar_url} alt={driverName} className="h-full w-full object-cover" />
@@ -89,7 +89,7 @@ export default function BidsList({ orderId, currentUserId, bids }: BidsListProps
                 </div>
               </div>
               <div className="text-right">
-                <p className="text-lg font-semibold text-maroon-700">{formatCurrency(bid.amount)}</p>
+                <p className="text-lg font-semibold text-trust-700">{formatCurrency(bid.amount)}</p>
                 <p className="mt-1 text-[11px] font-semibold" style={{ color: statusStyle.text }}>
                   {statusStyle.label}
                 </p>
@@ -118,7 +118,7 @@ export default function BidsList({ orderId, currentUserId, bids }: BidsListProps
                   onClick={() => handleAccept(bid.id)}
                   disabled={isPending}
                   aria-label={`Accept bid of ${formatCurrency(bid.amount)} from ${driverName}`}
-                  className="rounded-lg bg-maroon-600 px-4 py-2 text-xs font-semibold text-white transition hover:bg-maroon-700 disabled:cursor-not-allowed disabled:opacity-60"
+                  className="rounded-lg bg-trust-600 px-4 py-2 text-xs font-semibold text-white transition hover:bg-trust-700 disabled:cursor-not-allowed disabled:opacity-60"
                 >
                   {isPending && pendingBidId === bid.id ? 'Accepting…' : 'Accept bid'}
                 </button>
@@ -126,7 +126,7 @@ export default function BidsList({ orderId, currentUserId, bids }: BidsListProps
               <button
                 type="button"
                 onClick={() => handleToggleMessages(bid.id)}
-                className="rounded-lg border border-ink-400/25 px-4 py-2 text-xs font-semibold text-ink-700 transition hover:border-maroon-200 hover:text-maroon-700"
+                className="rounded-lg border border-ink-400/25 px-4 py-2 text-xs font-semibold text-ink-700 transition hover:border-trust-200 hover:text-trust-700"
               >
                 {isExpanded ? 'Hide messages' : `Messages${bid.messages.length ? ` (${bid.messages.length})` : ''}`}
               </button>

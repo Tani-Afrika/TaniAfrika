@@ -115,8 +115,8 @@ const STATUS: Record<
 
 function RoutePreview({ order }: { order: ClientOrder | undefined }) {
   return (
-    <div className="relative h-[177px] overflow-hidden rounded-2xl border border-[#f1ddd4] bg-[#fbf5f0]">
-      <div className="absolute inset-0 opacity-70 [background-image:linear-gradient(32deg,transparent_46%,#ffffff_47%,#ffffff_49%,transparent_50%),linear-gradient(145deg,transparent_47%,#efe6df_48%,#efe6df_50%,transparent_51%)] [background-size:130px_90px,170px_120px]" />
+    <div className="relative h-[177px] overflow-hidden rounded-2xl border border-[#C2E4D2] bg-[#F3FAF4]">
+      <div className="absolute inset-0 opacity-70 [background-image:linear-gradient(32deg,transparent_46%,#ffffff_47%,#ffffff_49%,transparent_50%),linear-gradient(145deg,transparent_47%,#C2E4D2_48%,#C2E4D2_50%,transparent_51%)] [background-size:130px_90px,170px_120px]" />
       <div className="absolute -right-5 -top-10 h-36 w-36 rounded-full bg-[#e8f4dc]" />
       <div className="absolute -bottom-16 right-24 h-28 w-36 rotate-12 rounded-full bg-[#e5f3dd]" />
       <svg className="absolute inset-0 h-full w-full" viewBox="0 0 620 180" fill="none" aria-hidden>
@@ -128,7 +128,7 @@ function RoutePreview({ order }: { order: ClientOrder | undefined }) {
         />
         <path
           d="M45 66C105 82 120 95 180 80C235 66 250 118 325 103C395 89 438 62 492 84C535 102 540 129 583 138"
-          stroke="#ff5b18"
+          stroke="#1F5F3F"
           strokeWidth="3.5"
           strokeLinecap="round"
         />
@@ -136,10 +136,10 @@ function RoutePreview({ order }: { order: ClientOrder | undefined }) {
       <span className="absolute left-[5%] top-[28%] grid h-9 w-9 place-items-center rounded-full bg-[#54b435] text-white shadow-lg ring-4 ring-white">
         <ClientIcon name="pin" className="h-5 w-5" />
       </span>
-      <span className="absolute left-[34%] top-[43%] grid h-9 w-9 place-items-center rounded-lg bg-[#ff5b18] text-white shadow-lg ring-4 ring-white">
+      <span className="absolute left-[34%] top-[43%] grid h-9 w-9 place-items-center rounded-lg bg-[#1F5F3F] text-white shadow-lg ring-4 ring-white">
         <ClientIcon name="truck" className="h-5 w-5" />
       </span>
-      <span className="absolute right-[7%] bottom-[15%] grid h-9 w-9 place-items-center rounded-full bg-[#ff5b18] text-white shadow-lg ring-4 ring-white">
+      <span className="absolute right-[7%] bottom-[15%] grid h-9 w-9 place-items-center rounded-full bg-[#1F5F3F] text-white shadow-lg ring-4 ring-white">
         <ClientIcon name="pin" className="h-5 w-5" />
       </span>
       <span className="absolute bottom-3 left-4 max-w-[45%] truncate rounded-lg bg-white/90 px-3 py-1.5 text-[11px] font-semibold text-[#475467] shadow-sm backdrop-blur">
@@ -208,9 +208,9 @@ export default async function ClientHomePage() {
         {stats.map((item) => (
           <article
             key={item.label}
-            className="flex min-h-[128px] items-center gap-5 rounded-2xl border border-[#f2ded5] bg-white px-5 py-5 shadow-[0_8px_24px_rgba(76,35,18,.05)]"
+            className="flex min-h-[128px] items-center gap-5 rounded-2xl border border-[#C2E4D2]/60 bg-white px-5 py-5 shadow-[0_8px_24px_rgba(31,95,63,.06)]"
           >
-            <span className="grid h-14 w-14 shrink-0 place-items-center rounded-full bg-[#fff0e8] text-[#ff5b18]">
+            <span className="grid h-14 w-14 shrink-0 place-items-center rounded-full bg-[#E8F5EE] text-[#1F5F3F]">
               <ClientIcon name={item.icon} className="h-7 w-7" />
             </span>
             <div>
@@ -223,10 +223,10 @@ export default async function ClientHomePage() {
       </section>
 
       <section className="grid gap-6 xl:grid-cols-[1fr_1.04fr]">
-        <article className="overflow-hidden rounded-2xl border border-[#f2ded5] bg-white shadow-[0_8px_24px_rgba(76,35,18,.05)]">
-          <div className="flex items-center justify-between border-b border-[#f2ded5] px-6 py-5">
+        <article className="overflow-hidden rounded-2xl border border-[#C2E4D2]/60 bg-white shadow-[0_8px_24px_rgba(31,95,63,.06)]">
+          <div className="flex items-center justify-between border-b border-[#C2E4D2]/60 px-6 py-5">
             <h2 className="text-lg font-bold text-[#101828]">Recent orders</h2>
-            <Link href="/client/orders" className="text-sm font-semibold text-[#ff5b18] hover:text-[#e94b0b]">
+            <Link href="/client/orders" className="text-sm font-semibold text-[#1F5F3F] hover:text-[#14422B]">
               View all
             </Link>
           </div>
@@ -237,21 +237,21 @@ export default async function ClientHomePage() {
 
           {!error && recentOrders.length === 0 ? (
             <div className="p-10 text-center">
-              <span className="mx-auto grid h-14 w-14 place-items-center rounded-full bg-[#fff0e8] text-[#ff5b18]">
+              <span className="mx-auto grid h-14 w-14 place-items-center rounded-full bg-[#E8F5EE] text-[#1F5F3F]">
                 <ClientIcon name="package" className="h-7 w-7" />
               </span>
               <h3 className="mt-4 font-bold text-[#101828]">No orders yet</h3>
               <p className="mt-1 text-sm text-[#667085]">Your recent deliveries will appear here.</p>
             </div>
           ) : (
-            <div className="divide-y divide-[#f2ded5]">
+            <div className="divide-y divide-[#E8F5EE]">
               {recentOrders.map((order) => {
                 const style = STATUS[order.status];
                 return (
                   <Link
                     key={order.id}
                     href={`/client/orders/${order.id}`}
-                    className="grid min-h-[76px] gap-3 px-5 py-4 transition hover:bg-[#fffaf7] sm:grid-cols-[auto_minmax(0,1fr)_auto_auto] sm:items-center"
+                    className="grid min-h-[76px] gap-3 px-5 py-4 transition hover:bg-[#F3FAF4] sm:grid-cols-[auto_minmax(0,1fr)_auto_auto] sm:items-center"
                   >
                     <span className={`grid h-11 w-11 place-items-center rounded-full ${style.icon} ${style.iconText}`}>
                       <ClientIcon name={style.iconName} className="h-5 w-5" />
@@ -276,10 +276,10 @@ export default async function ClientHomePage() {
           )}
         </article>
 
-        <article className="overflow-hidden rounded-2xl border border-[#f2ded5] bg-white p-5 shadow-[0_8px_24px_rgba(76,35,18,.05)]">
+        <article className="overflow-hidden rounded-2xl border border-[#C2E4D2]/60 bg-white p-5 shadow-[0_8px_24px_rgba(31,95,63,.06)]">
           <div className="flex items-center justify-between">
             <h2 className="text-lg font-bold text-[#101828]">Track your delivery</h2>
-            <Link href="/client/orders" className="text-sm font-semibold text-[#ff5b18] hover:text-[#e94b0b]">
+            <Link href="/client/orders" className="text-sm font-semibold text-[#1F5F3F] hover:text-[#14422B]">
               Track new order
             </Link>
           </div>
@@ -300,7 +300,7 @@ export default async function ClientHomePage() {
                 </span>
                 <span className="hidden border-t border-dashed border-[#b8c0cc] sm:block" />
                 <span className="flex min-w-0 items-center justify-end gap-2 truncate">
-                  <ClientIcon name="pin" className="h-5 w-5 shrink-0 text-[#ff5b18]" />
+                  <ClientIcon name="pin" className="h-5 w-5 shrink-0 text-[#1F5F3F]" />
                   <span className="truncate">{trackOrder.dropoff_address}</span>
                 </span>
               </div>
@@ -309,8 +309,8 @@ export default async function ClientHomePage() {
                 <RoutePreview order={trackOrder} />
               </div>
 
-              <div className="mt-4 flex items-center gap-4 rounded-xl border border-[#f2ded5] bg-[#fff9f6] px-4 py-3.5">
-                <span className="grid h-10 w-10 place-items-center rounded-lg bg-white text-[#ff5b18] shadow-sm">
+              <div className="mt-4 flex items-center gap-4 rounded-xl border border-[#C2E4D2]/60 bg-[#F3FAF4] px-4 py-3.5">
+                <span className="grid h-10 w-10 place-items-center rounded-lg bg-white text-[#1F5F3F] shadow-sm">
                   <ClientIcon name="clock" className="h-5 w-5" />
                 </span>
                 <div>
@@ -321,7 +321,7 @@ export default async function ClientHomePage() {
 
               <Link
                 href={`/client/orders/${trackOrder.id}`}
-                className="mt-4 flex w-full items-center justify-center rounded-xl bg-[#ff5b18] px-5 py-3.5 text-sm font-bold text-white shadow-[0_8px_20px_rgba(255,91,24,.18)] transition hover:bg-[#ec4d0d]"
+                className="mt-4 flex w-full items-center justify-center rounded-xl bg-[#1F5F3F] px-5 py-3.5 text-sm font-bold text-white shadow-[0_8px_20px_rgba(31,95,63,.18)] transition-[background-color,transform] duration-160 ease-out hover:bg-[#14422B] active:scale-[0.97]"
               >
                 View order details
               </Link>
@@ -329,7 +329,7 @@ export default async function ClientHomePage() {
           ) : (
             <div className="grid min-h-[400px] place-items-center text-center">
               <div>
-                <span className="mx-auto grid h-14 w-14 place-items-center rounded-full bg-[#fff0e8] text-[#ff5b18]">
+                <span className="mx-auto grid h-14 w-14 place-items-center rounded-full bg-[#E8F5EE] text-[#1F5F3F]">
                   <ClientIcon name="truck" className="h-7 w-7" />
                 </span>
                 <h3 className="mt-4 font-bold">No delivery to track</h3>
@@ -340,23 +340,23 @@ export default async function ClientHomePage() {
         </article>
       </section>
 
-      <section className="rounded-2xl border border-[#f2ded5] bg-white p-5 shadow-[0_8px_24px_rgba(76,35,18,.04)]">
+      <section className="rounded-2xl border border-[#C2E4D2]/60 bg-white p-5 shadow-[0_8px_24px_rgba(31,95,63,.05)]">
         <h2 className="text-lg font-bold text-[#101828]">What would you like to do?</h2>
         <div className="mt-5 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
           {quickActions.map((action) => (
             <Link
               key={action.title}
               href={action.href}
-              className="group flex min-h-[108px] items-center gap-4 rounded-2xl border border-[#f2ded5] bg-white p-4 transition hover:-translate-y-0.5 hover:border-[#ffcdb8] hover:shadow-[0_10px_26px_rgba(255,91,24,.08)]"
+              className="group flex min-h-[108px] items-center gap-4 rounded-2xl border border-[#C2E4D2]/60 bg-white p-4 transition hover:-translate-y-0.5 hover:border-[#C2E4D2] hover:shadow-[0_10px_26px_rgba(31,95,63,.08)]"
             >
-              <span className="grid h-14 w-14 shrink-0 place-items-center rounded-full bg-[#fff0e8] text-[#ff5b18]">
+              <span className="grid h-14 w-14 shrink-0 place-items-center rounded-full bg-[#E8F5EE] text-[#1F5F3F]">
                 <ClientIcon name={action.icon} className="h-7 w-7" />
               </span>
               <span className="min-w-0 flex-1">
                 <span className="block text-sm font-bold text-[#101828]">{action.title}</span>
                 <span className="mt-1 block text-xs leading-5 text-[#667085]">{action.text}</span>
               </span>
-              <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-[#fff0e8] text-[#ff5b18] transition group-hover:bg-[#ff5b18] group-hover:text-white">
+              <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-[#E8F5EE] text-[#1F5F3F] transition group-hover:bg-[#1F5F3F] group-hover:text-white">
                 <ClientIcon name="arrow" className="h-4 w-4" />
               </span>
             </Link>
