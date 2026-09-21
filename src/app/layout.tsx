@@ -2,6 +2,8 @@ import type { Metadata } from 'next';
 import { Poppins, Inter } from 'next/font/google';
 import './globals.css';
 
+import RoleSwitcherFloating from '@/components/RoleSwitcherFloating';
+
 const poppins = Poppins({
   subsets: ['latin'],
   weight: ['500', '600', '700'],
@@ -15,14 +17,17 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: 'TaniAfrika Admin',
-  description: 'Operations dashboard for TaniAfrika delivery marketplace',
+  title: 'TaniAfrika — Send anything, anywhere',
+  description: 'TaniAfrika delivery marketplace — get an instant quote, no account needed to browse.',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={`${poppins.variable} ${inter.variable}`}>
-      <body>{children}</body>
+      <body>
+        {children}
+        <RoleSwitcherFloating />
+      </body>
     </html>
   );
 }

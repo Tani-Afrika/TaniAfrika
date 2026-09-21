@@ -7,7 +7,6 @@ import { useState } from 'react';
 import LogoutButton from '@/components/LogoutButton';
 import {
   BellIcon,
-  BoxIcon,
   GavelIcon,
   HomeIcon,
   MenuIcon,
@@ -26,7 +25,7 @@ const NAV_ITEMS = [
   { href: '/driver/active', label: 'Active delivery', icon: TruckIcon },
   { href: '/driver/earnings', label: 'Earnings', icon: WalletIcon },
   { href: '/driver/messages', label: 'Messages', icon: MessageIcon },
-  { href: '/driver/profile', label: 'Account', icon: UserIcon },
+  { href: '/driver/profile', label: 'Account & Vehicle', icon: UserIcon },
 ] as const;
 
 type DriverShellProps = {
@@ -34,17 +33,19 @@ type DriverShellProps = {
   profile: {
     fullName: string;
     email: string;
-    avatarUrl: string | null;
+    avatarUrl?: string | null;
   };
 };
 
 function initials(name: string) {
-  return name
-    .split(/\s+/)
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((part) => part[0]?.toUpperCase())
-    .join('') || 'DR';
+  return (
+    name
+      .split(/\s+/)
+      .filter(Boolean)
+      .slice(0, 2)
+      .map((part) => part[0]?.toUpperCase())
+      .join('') || 'DR'
+  );
 }
 
 export default function DriverShell({ children, profile }: DriverShellProps) {
@@ -57,18 +58,24 @@ export default function DriverShell({ children, profile }: DriverShellProps) {
   };
 
   const sidebar = (
-    <div className="flex h-full flex-col bg-[#fffdfb]">
-      <div className="border-b border-orange-100 px-5 py-6">
+    <div className="flex h-full flex-col bg-white">
+      <div className="border-b border-slate-100 px-5 py-6">
         <Link href="/driver" className="flex items-center gap-3" onClick={() => setMobileOpen(false)}>
-          <span className="grid h-12 w-12 place-items-center rounded-2xl bg-gradient-to-br from-orange-400 to-orange-600 text-xl font-black text-white shadow-lg shadow-orange-200/70">T</span>
+          <span className="grid h-12 w-12 place-items-center rounded-2xl bg-[#1F5F3F] text-xl font-black text-white shadow-md">
+            T
+          </span>
           <span>
-            <span className="block font-display text-xl font-bold tracking-tight text-slate-950">Tani<span className="text-orange-600">Afrika</span></span>
-            <span className="mt-0.5 block text-[10px] font-semibold uppercase tracking-[0.22em] text-slate-500">Driver portal</span>
+            <span className="block font-display text-xl font-bold tracking-tight text-slate-950">
+              Tani<span className="text-[#1F5F3F]">Afrika</span>
+            </span>
+            <span className="mt-0.5 block text-[10px] font-semibold uppercase tracking-[0.22em] text-[#7A9080]">
+              Driver Workspace
+            </span>
           </span>
         </Link>
       </div>
 
-      <nav className="flex-1 space-y-1.5 overflow-y-auto px-4 py-5">
+      <nav className="flex-1 space-y-1 overflow-y-auto px-4 py-5">
         {NAV_ITEMS.map((item) => {
           const active = isActive(item.href);
           const Icon = item.icon;
@@ -79,8 +86,8 @@ export default function DriverShell({ children, profile }: DriverShellProps) {
               onClick={() => setMobileOpen(false)}
               className={`flex min-h-12 items-center gap-3 rounded-2xl px-4 text-sm font-semibold transition ${
                 active
-                  ? 'bg-orange-50 text-orange-600 ring-1 ring-orange-100'
-                  : 'text-slate-700 hover:bg-orange-50/70 hover:text-orange-600'
+                  ? 'bg-[#1F5F3F]/10 text-[#1F5F3F] font-bold'
+                  : 'text-slate-700 hover:bg-[#1F5F3F]/5 hover:text-[#1F5F3F]'
               }`}
             >
               <Icon className="h-5 w-5 shrink-0" />
@@ -91,17 +98,21 @@ export default function DriverShell({ children, profile }: DriverShellProps) {
       </nav>
 
       <div className="p-4">
-        <div className="overflow-hidden rounded-2xl border border-orange-100 bg-white shadow-sm">
-          <Link href="/driver/profile" className="flex items-center gap-3 border-b border-orange-100 px-4 py-4">
-            <span className="grid h-11 w-11 shrink-0 place-items-center overflow-hidden rounded-full bg-orange-50 font-bold text-orange-600">
-              {profile.avatarUrl ? <img src={profile.avatarUrl} alt="" className="h-full w-full object-cover" /> : initials(profile.fullName)}
+        <div className="overflow-hidden rounded-2xl border border-[#1F5F3F]/20 bg-gradient-to-br from-white to-[#F2FAF4] shadow-sm">
+          <Link href="/driver/profile" className="flex items-center gap-3 border-b border-slate-100 px-4 py-3.5 hover:bg-[#EBF8ED]/60 transition">
+            <span className="grid h-11 w-11 shrink-0 place-items-center overflow-hidden rounded-full border-2 border-[#1F5F3F]/25 bg-white font-bold text-[#1F5F3F] shadow-2xs">
+              {profile.avatarUrl ? (
+                <img src={profile.avatarUrl} alt="" className="h-full w-full object-cover" />
+              ) : (
+                initials(profile.fullName)
+              )}
             </span>
             <span className="min-w-0">
-              <span className="block truncate text-sm font-semibold text-slate-950">{profile.fullName}</span>
-              <span className="block truncate text-xs text-slate-500">{profile.email}</span>
+              <span className="block truncate text-sm font-bold text-[#14422B]">{profile.fullName}</span>
+              <span className="block truncate text-xs text-[#1F5F3F]/80">{profile.email}</span>
             </span>
           </Link>
-          <div className="px-4 py-3 [&_button]:w-full [&_button]:justify-start [&_button]:border-0 [&_button]:bg-transparent [&_button]:px-0 [&_button]:py-2 [&_button]:text-sm [&_button]:font-medium [&_button]:text-slate-700 [&_button]:shadow-none hover:[&_button]:text-orange-600">
+          <div className="px-4 py-2 [&_button]:w-full [&_button]:justify-start [&_button]:border-0 [&_button]:bg-transparent [&_button]:px-0 [&_button]:py-1.5 [&_button]:text-xs [&_button]:font-semibold [&_button]:text-slate-600 [&_button]:shadow-none hover:[&_button]:text-[#1F5F3F]">
             <LogoutButton />
           </div>
         </div>
@@ -109,16 +120,36 @@ export default function DriverShell({ children, profile }: DriverShellProps) {
     </div>
   );
 
-  return (
-    <div className="min-h-screen bg-[#fffaf6] text-slate-950">
-      <aside className="fixed inset-y-0 left-0 z-30 hidden w-[286px] border-r border-orange-100 lg:block">{sidebar}</aside>
+  const bottomTabs = [
+    { href: '/driver', label: 'Home', icon: HomeIcon },
+    { href: '/driver/orders', label: 'Loads', icon: SearchIcon },
+    { href: '/driver/active', label: 'Active', icon: TruckIcon },
+    { href: '/driver/bids', label: 'Bids', icon: GavelIcon },
+    { href: '/driver/profile', label: 'Account', icon: UserIcon },
+  ];
 
+  return (
+    <div className="min-h-screen bg-[#FFF8F4] text-slate-950 pb-mobile-nav lg:pb-0">
+      {/* Desktop Sidebar */}
+      <aside className="fixed inset-y-0 left-0 z-30 hidden w-[286px] border-r border-slate-200/80 bg-white lg:block">
+        {sidebar}
+      </aside>
+
+      {/* Mobile Drawer (Accessible from avatar/menu) */}
       {mobileOpen ? (
         <div className="fixed inset-0 z-50 lg:hidden">
-          <button className="absolute inset-0 bg-slate-950/25 backdrop-blur-sm" onClick={() => setMobileOpen(false)} aria-label="Close menu" />
-          <aside className="relative h-full w-[86%] max-w-[320px] border-r border-orange-100 shadow-2xl">
-            <button onClick={() => setMobileOpen(false)} className="absolute right-4 top-5 z-10 grid h-10 w-10 place-items-center rounded-xl border border-orange-100 bg-white text-slate-600" aria-label="Close menu">
-              <XIcon className="h-5 w-5" />
+          <button
+            className="absolute inset-0 bg-slate-950/30 backdrop-blur-xs animate-[fadeIn_150ms_ease-out]"
+            onClick={() => setMobileOpen(false)}
+            aria-label="Close menu"
+          />
+          <aside className="relative h-full w-[82%] max-w-[300px] border-r border-slate-200 bg-white shadow-2xl animate-[slideIn_200ms_ease-out]">
+            <button
+              onClick={() => setMobileOpen(false)}
+              className="absolute right-3.5 top-4 z-10 grid h-9 w-9 place-items-center rounded-xl border border-slate-200 bg-white text-slate-600"
+              aria-label="Close menu"
+            >
+              <XIcon className="h-4 w-4" />
             </button>
             {sidebar}
           </aside>
@@ -126,28 +157,103 @@ export default function DriverShell({ children, profile }: DriverShellProps) {
       ) : null}
 
       <div className="lg:pl-[286px]">
-        <header className="sticky top-0 z-20 flex min-h-[82px] items-center justify-between border-b border-orange-100 bg-white/90 px-4 backdrop-blur-xl sm:px-6 xl:px-8">
-          <div className="flex items-center gap-3">
-            <button onClick={() => setMobileOpen(true)} className="grid h-11 w-11 place-items-center rounded-xl border border-orange-100 bg-white text-slate-700 lg:hidden" aria-label="Open menu">
-              <MenuIcon className="h-5 w-5" />
-            </button>
-            <div>
-              <p className="text-sm font-semibold text-slate-950">Welcome back, {profile.fullName.split(' ')[0]}</p>
-              <p className="mt-0.5 hidden text-xs text-slate-500 sm:block">Manage bids, deliveries and earnings from one place.</p>
-            </div>
-          </div>
+        {/* Compact Mobile Top App Bar (React Native Header Feel) */}
+        <header className="sticky top-0 z-20 flex h-13 items-center justify-between border-b border-slate-200/80 bg-white/95 px-3.5 backdrop-blur-md sm:h-15 sm:px-6">
           <div className="flex items-center gap-2.5">
-            <Link href="/driver/orders" className="hidden min-h-11 items-center gap-2 rounded-xl bg-orange-600 px-4 text-sm font-semibold text-white shadow-lg shadow-orange-200 transition hover:bg-orange-700 sm:inline-flex">
-              <SearchIcon className="h-4 w-4" /> Find deliveries
-            </Link>
-            <button className="relative grid h-11 w-11 place-items-center rounded-xl border border-orange-100 bg-white text-slate-700 shadow-sm" aria-label="Notifications">
-              <BellIcon className="h-5 w-5" />
-              <span className="absolute right-2.5 top-2 h-2 w-2 rounded-full bg-red-500 ring-2 ring-white" />
+            <button
+              onClick={() => setMobileOpen(true)}
+              className="grid h-9 w-9 place-items-center rounded-lg border border-slate-200 bg-slate-50/80 text-slate-700 lg:hidden"
+              aria-label="Open menu"
+            >
+              <MenuIcon className="h-4.5 w-4.5" />
             </button>
+
+            <Link href="/driver" className="flex items-center gap-1.5">
+              <span className="grid h-7 w-7 place-items-center rounded-lg bg-[#1F5F3F] text-xs font-bold text-white shadow-xs">
+                T
+              </span>
+              <span className="font-display text-sm font-bold tracking-tight text-slate-950 sm:text-base">
+                Tani<span className="text-[#1F5F3F]">Afrika</span>
+              </span>
+            </Link>
+
+            <span className="hidden items-center gap-1.5 rounded-full bg-[#EBF8ED] border border-[#74C67A]/40 px-2.5 py-0.5 text-[10px] font-bold text-[#14422B] sm:inline-flex shadow-2xs">
+              <span className="h-1.5 w-1.5 rounded-full bg-[#74C67A] animate-pulse" />
+              Online
+            </span>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <Link
+              href="/driver/orders"
+              className="hidden h-9 items-center gap-1.5 rounded-xl bg-[#1F5F3F] px-3.5 text-xs font-bold text-white shadow-xs transition hover:bg-[#14422B] border border-[#14422B] sm:inline-flex"
+            >
+              <SearchIcon className="h-3.5 w-3.5" /> Find Loads
+            </Link>
+
+            <button
+              className="relative grid h-8.5 w-8.5 place-items-center rounded-lg border border-slate-200 bg-white text-slate-700 shadow-2xs"
+              aria-label="Notifications"
+            >
+              <BellIcon className="h-4 w-4" />
+              <span className="absolute right-2 top-1.5 h-1.5 w-1.5 rounded-full bg-[#D4A244] ring-1.5 ring-white" />
+            </button>
+
+            <Link
+              href="/driver/profile"
+              className="flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white p-1 transition hover:border-[#1F5F3F]/30"
+              aria-label="Go to driver profile"
+            >
+              <span className="grid h-6.5 w-6.5 shrink-0 place-items-center overflow-hidden rounded-md bg-[#1F5F3F]/10 text-[11px] font-bold text-[#1F5F3F]">
+                {profile.avatarUrl ? (
+                  <img src={profile.avatarUrl} alt="" className="h-full w-full object-cover" />
+                ) : (
+                  initials(profile.fullName)
+                )}
+              </span>
+            </Link>
           </div>
         </header>
-        <main className="px-4 py-6 sm:px-6 sm:py-8 xl:px-8">{children}</main>
+
+        {/* Page Content */}
+        <main className="px-3 py-4 sm:px-6 sm:py-6 xl:px-8">{children}</main>
       </div>
+
+      {/* React Native-Style Persistent Bottom Tab Bar (Mobile Only) */}
+      <nav
+        aria-label="Mobile navigation"
+        className="fixed bottom-0 inset-x-0 z-40 flex h-14 items-center justify-around border-t border-slate-200/90 bg-white/95 px-1 backdrop-blur-md safe-bottom shadow-[0_-2px_10px_rgba(0,0,0,0.04)] lg:hidden"
+      >
+        {bottomTabs.map((tab) => {
+          const active = isActive(tab.href);
+          const Icon = tab.icon;
+
+          return (
+            <Link
+              key={tab.href}
+              href={tab.href}
+              className={`native-press flex flex-1 flex-col items-center justify-center py-1 transition-colors ${
+                active ? 'text-[#1F5F3F]' : 'text-slate-500 hover:text-slate-800'
+              }`}
+            >
+              <div
+                className={`flex h-7 w-11 items-center justify-center rounded-full transition-all ${
+                  active ? 'bg-[#1F5F3F]/12 text-[#1F5F3F]' : 'text-slate-500'
+                }`}
+              >
+                <Icon className="h-4.5 w-4.5" />
+              </div>
+              <span
+                className={`mt-0.5 text-[10px] tracking-tight ${
+                  active ? 'font-bold text-[#1F5F3F]' : 'font-medium text-slate-500'
+                }`}
+              >
+                {tab.label}
+              </span>
+            </Link>
+          );
+        })}
+      </nav>
     </div>
   );
 }

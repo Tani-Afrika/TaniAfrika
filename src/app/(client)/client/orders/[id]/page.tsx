@@ -19,6 +19,8 @@ import OrderTrackingMap from '@/components/client/OrderTrackingMap';
 import ReviewForm from '@/components/client/ReviewForm';
 import TripStatusLine from '@/components/client/TripStatusLine';
 
+import { getDevSession } from '@/lib/auth/dev-session';
+
 export const dynamic = 'force-dynamic';
 
 interface OrderDetailPageProps {
@@ -30,11 +32,13 @@ const CANCELLABLE_STATUSES = new Set(['pending', 'payment_pending']);
 export default async function OrderDetailPage({ params }: OrderDetailPageProps) {
   const { id } = await params;
 
+  const devSession = await getDevSession();
   const supabase = await createClient();
   const {
-    data: { user },
+    data: { user: authUser },
   } = await supabase.auth.getUser();
 
+  const user = devSession ? { id: devSession.id, email: devSession.email } : authUser;
   if (!user) notFound();
 
   const detail = await getClientOrderDetail(id);

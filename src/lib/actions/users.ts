@@ -4,6 +4,7 @@ import { revalidatePath } from 'next/cache';
 
 import { createClient } from '@/lib/supabase/server';
 import { createAdminClient } from '@/lib/supabase/admin';
+import { getDevSession } from '@/lib/auth/dev-session';
 import type { UserRole, ApprovalStatus } from '@/types/supabase';
 
 const VALID_ROLES: UserRole[] = ['client', 'driver', 'admin'];
@@ -21,6 +22,11 @@ export interface ActionResult {
 async function requireAdmin(): Promise<
   { ok: true; userId: string } | { ok: false; result: ActionResult }
 > {
+  const devSession = await getDevSession();
+  if (devSession && devSession.role === 'admin') {
+    return { ok: true, userId: devSession.id };
+  }
+
   const supabase = await createClient();
   const {
     data: { user },
@@ -73,9 +79,9 @@ export async function updateUserRole(
     return { success: false, error: updateError.message };
   }
 
-  revalidatePath('/clients');
-  revalidatePath('/drivers');
-  revalidatePath('/');
+  revalidatePath('/admin/clients');
+  revalidatePath('/admin/drivers');
+  revalidatePath('/admin');
 
   return { success: true };
 }
@@ -126,8 +132,8 @@ export async function updateDriverApproval(
     return { success: false, error: updateError.message };
   }
 
-  revalidatePath('/drivers');
-  revalidatePath('/');
+  revalidatePath('/admin/drivers');
+  revalidatePath('/admin');
 
   return { success: true };
 }

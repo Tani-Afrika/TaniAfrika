@@ -2,18 +2,22 @@
 
 import { useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
-import { useRouter } from 'next/navigation';
+import { logoutDevUser } from '@/lib/actions/dev-auth';
 
 export default function LogoutButton() {
   const [loading, setLoading] = useState(false);
-  const router = useRouter();
-  const supabase = createClient();
 
   const handleLogout = async () => {
     setLoading(true);
-    await supabase.auth.signOut();
-    router.push('/login');
-    router.refresh();
+    try {
+      await logoutDevUser();
+      const supabase = createClient();
+      await supabase.auth.signOut();
+    } catch {
+      // Safe to ignore in dev session mode
+    } finally {
+      window.location.href = '/login';
+    }
   };
 
   return (

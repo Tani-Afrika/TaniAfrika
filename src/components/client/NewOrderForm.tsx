@@ -1,7 +1,8 @@
 'use client';
 
 import dynamic from 'next/dynamic';
-import { useMemo, useState, useTransition } from 'react';
+import { Suspense, useMemo, useState, useTransition } from 'react';
+import { useSearchParams } from 'next/navigation';
 
 import {
   createClientOrder,
@@ -46,15 +47,30 @@ const localDateTimeValue = (date: Date) =>
   `${date.getFullYear()}-${padDatePart(date.getMonth() + 1)}-${padDatePart(date.getDate())}T${padDatePart(date.getHours())}:${padDatePart(date.getMinutes())}`;
 
 export function NewOrderForm() {
-  const [pickupAddress, setPickupAddress] = useState('');
-  const [dropoffAddress, setDropoffAddress] = useState('');
+  return (
+    <Suspense fallback={null}>
+      <NewOrderFormInner />
+    </Suspense>
+  );
+}
+
+function NewOrderFormInner() {
+  // Carries over the pickup/drop-off/parcel/vehicle details a guest
+  // entered in the public "Get an instant quote" widget on the homepage,
+  // so signing up to confirm a delivery doesn't mean retyping everything.
+  const searchParams = useSearchParams();
+  const [pickupAddress, setPickupAddress] = useState(searchParams.get('pickup') ?? '');
+  const [dropoffAddress, setDropoffAddress] = useState(searchParams.get('dropoff') ?? '');
   const [pickupAccessNotes, setPickupAccessNotes] = useState('');
-  const [goodsDescription, setGoodsDescription] = useState('');
-  const [vehicleTypeRequired, setVehicleTypeRequired] = useState('');
+  const [goodsDescription, setGoodsDescription] = useState(searchParams.get('goods') ?? '');
+  const [vehicleTypeRequired, setVehicleTypeRequired] = useState(searchParams.get('vehicle') ?? '');
   const [scheduleMode, setScheduleMode] = useState<ScheduleMode>('asap');
   const [scheduledFor, setScheduledFor] = useState('');
   const [fragile, setFragile] = useState(false);
   const [photo, setPhoto] = useState<File | null>(null);
+  const arrivedFromQuote = Boolean(
+    searchParams.get('pickup') || searchParams.get('dropoff'),
+  );
   const [pickupLocation, setPickupLocation] = useState<PickedLocation | null>(null);
   const [dropoffLocation, setDropoffLocation] = useState<PickedLocation | null>(null);
   const [errors, setErrors] = useState<FieldErrors>({});
@@ -157,6 +173,12 @@ export function NewOrderForm() {
       {serverError ? (
         <div className="rounded-xl border border-red-100 bg-red-50 px-4 py-3 text-sm text-red-700" role="alert">
           {serverError}
+        </div>
+      ) : null}
+
+      {arrivedFromQuote ? (
+        <div className="rounded-xl border border-emerald-100 bg-emerald-50 px-4 py-3 text-sm text-[#1F5F3F]" role="status">
+          We&apos;ve carried over the route from your quote — just drop the exact pickup and drop-off pins on the map below to confirm.
         </div>
       ) : null}
 

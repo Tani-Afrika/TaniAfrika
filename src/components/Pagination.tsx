@@ -75,9 +75,9 @@ export default function Pagination({ page, totalPages, baseParams, basePath }: P
           <Link
             key={p}
             href={buildHref(basePath, baseParams, p)}
-            className={`rounded-lg border px-3 py-1.5 text-xs font-medium transition ${
+            className={`rounded-lg border px-3 py-1.5 text-xs font-semibold transition ${
               p === page
-                ? 'border-maroon-600 bg-maroon-600 text-white'
+                ? 'border-trust bg-trust text-white shadow-xs'
                 : 'border-ink-200 text-ink-600 hover:bg-ink-200/40'
             }`}
           >

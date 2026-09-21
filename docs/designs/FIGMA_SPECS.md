@@ -1,0 +1,387 @@
+# TaniAfrika Figma Design Specs & Tokens
+
+* **File Name:** TaniAfrika
+* **File Key:** `zQPq6p4mfaPpbXAB1D3sZ2`
+* **Last Modified:** 2026-09-13T18:50:43Z
+* **Total Screens Identified:** 353
+  - **Mover (Client) Screens:** 224
+  - **Driver Screens:** 118
+  - **Other Screens:** 11
+
+## Top Color Palette
+| Hex Code | Sample Usage Count | Role / Guess |
+|---|---|---|
+| `#2A2A28` | 692 | Primary Ink / Text |
+| `#FFFFFF` | 659 | Surface / Card White |
+| `#000000` | 423 | Primary Ink / Text |
+| `#3F4943` | 338 | Neutral / Text |
+| `#1F1B17` | 331 | Primary Ink / Text |
+| `#F7F1E5` | 324 | Warm Background / Paper |
+| `#006044` | 235 | Brand Primary Green |
+| `#7A9080` | 212 | Secondary Accent Sage |
+| `#5F5E5E` | 204 | Neutral / Text |
+| `#1F5F3F` | 161 | Brand Primary Green |
+| `#414844` | 126 | Neutral / Text |
+| `#FFF8F4` | 114 | Warm Background / Paper |
+| `#4C4546` | 95 | Neutral / Text |
+| `#F9F9F9` | 85 | Warm Background / Paper |
+| `#2D3339` | 77 | Neutral / Text |
+| `#7F7F7F` | 73 | Neutral / Text |
+
+## Mover PWA Screens (224)
+- **LogIn** (`17:4787`) — 412x917px
+- **Frame 98550** (`22:7903`) — 380x782px
+- **Sign Up** (`22:7958`) — 412x917px
+- **Frame 98550** (`22:7959`) — 380x782px
+- **Verify OTP timer running** (`22:8054`) — 412x917px
+- **Frame 98550** (`22:8055`) — 380x782px
+- **Verify OTP timer stopped** (`22:8141`) — 412x917px
+- **Frame 98550** (`22:8142`) — 380x782px
+- **Home - new user** (`22:8189`) — 412x917px
+- **Frame 98556** (`27:8409`) — 412x962px
+- **Frame 98555** (`27:8408`) — 380x501px
+- **Asymmetric Grid for Steps** (`34:390`) — 380x427px
+- **Rate & Tip** (`119:1057`) — 412x1180px
+- **Frame 98556** (`119:1058`) — 412x1180px
+- **Main** (`119:1200`) — 412x938px
+- **Report Damage or Issue** (`121:297`) — 412x1137px
+- **Frame 98556** (`121:298`) — 412x950px
+- **Main** (`121:325`) — 412x825px
+- **Form** (`121:379`) — 380x780px
+- **Home - returning user** (`34:260`) — 412x917px
+- **Frame 98556** (`34:261`) — 412x1200px
+- **successful sign up** (`22:8208`) — 412x917px
+- **All notifications** (`34:19`) — 412x917px
+- **notifications empty state** (`38:1113`) — 412x917px
+- **Trips notifications** (`38:768`) — 412x917px
+- **Frame 98575** (`38:1022`) — 378x603px
+- **Pick type of car** (`41:70`) — 412x955px
+- **Main Content** (`41:71`) — 412x758px
+- **Item Details & Photos** (`41:150`) — 412x1221px
+- **Main Content Canvas** (`41:151`) — 410x1221px
+- **Frame 98579** (`80:3647`) — 378x992px
+- **Service Add-ons** (`41:236`) — 412x947px
+- **Main Content Canvas** (`41:237`) — 412x718px
+- **Options Section** (`41:243`) — 372x472px
+- **Pickup & Drop-off** (`41:315`) — 412x913px
+- **Main Content** (`41:316`) — 412x825px
+- **Frame 98580** (`80:3648`) — 372x681px
+- **Form & Map Container (Bento-ish layout on Web)** (`41:322`) — 372x522px
+- **Booking Mode Choice** (`41:392`) — 412x917px
+- **Main Content Canvas** (`41:393`) — 412x418px
+- **Date & Time Selection** (`41:441`) — 412x917px
+- **Waiting for Bids** (`41:484`) — 412x917px
+- **Bottom sheet** (`63:4139`) — 412x495px
+- **Bottom Sheet** (`63:4140`) — 412x495px
+- **No bids fallback** (`87:265`) — 412x917px
+- **Bottom sheet** (`87:311`) — 412x601px
+- **Bottom Sheet** (`87:312`) — 412x601px
+- **Frame 98587** (`87:392`) — 412x422px
+- **Track Driver** (`116:395`) — 412x917px
+- **Main Content Canvas** (`116:422`) — 412x608px
+- **Section - Map Column (Restrained Monochome Map)** (`116:423`) — 412x918px
+- **Track Driver** (`119:957`) — 412x917px
+- **Main Content Canvas** (`119:958`) — 412x608px
+- **Section - Map Column (Restrained Monochome Map)** (`119:959`) — 412x918px
+- **Bottom Sheet** (`119:986`) — 412x402px
+- **driver arrived** (`116:646`) — 412x917px
+- **Main Content Canvas** (`116:647`) — 412x608px
+- **Section - Map Column (Restrained Monochome Map)** (`116:648`) — 412x918px
+- **Bottom Sheet** (`116:675`) — 412x504px
+- **Frame 98588** (`116:707`) — 412x444px
+- **Loading in progress** (`116:818`) — 412x917px
+- **Main Content Canvas** (`116:819`) — 412x608px
+- **Section - Map Column (Restrained Monochome Map)** (`116:820`) — 412x918px
+- **Bottom Sheet** (`116:847`) — 412x633px
+- **Frame 98588** (`116:850`) — 412x573px
+- **Bid Comparison** (`41:555`) — 412x1405px
+- **Main Content Canvas** (`41:556`) — 412x1155px
+- **Bids Grid** (`41:574`) — 372x1131px
+- **Driver Detail Profile** (`41:730`) — 412x1572px
+- **Main** (`41:758`) — 412x1331px
+- **Section - Recent Reviews** (`41:818`) — 380x462px
+- **Container** (`41:825`) — 380x414px
+- **Booking Confirmation** (`41:994`) — 412x994px
+- **Main** (`41:1002`) — 412x893px
+- **Save as Preferred** (`41:1285`) — 412x535px
+- **Trip Share** (`41:1383`) — 412x503px
+- **Main Content Canvas** (`41:1384`) — 412x504px
+- **Vehicle Photo Verification** (`41:1507`) — 412x884px
+- **Camera Viewfinder Canvas** (`41:1518`) — 412x786px
+- **Viewfinder Frame** (`41:1519`) — 372x762px
+- **AB6AXuDy0kmuUJmzq2-GUHKPqJTu-z_u7d2mB-U8XFw0HKHxaZIQpJQHOZoB3XmglTnJipiEn8dNiFmssazK-17_7Pu0pAO6oVTctPOEfrZnVb6qCM1eDgemZ6WBLLlMKc9ETqw8ZfItE9MYbYPoKHF0HgMkf-rp7xplLEXAvPN3aCUvLlgLngJ5AEKyCBJ5WEJEJBBFysIpkSDwinSLqJfizCM5P32jkoELm9hBgfl7sHOKuY5JVB19alGw** (`41:1520`) — 370x760px
+- **Framing Guide UI** (`41:1522`) — 370x760px
+- **Report Driver** (`41:1536`) — 412x882px
+- **Main Content** (`41:1537`) — 412x882px
+- **Form** (`41:1543`) — 372x612px
+- **Digital Receipt** (`41:1588`) — 412x945px
+- **Main Content Canvas** (`41:1589`) — 412x843px
+- **Document Card** (`41:1600`) — 372x626px
+- **Share Experience** (`41:1727`) — 412x1076px
+- **Main** (`41:1728`) — 412x894px
+- **Left/Top Section: Visuals** (`41:1729`) — 412x412px
+- **Right/Bottom Section: Content & Actions** (`41:1733`) — 412x482px
+- **Container** (`41:1734`) — 380x466px
+- **Cancel Trip** (`41:1774`) — 412x835px
+- **Content Area** (`41:1782`) — 412x733px
+- **Container** (`41:1789`) — 372x408px
+- **Payment Failure & Retry** (`41:1879`) — 412x503px
+- **Container** (`41:1880`) — 372x463px
+- **Trip Complete** (`41:1907`) — 412x682px
+- **Main - Top Navigation (Suppressed per logic: Linear/Transactional "Success" splash screen)** (`41:1908`) — 372x642px
+- **Booking detail** (`42:1968`) — 412x1727px
+- **Main** (`42:1969`) — 412x1533px
+- **Section - Trip Timeline** (`42:2014`) — 372x402px
+- **Rebook Trip** (`44:2143`) — 412x553px
+- **Main Content** (`44:2144`) — 412x529px
+- **Profile HQ** (`44:2210`) — 412x1288px
+- **Main Content** (`44:2211`) — 412x1192px
+- **Section - Navigation Grid** (`44:2244`) — 372x674px
+- **Your Bookings** (`44:2318`) — 412x884px
+- **Main Content Canvas** (`44:2319`) — 412x884px
+- **Personal Information** (`44:2425`) — 412x664px
+- **Main Content Canvas** (`44:2426`) — 412x480px
+- **Saved Addresses** (`44:2465`) — 412x833px
+- **Main Content Canvas** (`44:2466`) — 412x833px
+- **Add Address** (`44:2526`) — 412x891px
+- **Main** (`44:2527`) — 412x827px
+- **Form Area** (`44:2541`) — 412x587px
+- **Preferred Drivers** (`44:2608`) — 412x660px
+- **Main Content** (`44:2609`) — 412x660px
+- **Driver List** (`44:2623`) — 372x426px
+- **Referrals** (`44:2703`) — 412x1209px
+- **Main** (`44:2704`) — 412x1129px
+- **Reviews Given** (`44:2817`) — 412x764px
+- **Main Content → Review List** (`44:2818`) — 372x576px
+- **Payment Methods** (`44:2927`) — 412x517px
+- **Emergency Contact** (`44:2999`) — 412x788px
+- **Main Content Canvas** (`44:3000`) — 412x620px
+- **Form Section** (`44:3011`) — 372x412px
+- **Reviews Received** (`44:3055`) — 412x1634px
+- **Main Canvas** (`44:3056`) — 412x1570px
+- **Section - Aspect Bar Chart (Bento Grid Style)** (`44:3087`) — 372x477px
+- **Section - Driver Comments** (`44:3118`) — 372x753px
+- **Container** (`44:3121`) — 372x605px
+- **Security** (`44:3165`) — 412x835px
+- **Main - Navigation Shell suppressed because this is a deep settings/focused task view** (`44:3166`) — 412x835px
+- **Change Password** (`44:3227`) — 412x649px
+- **Main Content Canvas** (`44:3228`) — 412x585px
+- **Form** (`44:3234`) — 372x404px
+- **Block List** (`44:3275`) — 412x566px
+- **Main Content** (`44:3276`) — 412x566px
+- **Help Centre** (`44:3348`) — 412x998px
+- **Main** (`44:3349`) — 412x998px
+- **Section - Popular Articles** (`44:3377`) — 372x473px
+- **Container** (`44:3380`) — 372x428px
+- **Your Disputes** (`71:143`) — 390x928px
+- **Main Content Canvas** (`71:144`) — 390x928px
+- **Disputes List (Bento/Card layout logic for premium feel)** (`71:155`) — 350x536px
+- **Contact Support** (`71:220`) — 390x1257px
+- **Main - Navigation shell suppressed (BottomNavBar) as this is a task-focused sub-page with a Back action** (`71:221`) — 390x1257px
+- **Support Form** (`71:227`) — 350x816px
+- **Dispute Detail** (`71:298`) — 390x1775px
+- **Main Content** (`71:299`) — 390x1775px
+- **Section - Chat Thread** (`71:328`) — 350x895px
+- **Container** (`71:333`) — 350x826px
+- **File Dispute** (`71:375`) — 390x1020px
+- **Main Content → Section** (`71:376`) — 350x832px
+- **Form** (`71:379`) — 350x784px
+- **Settings** (`71:458`) — 390x845px
+- **Main Content Canvas** (`71:459`) — 390x685px
+- **Settings Groups** (`71:465`) — 350x401px
+- **Notifications** (`71:545`) — 390x916px
+- **Main** (`71:546`) — 390x854px
+- **Section** (`71:555`) — 350x425px
+- **Data Saver** (`71:625`) — 390x1135px
+- **Main** (`71:626`) — 390x1135px
+- **Section - Details Grid (Bento Style)** (`71:646`) — 350x638px
+- **Language** (`71:711`) — 390x456px
+- **Data Rights** (`71:739`) — 390x984px
+- **Main Content** (`71:740`) — 390x896px
+- **Container** (`71:741`) — 350x800px
+- **Cancellation History** (`71:792`) — 390x985px
+- **Main Content** (`71:793`) — 390x875px
+- **Section - History List** (`71:813`) — 350x449px
+- **Cookie Preferences** (`71:908`) — 390x884px
+- **Mock Content to simulate a background page** (`71:909`) — 390x884px
+- **Bottom Sheet** (`71:915`) — 390x707px
+- **Container** (`71:918`) — 390x535px
+- **Terms of Service** (`71:964`) — 390x2662px
+- **Main Content Canvas** (`71:965`) — 390x2614px
+- **Article** (`71:971`) — 350x2387px
+- **Section** (`71:972`) — 350x414px
+- **Section** (`71:979`) — 350x463px
+- **Section** (`71:1011`) — 350x552px
+- **Container** (`71:1014`) — 350x512px
+- **Share Location** (`71:1031`) — 390x884px
+- **Main Content Area** (`71:1032`) — 390x820px
+- **Map Container** (`71:1033`) — 390x501px
+- **stitch-placeholder-300x300.svg clip** (`71:1034`) — 390x501px
+- **Emergency SOS** (`71:1076`) — 390x884px
+- **Main Content** (`71:1077`) — 390x884px
+- **Welcome** (`71:1108`) — 412x917px
+- **Full Bleed Background Image with Overlay** (`71:1109`) — 412x494px
+- **Age Gate** (`71:1133`) — 412x917px
+- **Main Container aligned to 412px max-width for mobile optimized view** (`71:1134`) — 412x884px
+- **Middle Section: Date Picker (Bento style card container):margin** (`71:1145`) — 380x668px
+- **Middle Section: Date Picker (Bento style card container)** (`71:1146`) — 380x620px
+- **Tour - Book Truck** (`71:1411`) — 412x917px
+- **Subtle Background Elements for Warm Minimalism Depth** (`71:1412`) — 412x917px
+- **Main Content Area** (`71:1415`) — 412x880px
+- **Tour - Track Driver** (`77:3270`) — 412x917px
+- **Subtle Background Elements for Warm Minimalism Depth** (`77:3271`) — 412x917px
+- **Main Content Area** (`77:3288`) — 412x880px
+- **Tour - Track Driver** (`77:3324`) — 412x917px
+- **Subtle Background Elements for Warm Minimalism Depth** (`77:3325`) — 412x917px
+- **Main Content Area** (`77:3342`) — 412x880px
+- **Consent** (`71:1469`) — 412x917px
+- **Main** (`71:1474`) — 412x820px
+- **Form** (`71:1481`) — 380x520px
+- **location permission** (`77:3455`) — 412x494px
+- **Bottom Sheet** (`77:3456`) — 412x494px
+- **Permission Card** (`77:3462`) — 412x458px
+- **Sort bids options** (`86:4417`) — 412x501px
+- **Bottom Sheet** (`86:4418`) — 412x501px
+- **Container** (`86:4421`) — 412x465px
+- **notification permission** (`79:3509`) — 412x490px
+- **Bottom Sheet** (`79:3510`) — 412x490px
+- **Permission Card** (`79:3513`) — 412x454px
+- **camera permission** (`79:3561`) — 412x494px
+- **Bottom Sheet** (`79:3562`) — 412x494px
+- **Permission Card** (`79:3565`) — 412x458px
+- **D-46 Rate Mover** (`186:1817`) — 390x540px
+- **Content** (`186:1819`) — 390x484px
+- **D-50 Report This Mover** (`186:2129`) — 390x640px
+- **Content** (`186:2131`) — 390x584px
+
+## Driver Screens (118)
+- **Sign Up** (`186:495`) — 390x406px
+- **Main - Content Canvas** (`186:496`) — 390x406px
+- **OTP Verify** (`186:523`) — 390x884px
+- **Section - Main Content Area** (`186:530`) — 390x820px
+- **Margin** (`186:531`) — 358x672px
+- **Container** (`186:532`) — 358x640px
+- **Can't Log In** (`186:578`) — 390x596px
+- **Main** (`186:579`) — 390x596px
+- **Form** (`186:583`) — 358x446px
+- **Verification Intro** (`186:617`) — 390x884px
+- **Main** (`186:618`) — 390x884px
+- **Container** (`186:619`) — 358x564px
+- **Consent & DPA** (`186:677`) — 390x698px
+- **Main** (`186:678`) — 358x666px
+- **National ID Capture** (`186:716`) — 390x898px
+- **Main Content** (`186:717`) — 390x834px
+- **Camera Viewfinder:margin** (`186:731`) — 358x501px
+- **Camera Viewfinder** (`186:732`) — 358x477px
+- **Simulated Camera Feed** (`186:733`) — 358x477px
+- **Edge Detection Overlay (ID shape)** (`186:736`) — 294x413px
+- **Driver Licence Capture** (`186:754`) — 390x981px
+- **Main Content Canvas** (`186:755`) — 390x821px
+- **Vehicle Photos** (`186:851`) — 390x664px
+- **Main Content** (`186:852`) — 390x664px
+- **Vehicle Details** (`186:895`) — 390x927px
+- **Main Canvas** (`186:896`) — 390x799px
+- **Form** (`186:902`) — 358x595px
+- **M-Pesa Setup** (`186:1015`) — 390x628px
+- **Main Content Canvas** (`186:1016`) — 390x628px
+- **Pending Review** (`186:1059`) — 390x730px
+- **Main Content Canvas** (`186:1060`) — 390x730px
+- **Container** (`186:1061`) — 358x634px
+- **Approved** (`186:1115`) — 390x482px
+- **Decorative Ambient Background Graphic** (`186:1116`) — 390x482px
+- **Main Content Canvas** (`186:1120`) — 390x418px
+- **Rejected & Retry** (`186:1140`) — 390x594px
+- **Main Container** (`186:1141`) — 358x538px
+- **Retry Detail** (`186:1175`) — 390x979px
+- **Main Content** (`186:1176`) — 390x883px
+- **Section** (`186:1182`) — 358x571px
+- **Welcome Tour** (`186:1245`) — 390x514px
+- **Confetti / Celebration Decoration (CSS ONLY)** (`186:1246`) — 390x514px
+- **Main Content Container** (`186:1249`) — 390x514px
+- **Onboarding Tour - Step 2** (`186:1266`) — 390x626px
+- **Background+Shadow** (`186:1267`) — 358x594px
+- **Confirm Details** (`186:1285`) — 390x884px
+- **Background** (`186:1286`) — 390x884px
+- **Main Content Canvas:margin** (`186:1292`) — 390x686px
+- **Main Content Canvas** (`186:1293`) — 390x662px
+- **Details Section** (`186:1300`) — 358x558px
+- **Location Permission** (`186:1331`) — 390x452px
+- **Main Content Container** (`186:1332`) — 358x446px
+- **Job Feed** (`186:1354`) — 390x895px
+- **Main** (`186:1364`) — 390x727px
+- **Section - Feed / Job Cards** (`186:1395`) — 358x489px
+- **Filters** (`186:1482`) — 390x1040px
+- **Bottom Sheet (80% Height)** (`186:1484`) — 390x707px
+- **Scrollable Content** (`186:1493`) — 390x619px
+- **On Break** (`186:1572`) — 390x716px
+- **Main - Top Navigation Placeholder - Hidden for transactional/focused screens based on semantic rules** (`186:1573`) — 358x684px
+- **No Jobs Found** (`186:1607`) — 390x652px
+- **Main Content: Empty State** (`186:1640`) — 390x588px
+- **Announcements** (`186:1664`) — 390x938px
+- **Main** (`186:1700`) — 390x794px
+- **Container** (`186:1714`) — 358x640px
+- **D-30a Job Overview — Bid** (`186:1761`) — 390x813px
+- **Content** (`186:1763`) — 390x757px
+- **D-33 Bid Submission** (`186:1803`) — 390x584px
+- **Content** (`186:1805`) — 390x528px
+- **D-47 Trip Earnings** (`186:1835`) — 390x516px
+- **Content** (`186:1837`) — 390x460px
+- **D-30b Job Overview — Instant** (`186:1849`) — 390x813px
+- **Content** (`186:1851`) — 390x757px
+- **D-36 Navigate to Pickup** (`186:1891`) — 390x844px
+- **Bottom Sheet** (`186:1897`) — 390x458px
+- **D-36 Navigate to Pickup — Arrived** (`186:1925`) — 390x844px
+- **Bottom Sheet** (`186:1931`) — 390x458px
+- **D-39 Waiting Timer** (`186:1959`) — 390x430px
+- **D-52 Daily** (`186:1972`) — 390x944px
+- **Content** (`186:1973`) — 390x824px
+- **D-53 This Week** (`186:2019`) — 390x893px
+- **Content** (`186:2020`) — 390x773px
+- **D-54 This Month** (`186:2057`) — 390x736px
+- **Content** (`186:2058`) — 390x616px
+- **D-55 Trip Log** (`186:2091`) — 390x840px
+- **Content** (`186:2092`) — 390x722px
+- **Trip List** (`186:2101`) — 358x546px
+- **D-48 Payment Received** (`186:2110`) — 390x572px
+- **Content** (`186:2111`) — 390x572px
+- **D-49 Tip Received** (`186:2121`) — 390x434px
+- **Content** (`186:2122`) — 390x434px
+- **D-56 Payment Detail** (`186:2152`) — 390x641px
+- **Content** (`186:2154`) — 390x585px
+- **D-57 Profile Overview** (`186:2171`) — 390x1385px
+- **Content** (`186:2173`) — 390x1265px
+- **Vehicle Section** (`186:2194`) — 358x454px
+- **Vehicle Card** (`186:2196`) — 358x414px
+- **D-58 Personal Info** (`186:2239`) — 390x650px
+- **Content** (`186:2241`) — 390x594px
+- **D-59 Vehicle Info** (`186:2264`) — 390x1292px
+- **Content** (`186:2266`) — 390x1236px
+- **Form** (`186:2284`) — 358x566px
+- **D-60 Reviews Received** (`186:2322`) — 390x1012px
+- **Content** (`186:2324`) — 390x956px
+- **Review Stack** (`186:2342`) — 358x768px
+- **D-61 Rating Breakdown** (`186:2405`) — 390x542px
+- **Content** (`186:2407`) — 390x486px
+- **D-62 Referral** (`186:2436`) — 390x665px
+- **Content** (`186:2438`) — 390x609px
+- **D-63 Emergency Contact** (`186:2461`) — 390x514px
+- **Content** (`186:2463`) — 390x458px
+- **D-39 Waiting Timer — Surcharge** (`186:2492`) — 390x480px
+- **Content** (`186:2494`) — 390x424px
+- **D-51 Earnings Overview** (`186:2506`) — 390x736px
+- **Content** (`186:2510`) — 390x608px
+- **D-65 Account Security** (`186:2559`) — 390x531px
+- **Content** (`186:2561`) — 390x475px
+- **D-66 Block List** (`186:2568`) — 390x404px
+
+## Common Typography
+- `Plus Jakarta Sans 400 12px` (484 occurrences)
+- `Plus Jakarta Sans 400 15px` (285 occurrences)
+- `Plus Jakarta Sans 400 14px` (212 occurrences)
+- `Plus Jakarta Sans 400 16px` (206 occurrences)
+- `Plus Jakarta Sans 500 16px` (137 occurrences)
+- `Plus Jakarta Sans 400 20px` (125 occurrences)
+- `Inter 500 12px` (62 occurrences)
+- `Inter 400 9px` (58 occurrences)
+- `Roboto 700 12px` (48 occurrences)
+- `Plus Jakarta Sans 500 18px` (45 occurrences)

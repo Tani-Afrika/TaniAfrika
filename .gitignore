@@ -9,3 +9,5 @@ coverage/
 supabase/.temp/
 *.log
 .DS_Store
+taniafrika-universal-login-patch/
+*.zip

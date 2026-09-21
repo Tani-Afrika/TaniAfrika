@@ -53,7 +53,7 @@ export default function RoleSelect({
         value={role}
         onChange={handleChange}
         disabled={isPending}
-        className="rounded-lg border border-ink-200 bg-white px-2.5 py-1.5 text-xs font-medium text-ink-900 outline-none transition focus:border-maroon-600 focus:ring-2 focus:ring-maroon-100 disabled:cursor-not-allowed disabled:opacity-60"
+        className="rounded-lg border border-ink-200 bg-white px-2.5 py-1.5 text-xs font-medium text-ink-900 outline-none transition focus:border-trust focus:ring-2 focus:ring-trust/20 disabled:cursor-not-allowed disabled:opacity-60"
       >
         {ROLE_OPTIONS.map((option) => (
           <option key={option.value} value={option.value}>

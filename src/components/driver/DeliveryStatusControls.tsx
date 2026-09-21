@@ -28,9 +28,9 @@ export default function DeliveryStatusControls({ orderId, status }: { orderId: s
   if (!config) return null;
 
   return (
-    <div className="rounded-2xl border border-orange-100 bg-orange-50/50 p-4">
+    <div className="rounded-2xl border border-trust/20 bg-trust-light/30 p-4">
       <p className="text-sm font-semibold text-slate-950">Next delivery step</p>
-      <p className="mt-1 text-xs leading-5 text-slate-500">{config.helper}</p>
+      <p className="mt-1 text-xs leading-5 text-slate-600">{config.helper}</p>
       {error ? <p className="mt-3 rounded-xl border border-red-100 bg-red-50 px-3 py-2 text-xs text-red-700">{error}</p> : null}
       <button
         type="button"
@@ -43,7 +43,7 @@ export default function DeliveryStatusControls({ orderId, status }: { orderId: s
             else router.refresh();
           });
         }}
-        className="mt-4 w-full rounded-xl bg-orange-600 px-4 py-3 text-sm font-semibold text-white shadow-lg shadow-orange-200 transition hover:bg-orange-700 disabled:opacity-60"
+        className="mt-3.5 w-full rounded-xl bg-trust px-4 py-3 text-sm font-semibold text-white shadow-md shadow-trust/20 transition hover:bg-trust-deep disabled:opacity-60 native-press"
       >
         {isPending ? 'Updating…' : config.label}
       </button>

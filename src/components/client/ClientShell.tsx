@@ -172,6 +172,40 @@ export default function ClientShell({
           </div>
         </header>
 
+        {/* Navigation & Portal Escape Banner */}
+        <div className="bg-[#EBF8ED] border-b border-[#74C67A]/40 px-4 py-2.5 text-xs text-[#14422B] flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+          <div className="flex items-center gap-2">
+            <span className="h-2 w-2 rounded-full bg-amber-500 animate-pulse shrink-0" />
+            <span className="font-semibold">Client portal in development — switch to an active section anytime:</span>
+          </div>
+          <div className="flex items-center gap-2 shrink-0">
+            <a
+              href="/driver"
+              onClick={() => {
+                document.cookie = 'taniafrika_dev_role=approved_driver; path=/; max-age=2592000';
+              }}
+              className="font-bold text-white bg-[#1F5F3F] hover:bg-[#14422B] px-3 py-1.5 rounded-xl transition shadow-xs"
+            >
+              🚗 Driver Portal
+            </a>
+            <a
+              href="/admin"
+              onClick={() => {
+                document.cookie = 'taniafrika_dev_role=admin; path=/; max-age=2592000';
+              }}
+              className="font-bold text-slate-800 bg-white border border-slate-300 hover:bg-slate-100 px-3 py-1.5 rounded-xl transition shadow-xs"
+            >
+              🛡️ Admin
+            </a>
+            <a
+              href="/logout"
+              className="font-bold text-red-600 hover:text-red-700 bg-red-50 hover:bg-red-100 px-2.5 py-1.5 rounded-xl transition"
+            >
+              🚪 Exit
+            </a>
+          </div>
+        </div>
+
         <main className="px-4 py-7 sm:px-8 xl:px-8">{children}</main>
       </div>
     </div>

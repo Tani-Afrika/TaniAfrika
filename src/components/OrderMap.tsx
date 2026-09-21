@@ -27,9 +27,9 @@ const LiveOrderMap = dynamic(
     loading: () => (
       <div className="flex h-72 items-center justify-center bg-ink-200/30 sm:h-80 lg:h-[380px]">
         <div className="text-center">
-          <div className="mx-auto h-7 w-7 animate-spin rounded-full border-2 border-ink-200 border-t-maroon-600" />
+          <div className="mx-auto h-7 w-7 animate-spin rounded-full border-2 border-ink-200 border-t-trust" />
 
-          <p className="mt-3 text-sm text-ink-400">
+          <p className="mt-3 text-xs text-ink-400">
             Loading order map...
           </p>
         </div>

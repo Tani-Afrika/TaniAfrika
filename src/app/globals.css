@@ -1,46 +1,88 @@
 @import "tailwindcss";
 
 @theme {
-  --color-maroon-50: #FDF2F4;
-  --color-maroon-100: #FBE6EA;
-  --color-maroon-200: #F3C9D2;
-  --color-maroon-500: #A32A42;
-  --color-maroon-600: #8B1A2F;
-  --color-maroon-700: #6E1526;
-  --color-maroon-900: #430D18;
+  /* Reliable Neighbour Brand Primary: Trust Green */
+  --color-trust-50: #F0FDF4;
+  --color-trust-100: #E8F5EE;
+  --color-trust-200: #C2E4D2;
+  --color-trust-300: #88CDB0;
+  --color-trust-400: #3E9A70;
+  --color-trust-500: #297E54;
+  --color-trust-600: #1F5F3F; /* Primary Brand Green */
+  --color-trust-700: #164E33;
+  --color-trust-800: #14422B; /* Deep Forest Green */
+  --color-trust-900: #0B291A;
 
+  /* Accent Amber */
+  --color-amber-50: #FFFBEB;
+  --color-amber-100: #FEF3C7;
+  --color-amber-200: #FDE68A;
+  --color-amber-400: #E5B25D;
+  --color-amber-500: #D4A244;
+  --color-amber-600: #B88628;
+  --color-amber-700: #92400E;
+
+  /* Accent Sage */
+  --color-sage-100: #EDF1EE;
+  --color-sage-300: #B4C2B8;
+  --color-sage-500: #7A9080;
+  --color-sage-700: #4D6052;
+
+  /* Fresh Meadow / Luminous Daylight Green (Daylight & Fresh Energy Balance) */
+  --color-meadow-50: #F3FAF4;
+  --color-meadow-100: #E6F7E8;
+  --color-meadow-200: #CBEFD2;
+  --color-meadow-300: #A0E2A9;
+  --color-meadow-400: #74C67A; /* Direct match from brand reference graphic */
+  --color-meadow-500: #57B35E;
+  --color-meadow-600: #3E9745;
+  --color-meadow-700: #2D7433;
+
+  /* Legacy Maroon Aliases (Remapped directly to Trust Green to guarantee zero-red output) */
+  --color-maroon-50: #F0FDF4;
+  --color-maroon-100: #E8F5EE;
+  --color-maroon-200: #C2E4D2;
+  --color-maroon-500: #297E54;
+  --color-maroon-600: #1F5F3F;
+  --color-maroon-700: #164E33;
+  --color-maroon-900: #0B291A;
+
+  /* Neutral Inks */
   --color-ink-900: #1C1D20;
-  --color-ink-700: #33353A;
+  --color-ink-700: #2A2A28;
   --color-ink-600: #52555C;
   --color-ink-400: #8B8D94;
   --color-ink-200: #E4E4E7;
 
-  --color-paper: #F7F6F5;
+  /* Warm Neutral Paper Backgrounds */
+  --color-paper: #F7F1E5;
+  --color-paper-light: #FFF8F4;
 
   --font-display: var(--font-poppins), ui-sans-serif, system-ui, sans-serif;
   --font-body: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
 
-  --shadow-card: 0 1px 2px 0 rgba(28, 29, 32, 0.04), 0 12px 24px -16px rgba(28, 29, 32, 0.14);
-  --shadow-card-hover: 0 2px 4px 0 rgba(28, 29, 32, 0.05), 0 18px 32px -16px rgba(28, 29, 32, 0.18);
-  --shadow-sidebar: 1px 0 0 0 rgba(28, 29, 32, 0.06), 8px 0 24px -16px rgba(28, 29, 32, 0.08);
+  --shadow-card: 0 1px 2px 0 rgba(28, 29, 32, 0.04), 0 8px 16px -8px rgba(31, 95, 63, 0.08);
+  --shadow-card-hover: 0 2px 4px 0 rgba(28, 29, 32, 0.05), 0 12px 24px -10px rgba(31, 95, 63, 0.12);
+  --shadow-sidebar: 1px 0 0 0 rgba(31, 95, 63, 0.08), 4px 0 16px -8px rgba(31, 95, 63, 0.06);
+  --shadow-bottom-bar: 0 -2px 12px -2px rgba(28, 29, 32, 0.06), 0 -1px 2px 0 rgba(28, 29, 32, 0.04);
 }
 
 body {
   background: var(--color-paper);
   color: var(--color-ink-900);
   font-family: var(--font-body);
+  -webkit-tap-highlight-color: transparent;
 }
 
 .font-display {
   font-family: var(--font-display);
 }
 
-/* Shared premium surface treatment: used across stat cards, list cards,
-   and empty states, replacing the old flat border-gray-200 look. */
+/* Shared surface treatment with subtle Trust Green warmth */
 .surface {
-  border-radius: 1rem;
-  border: 1px solid rgba(28, 29, 32, 0.06);
-  background: #fff;
+  border-radius: 0.875rem;
+  border: 1px solid rgba(31, 95, 63, 0.09);
+  background: #FFFFFF;
   box-shadow: var(--shadow-card);
   transition: box-shadow 180ms ease, transform 180ms ease;
 }
@@ -50,17 +92,50 @@ body {
   transform: translateY(-1px);
 }
 
-/* Page shell: centers content and keeps line lengths / card widths sane
-   on large monitors instead of stretching edge-to-edge. */
+/* React Native-style mobile card */
+.native-card {
+  border-radius: 0.875rem;
+  border: 1px solid rgba(31, 95, 63, 0.1);
+  background: #FFFFFF;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+}
+
+/* Luminous meadow surface for daylight freshness and welcoming profile/hero sections */
+.surface-light-meadow {
+  border-radius: 1rem;
+  border: 1px solid rgba(31, 95, 63, 0.22);
+  background: linear-gradient(135deg, #F3FAF4 0%, #E6F7E8 45%, #D4F2D9 100%);
+  box-shadow: 0 1px 3px 0 rgba(31, 95, 63, 0.05);
+}
+
+/* Native touch response feedback */
+.native-press {
+  transition: transform 100ms ease, opacity 100ms ease;
+}
+.native-press:active {
+  transform: scale(0.97);
+  opacity: 0.9;
+}
+
+/* Mobile safe area spacing for bottom navigation bar */
+.pb-mobile-nav {
+  padding-bottom: calc(5rem + env(safe-area-inset-bottom, 0px));
+}
+
+.safe-bottom {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+/* Page shell */
 .page-shell {
   max-width: 1440px;
   margin-inline: auto;
   width: 100%;
 }
 
-/* Visible keyboard focus, kept everywhere */
+/* Visible keyboard focus using Trust Green */
 :focus-visible {
-  outline: 2px solid var(--color-maroon-600);
+  outline: 2px solid var(--color-trust-600);
   outline-offset: 2px;
 }
 

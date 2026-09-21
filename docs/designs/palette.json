@@ -1,0 +1,490 @@
+[
+  {
+    "hex": "#2A2A28",
+    "usages": 692
+  },
+  {
+    "hex": "#FFFFFF",
+    "usages": 659
+  },
+  {
+    "hex": "#000000",
+    "usages": 423
+  },
+  {
+    "hex": "#3F4943",
+    "usages": 338
+  },
+  {
+    "hex": "#1F1B17",
+    "usages": 331
+  },
+  {
+    "hex": "#F7F1E5",
+    "usages": 324
+  },
+  {
+    "hex": "#006044",
+    "usages": 235
+  },
+  {
+    "hex": "#7A9080",
+    "usages": 212
+  },
+  {
+    "hex": "#5F5E5E",
+    "usages": 204
+  },
+  {
+    "hex": "#1F5F3F",
+    "usages": 161
+  },
+  {
+    "hex": "#414844",
+    "usages": 126
+  },
+  {
+    "hex": "#FFF8F4",
+    "usages": 114
+  },
+  {
+    "hex": "#4C4546",
+    "usages": 95
+  },
+  {
+    "hex": "#F9F9F9",
+    "usages": 85
+  },
+  {
+    "hex": "#2D3339",
+    "usages": 77
+  },
+  {
+    "hex": "#7F7F7F",
+    "usages": 73
+  },
+  {
+    "hex": "#BEC9C1",
+    "usages": 52
+  },
+  {
+    "hex": "#5A524A",
+    "usages": 48
+  },
+  {
+    "hex": "#D4A244",
+    "usages": 44
+  },
+  {
+    "hex": "#1A7A5A",
+    "usages": 44
+  },
+  {
+    "hex": "#1A1C1C",
+    "usages": 42
+  },
+  {
+    "hex": "#EAE1DA",
+    "usages": 42
+  },
+  {
+    "hex": "#F3E7FF",
+    "usages": 36
+  },
+  {
+    "hex": "#FDF8F0",
+    "usages": 33
+  },
+  {
+    "hex": "#F3F3F3",
+    "usages": 30
+  },
+  {
+    "hex": "#BA1A1A",
+    "usages": 30
+  },
+  {
+    "hex": "#FEC341",
+    "usages": 28
+  },
+  {
+    "hex": "#EEEEEE",
+    "usages": 26
+  },
+  {
+    "hex": "#E2E2E2",
+    "usages": 25
+  },
+  {
+    "hex": "#EAD4FF",
+    "usages": 22
+  },
+  {
+    "hex": "#6F7A73",
+    "usages": 20
+  },
+  {
+    "hex": "#F6ECE5",
+    "usages": 20
+  },
+  {
+    "hex": "#E8E8E8",
+    "usages": 15
+  },
+  {
+    "hex": "#55534D",
+    "usages": 14
+  },
+  {
+    "hex": "#79747E",
+    "usages": 13
+  },
+  {
+    "hex": "#32343D",
+    "usages": 12
+  },
+  {
+    "hex": "#1E1E1E",
+    "usages": 12
+  },
+  {
+    "hex": "#F6F8FA",
+    "usages": 12
+  },
+  {
+    "hex": "#7E7576",
+    "usages": 11
+  },
+  {
+    "hex": "#C68DFF",
+    "usages": 11
+  },
+  {
+    "hex": "#CFC4C5",
+    "usages": 10
+  },
+  {
+    "hex": "#1B4332",
+    "usages": 9
+  },
+  {
+    "hex": "#FFDAD6",
+    "usages": 7
+  },
+  {
+    "hex": "#5C6B64",
+    "usages": 7
+  },
+  {
+    "hex": "#D6F8DF",
+    "usages": 6
+  },
+  {
+    "hex": "#DADADA",
+    "usages": 6
+  },
+  {
+    "hex": "#FFB700",
+    "usages": 6
+  },
+  {
+    "hex": "#C5C5C5",
+    "usages": 6
+  },
+  {
+    "hex": "#AEEECB",
+    "usages": 6
+  },
+  {
+    "hex": "#C7E0D4",
+    "usages": 5
+  },
+  {
+    "hex": "#717973",
+    "usages": 5
+  },
+  {
+    "hex": "#FCF2EB",
+    "usages": 5
+  },
+  {
+    "hex": "#D22F27",
+    "usages": 4
+  },
+  {
+    "hex": "#6056F0",
+    "usages": 4
+  },
+  {
+    "hex": "#7168F6",
+    "usages": 4
+  },
+  {
+    "hex": "#2563EB",
+    "usages": 4
+  },
+  {
+    "hex": "#2D6A4F",
+    "usages": 4
+  },
+  {
+    "hex": "#FAF3E8",
+    "usages": 4
+  },
+  {
+    "hex": "#D9D9D9",
+    "usages": 3
+  },
+  {
+    "hex": "#B3B3B3",
+    "usages": 3
+  },
+  {
+    "hex": "#2D8659",
+    "usages": 3
+  },
+  {
+    "hex": "#6B7280",
+    "usages": 3
+  },
+  {
+    "hex": "#E5E5E5",
+    "usages": 3
+  },
+  {
+    "hex": "#012D1D",
+    "usages": 3
+  },
+  {
+    "hex": "#FBF9F5",
+    "usages": 3
+  },
+  {
+    "hex": "#34302B",
+    "usages": 3
+  },
+  {
+    "hex": "#F8BD3C",
+    "usages": 3
+  },
+  {
+    "hex": "#705100",
+    "usages": 3
+  },
+  {
+    "hex": "#5C9E31",
+    "usages": 2
+  },
+  {
+    "hex": "#12121D",
+    "usages": 2
+  },
+  {
+    "hex": "#675B5B",
+    "usages": 2
+  },
+  {
+    "hex": "#FEE2E2",
+    "usages": 2
+  },
+  {
+    "hex": "#DC2626",
+    "usages": 2
+  },
+  {
+    "hex": "#B33A2A",
+    "usages": 2
+  },
+  {
+    "hex": "#C8C6C5",
+    "usages": 2
+  },
+  {
+    "hex": "#EF4444",
+    "usages": 2
+  },
+  {
+    "hex": "#3B82F6",
+    "usages": 2
+  },
+  {
+    "hex": "#EFEEEA",
+    "usages": 2
+  },
+  {
+    "hex": "#EAE8E4",
+    "usages": 2
+  },
+  {
+    "hex": "#E4E2DE",
+    "usages": 2
+  },
+  {
+    "hex": "#8A827A",
+    "usages": 2
+  },
+  {
+    "hex": "#7B5900",
+    "usages": 2
+  },
+  {
+    "hex": "#ADFFD9",
+    "usages": 2
+  },
+  {
+    "hex": "#FF5C02",
+    "usages": 2
+  },
+  {
+    "hex": "#4D00FF",
+    "usages": 2
+  },
+  {
+    "hex": "#333333",
+    "usages": 2
+  },
+  {
+    "hex": "#FB3748",
+    "usages": 2
+  },
+  {
+    "hex": "#FFDB43",
+    "usages": 2
+  },
+  {
+    "hex": "#1FC16B",
+    "usages": 2
+  },
+  {
+    "hex": "#E9E9E9",
+    "usages": 1
+  },
+  {
+    "hex": "#D97706",
+    "usages": 1
+  },
+  {
+    "hex": "#FFD9D4",
+    "usages": 1
+  },
+  {
+    "hex": "#E2DFDE",
+    "usages": 1
+  },
+  {
+    "hex": "#1B1C1C",
+    "usages": 1
+  },
+  {
+    "hex": "#C7C6C6",
+    "usages": 1
+  },
+  {
+    "hex": "#1B1C1A",
+    "usages": 1
+  },
+  {
+    "hex": "#F2F0ED",
+    "usages": 1
+  },
+  {
+    "hex": "#F0FDF4",
+    "usages": 1
+  },
+  {
+    "hex": "#A5D0B9",
+    "usages": 1
+  },
+  {
+    "hex": "#95D4B3",
+    "usages": 1
+  },
+  {
+    "hex": "#1E1A16",
+    "usages": 1
+  },
+  {
+    "hex": "#F0E6E0",
+    "usages": 1
+  },
+  {
+    "hex": "#FFDEA4",
+    "usages": 1
+  },
+  {
+    "hex": "#9CF4CD",
+    "usages": 1
+  },
+  {
+    "hex": "#FFC9AB",
+    "usages": 1
+  },
+  {
+    "hex": "#FF9256",
+    "usages": 1
+  },
+  {
+    "hex": "#C74700",
+    "usages": 1
+  },
+  {
+    "hex": "#8D3200",
+    "usages": 1
+  },
+  {
+    "hex": "#C4AAFF",
+    "usages": 1
+  },
+  {
+    "hex": "#8855FF",
+    "usages": 1
+  },
+  {
+    "hex": "#3C00C6",
+    "usages": 1
+  },
+  {
+    "hex": "#2A008C",
+    "usages": 1
+  },
+  {
+    "hex": "#D2D2D2",
+    "usages": 1
+  },
+  {
+    "hex": "#BBBBBB",
+    "usages": 1
+  },
+  {
+    "hex": "#A4A4A4",
+    "usages": 1
+  },
+  {
+    "hex": "#8E8E8E",
+    "usages": 1
+  },
+  {
+    "hex": "#777777",
+    "usages": 1
+  },
+  {
+    "hex": "#606060",
+    "usages": 1
+  },
+  {
+    "hex": "#4A4A4A",
+    "usages": 1
+  },
+  {
+    "hex": "#D00416",
+    "usages": 1
+  },
+  {
+    "hex": "#DFB400",
+    "usages": 1
+  },
+  {
+    "hex": "#84EBB4",
+    "usages": 1
+  }
+]

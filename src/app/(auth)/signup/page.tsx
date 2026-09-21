@@ -1,36 +1,52 @@
 'use client';
 
-import { FormEvent, useState } from 'react';
+import { FormEvent, Suspense, useState } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 import { createClient } from '@/lib/supabase/client';
+
+export const dynamic = 'force-dynamic';
 
 type SignupRole = 'client' | 'driver';
 
 export default function SignupPage() {
+  return (
+    <Suspense fallback={null}>
+      <SignupPageInner />
+    </Suspense>
+  );
+}
+
+function SignupPageInner() {
   const router = useRouter();
   const supabase = createClient();
+  const searchParams = useSearchParams();
+
+  // Carried over from the public guest quote widget or the driver CTA on
+  // the homepage — preselects the role and, after account creation, sends
+  // the person straight back to finish the transaction they started as a
+  // guest (e.g. confirming the delivery they already quoted).
+  const requestedRole = searchParams.get('role') === 'driver' ? 'driver' : 'client';
+  const redirectTo = searchParams.get('redirectTo');
+  const intentNotice = searchParams.get('intent') === 'order'
+    ? 'Create a free account to confirm the delivery you just quoted.'
+    : null;
 
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] =
-    useState('');
-  const [role, setRole] =
-    useState<SignupRole>('client');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [role, setRole] = useState<SignupRole>(requestedRole);
 
   const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmation, setShowConfirmation] =
-    useState(false);
+  const [showConfirmation, setShowConfirmation] = useState(false);
 
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  async function handleSignup(
-    event: FormEvent<HTMLFormElement>,
-  ) {
+  async function handleSignup(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
     setError(null);
@@ -42,9 +58,7 @@ export default function SignupPage() {
     }
 
     if (password.length < 8) {
-      setError(
-        'Your password must contain at least 8 characters.',
-      );
+      setError('Your password must contain at least 8 characters.');
       return;
     }
 
@@ -56,17 +70,16 @@ export default function SignupPage() {
     setIsSubmitting(true);
 
     try {
-      const { data, error: signupError } =
-        await supabase.auth.signUp({
-          email: email.trim(),
-          password,
-          options: {
-            data: {
-              full_name: fullName.trim(),
-              role,
-            },
+      const { data, error: signupError } = await supabase.auth.signUp({
+        email: email.trim(),
+        password,
+        options: {
+          data: {
+            full_name: fullName.trim(),
+            role,
           },
-        });
+        },
+      });
 
       if (signupError) {
         setError(signupError.message);
@@ -74,15 +87,13 @@ export default function SignupPage() {
       }
 
       if (!data.user) {
-        setError(
-          'Account creation failed. Please try again.',
-        );
+        setError('Account creation failed. Please try again.');
         return;
       }
 
       if (!data.session) {
         setNotice(
-          'Account created. Check your email to confirm your account before logging in.',
+          'Account created. Check your email to confirm your account before logging in.'
         );
 
         setFullName('');
@@ -92,40 +103,40 @@ export default function SignupPage() {
         return;
       }
 
+      // If user session is active, route based on role
+      const safeRedirect = redirectTo?.startsWith('/') && !redirectTo.startsWith('//') ? redirectTo : null;
+      router.push(safeRedirect || (role === 'client' ? '/client' : '/driver/profile'));
       router.refresh();
     } catch {
-      setError(
-        'Unable to create your account. Please try again.',
-      );
+      setError('Unable to create your account. Please try again.');
     } finally {
       setIsSubmitting(false);
     }
   }
 
   return (
-    <main className="relative grid min-h-screen overflow-hidden bg-[#fffaf7] lg:grid-cols-2">
-      <section className="relative hidden overflow-hidden bg-gradient-to-br from-orange-500 via-orange-500 to-orange-600 p-12 text-white lg:flex lg:flex-col lg:justify-between">
+    <main className="relative grid min-h-screen overflow-hidden bg-[#fbfdfa] lg:grid-cols-2">
+      <section className="relative hidden overflow-hidden bg-gradient-to-br from-[#14422B] via-[#1F5F3F] to-[#1F5F3F] p-12 text-white lg:flex lg:flex-col lg:justify-between">
         <div className="absolute -right-24 -top-24 h-72 w-72 rounded-full border-[48px] border-white/10" />
         <div className="absolute -bottom-40 -left-28 h-96 w-96 rounded-full bg-white/10 blur-2xl" />
 
         <Brand light />
 
         <div className="relative z-10 max-w-lg">
-          <p className="text-sm font-bold uppercase tracking-[0.2em] text-orange-100">
+          <p className="text-sm font-bold uppercase tracking-[0.2em] text-emerald-200">
             Join TaniAfrika
           </p>
 
-          <h1 className="mt-5 text-5xl font-bold leading-tight tracking-tight">
+          <h1 className="mt-5 text-5xl font-bold leading-tight tracking-tight font-display">
             Deliver or send parcels with one trusted platform.
           </h1>
 
-          <p className="mt-6 max-w-md text-base leading-7 text-orange-50">
-            Create a client account to send packages or register
-            as a driver to find delivery opportunities.
+          <p className="mt-6 max-w-md text-base leading-7 text-emerald-100/90">
+            Create a client account to book moves and send cargo, or register as a driver to bid on delivery jobs.
           </p>
         </div>
 
-        <p className="relative z-10 text-sm text-orange-100">
+        <p className="relative z-10 text-sm text-emerald-200/80">
           Simple. Reliable. African.
         </p>
       </section>
@@ -136,25 +147,28 @@ export default function SignupPage() {
             <Brand />
           </div>
 
-          <div className="rounded-[28px] border border-orange-100 bg-white p-6 shadow-[0_24px_70px_rgba(249,115,22,0.10)] sm:p-8">
+          <div className="rounded-[28px] border border-emerald-950/10 bg-white p-6 shadow-xl shadow-emerald-950/5 sm:p-8">
             <div>
-              <p className="text-xs font-bold uppercase tracking-[0.18em] text-orange-500">
+              <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#1F5F3F]">
                 Get started
               </p>
 
-              <h2 className="mt-2 text-3xl font-bold tracking-tight text-slate-950">
+              <h2 className="mt-2 text-3xl font-bold tracking-tight text-slate-950 font-display">
                 Create your account
               </h2>
 
               <p className="mt-2 text-sm leading-6 text-slate-500">
-                Select how you intend to use TaniAfrika.
+                Select your account role to continue:
               </p>
+
+              {intentNotice ? (
+                <p className="mt-4 rounded-xl border border-emerald-100 bg-emerald-50 px-3.5 py-2.5 text-xs font-medium text-[#1F5F3F]">
+                  {intentNotice}
+                </p>
+              ) : null}
             </div>
 
-            <form
-              onSubmit={handleSignup}
-              className="mt-8 space-y-5"
-            >
+            <form onSubmit={handleSignup} className="mt-8 space-y-5">
               <div>
                 <p className="text-sm font-semibold text-slate-800">
                   I want to
@@ -188,11 +202,9 @@ export default function SignupPage() {
                   required
                   autoComplete="name"
                   value={fullName}
-                  onChange={(event) =>
-                    setFullName(event.target.value)
-                  }
+                  onChange={(event) => setFullName(event.target.value)}
                   placeholder="Jane Wanjiru"
-                  className="mt-2 min-h-12 w-full rounded-xl border border-orange-100 px-4 py-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 hover:border-orange-200 focus:border-orange-400 focus:ring-4 focus:ring-orange-100"
+                  className="mt-2 min-h-12 w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 hover:border-slate-300 focus:border-[#1F5F3F] focus:ring-4 focus:ring-emerald-100"
                 />
               </label>
 
@@ -207,11 +219,9 @@ export default function SignupPage() {
                   required
                   autoComplete="email"
                   value={email}
-                  onChange={(event) =>
-                    setEmail(event.target.value)
-                  }
+                  onChange={(event) => setEmail(event.target.value)}
                   placeholder="you@example.com"
-                  className="mt-2 min-h-12 w-full rounded-xl border border-orange-100 px-4 py-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 hover:border-orange-200 focus:border-orange-400 focus:ring-4 focus:ring-orange-100"
+                  className="mt-2 min-h-12 w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 hover:border-slate-300 focus:border-[#1F5F3F] focus:ring-4 focus:ring-emerald-100"
                 />
               </label>
 
@@ -221,9 +231,7 @@ export default function SignupPage() {
                 value={password}
                 visible={showPassword}
                 onChange={setPassword}
-                onToggle={() =>
-                  setShowPassword((current) => !current)
-                }
+                onToggle={() => setShowPassword((current) => !current)}
               />
 
               <PasswordInput
@@ -232,11 +240,7 @@ export default function SignupPage() {
                 value={confirmPassword}
                 visible={showConfirmation}
                 onChange={setConfirmPassword}
-                onToggle={() =>
-                  setShowConfirmation(
-                    (current) => !current,
-                  )
-                }
+                onToggle={() => setShowConfirmation((current) => !current)}
               />
 
               {error ? (
@@ -251,7 +255,7 @@ export default function SignupPage() {
               {notice ? (
                 <p
                   role="status"
-                  className="rounded-xl border border-emerald-100 bg-emerald-50 px-4 py-3 text-sm text-emerald-700"
+                  className="rounded-xl border border-emerald-100 bg-emerald-50 px-4 py-3 text-sm text-[#1F5F3F]"
                 >
                   {notice}
                 </p>
@@ -260,7 +264,7 @@ export default function SignupPage() {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-orange-500 px-5 py-3 text-sm font-semibold text-white shadow-[0_12px_30px_rgba(249,115,22,0.22)] transition hover:bg-orange-600 focus:outline-none focus:ring-4 focus:ring-orange-100 disabled:cursor-not-allowed disabled:opacity-60"
+                className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-[#1F5F3F] px-5 py-3 text-sm font-semibold text-white shadow-md shadow-emerald-950/10 transition hover:bg-[#14422B] focus:outline-none focus:ring-4 focus:ring-emerald-100 disabled:cursor-not-allowed disabled:opacity-60 cursor-pointer"
               >
                 {isSubmitting ? (
                   <>
@@ -279,8 +283,8 @@ export default function SignupPage() {
             <p className="mt-7 text-center text-sm text-slate-500">
               Already have an account?{' '}
               <Link
-                href="/login"
-                className="font-semibold text-orange-600 hover:underline"
+                href={redirectTo ? `/login?redirectTo=${encodeURIComponent(redirectTo)}` : '/login'}
+                className="font-semibold text-[#1F5F3F] hover:underline"
               >
                 Log in
               </Link>
@@ -309,15 +313,15 @@ function RoleOption({
     <button
       type="button"
       onClick={onClick}
-      className={`rounded-xl border p-4 text-left transition ${
+      className={`rounded-xl border p-4 text-left transition cursor-pointer ${
         active
-          ? 'border-orange-400 bg-orange-50 ring-4 ring-orange-100'
-          : 'border-slate-200 bg-white hover:border-orange-200 hover:bg-orange-50/40'
+          ? 'border-[#1F5F3F] bg-emerald-50/60 ring-4 ring-emerald-100'
+          : 'border-slate-200 bg-white hover:border-emerald-200 hover:bg-emerald-50/20'
       }`}
     >
       <span
         className={`block text-sm font-semibold ${
-          active ? 'text-orange-700' : 'text-slate-800'
+          active ? 'text-[#1F5F3F]' : 'text-slate-800'
         }`}
       >
         {title}
@@ -361,20 +365,16 @@ function PasswordInput({
           minLength={8}
           autoComplete="new-password"
           value={value}
-          onChange={(event) =>
-            onChange(event.target.value)
-          }
+          onChange={(event) => onChange(event.target.value)}
           placeholder="At least 8 characters"
-          className="min-h-12 w-full rounded-xl border border-orange-100 px-4 py-3 pr-12 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 hover:border-orange-200 focus:border-orange-400 focus:ring-4 focus:ring-orange-100"
+          className="min-h-12 w-full rounded-xl border border-slate-200 px-4 py-3 pr-12 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 hover:border-slate-300 focus:border-[#1F5F3F] focus:ring-4 focus:ring-emerald-100"
         />
 
         <button
           type="button"
           onClick={onToggle}
-          aria-label={
-            visible ? `Hide ${label}` : `Show ${label}`
-          }
-          className="absolute inset-y-0 right-0 grid w-12 place-items-center text-slate-400 transition hover:text-orange-500"
+          aria-label={visible ? `Hide ${label}` : `Show ${label}`}
+          className="absolute inset-y-0 right-0 grid w-12 place-items-center text-slate-400 transition hover:text-slate-700"
         >
           {visible ? <EyeOffIcon /> : <EyeIcon />}
         </button>
@@ -389,8 +389,8 @@ function Brand({ light = false }: { light?: boolean }) {
       <span
         className={`grid h-11 w-11 place-items-center rounded-xl text-lg font-black shadow-lg ${
           light
-            ? 'bg-white text-orange-500'
-            : 'bg-gradient-to-br from-orange-400 to-orange-500 text-white'
+            ? 'bg-white text-[#1F5F3F]'
+            : 'bg-[#1F5F3F] text-white'
         }`}
       >
         T
@@ -402,19 +402,12 @@ function Brand({ light = false }: { light?: boolean }) {
             light ? 'text-white' : 'text-slate-950'
           }`}
         >
-          Tani
-          <span
-            className={
-              light ? 'text-orange-100' : 'text-orange-500'
-            }
-          >
-            Afrika
-          </span>
+          TaniAfrika
         </span>
 
         <span
           className={`block text-[9px] font-semibold uppercase tracking-[0.2em] ${
-            light ? 'text-orange-100' : 'text-slate-400'
+            light ? 'text-emerald-100' : 'text-slate-400'
           }`}
         >
           Delivering what matters
@@ -441,7 +434,7 @@ function EyeIcon() {
       aria-hidden="true"
     >
       <path
-        d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6Z"
+        d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6Z"
         strokeLinejoin="round"
       />
       <circle cx="12" cy="12" r="2.5" />
