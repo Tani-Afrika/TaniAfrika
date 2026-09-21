@@ -98,7 +98,7 @@ export default function PaymentHoldPanel({ orderId, hold, mpesaEnabled }: Paymen
         onClick={handlePay}
         disabled={isPending}
         aria-label="Pay with M-Pesa"
-        className="mt-4 w-full rounded-lg bg-maroon-600 px-4 py-3 text-sm font-semibold text-white transition hover:bg-maroon-700 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
+        className="mt-4 w-full rounded-lg bg-trust-600 px-4 py-3 text-sm font-semibold text-white transition hover:bg-trust-700 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
       >
         {isPending ? 'Starting M-Pesa…' : 'Pay with M-Pesa'}
       </button>

@@ -22,7 +22,7 @@ type LocationPickerProps = {
 const markerIcon = L.divIcon({
   className: '',
   html: `
-    <div style="width:34px;height:34px;border-radius:9999px 9999px 9999px 0;transform:rotate(-45deg);background:#ff5a1f;border:3px solid white;box-shadow:0 8px 20px rgba(20,20,20,.22);display:grid;place-items:center">
+    <div style="width:34px;height:34px;border-radius:9999px 9999px 9999px 0;transform:rotate(-45deg);background:#1F5F3F;border:3px solid white;box-shadow:0 8px 20px rgba(20,20,20,.22);display:grid;place-items:center">
       <div style="width:10px;height:10px;border-radius:9999px;background:white"></div>
     </div>
   `,
@@ -67,7 +67,7 @@ export function LocationPicker({
           <p className="mt-0.5 text-xs text-ink-500">{helperText}</p>
         </div>
         {value ? (
-          <span className="rounded-full bg-orange-50 px-2.5 py-1 text-xs font-semibold text-orange-700">
+          <span className="rounded-full bg-trust-50 px-2.5 py-1 text-xs font-semibold text-trust-700">
             Pin placed
           </span>
         ) : (

@@ -53,15 +53,15 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
   const orderLabel = orderNumber != null ? `Order #${orderNumber}` : `Order #${order.id.slice(0, 8)}`;
 
   return (
-    <main className="min-h-screen bg-gray-50 px-4 py-5 sm:px-6 sm:py-8 lg:px-8">
+    <div>
       <OrderLiveRefresh orderId={order.id} />
       <div className="mx-auto max-w-[1500px]">
         <header className="mb-6 flex items-center gap-4 sm:mb-8">
-          <Link href="/client" aria-label="Back to client home" className="grid h-11 w-11 shrink-0 place-items-center rounded-full border border-gray-200 bg-white text-xl text-gray-700 shadow-sm transition hover:border-orange-200 hover:text-orange-600">
+          <Link href="/client" aria-label="Back to client home" className="grid h-11 w-11 shrink-0 place-items-center rounded-full border border-gray-200 bg-white text-xl text-gray-700 shadow-sm transition hover:border-trust-200 hover:text-trust-600">
             {String.fromCharCode(8592)}
           </Link>
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-orange-600">TaniAfrika delivery</p>
+            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-trust-600">TaniAfrika delivery</p>
             <h1 className="mt-1 font-display text-3xl font-semibold tracking-tight text-gray-900 sm:text-4xl">
               Track Order
             </h1>
@@ -73,7 +73,7 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
             <section className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm sm:p-6">
               <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
                 <div>
-                  <p className="text-xs font-semibold uppercase tracking-[0.16em] text-orange-600">
+                  <p className="text-xs font-semibold uppercase tracking-[0.16em] text-trust-600">
                     {orderLabel}
                   </p>
                   <p className="mt-1 text-xs text-gray-400">Placed {formatDate(order.created_at)}</p>
@@ -85,7 +85,7 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
 
               <dl className="mt-4 space-y-3 text-sm">
                 <div className="flex gap-3">
-                  <span className="mt-0.5 text-orange-600">{String.fromCharCode(9679)}</span>
+                  <span className="mt-0.5 text-trust-600">{String.fromCharCode(9679)}</span>
                   <div>
                     <dt className="text-xs text-gray-400">Pickup</dt>
                     <dd className="text-gray-800">{order.pickup_address}</dd>
@@ -114,7 +114,7 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
                 {order.price_agreed ? (
                   <div>
                     <p className="text-xs text-gray-400">Agreed price</p>
-                    <p className="mt-0.5 font-semibold text-orange-600">{formatCurrency(order.price_agreed)}</p>
+                    <p className="mt-0.5 font-semibold text-trust-600">{formatCurrency(order.price_agreed)}</p>
                   </div>
                 ) : null}
               </div>
@@ -152,7 +152,7 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
 
             {order.status === 'delivered' ? (
               <section className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm sm:p-6">
-                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-orange-600">Something wrong?</p>
+                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-trust-600">Something wrong?</p>
                 <p className="mt-2 text-sm leading-6 text-ink-600">
                   Dispute only if the delivery is not what you agreed. This does not complete the trip.
                 </p>
@@ -164,9 +164,9 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
 
             {isAssigned && driver ? (
               <section className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm sm:p-6">
-                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-orange-600">Your driver</p>
+                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-trust-600">Your driver</p>
                 <div className="mt-3 flex items-center gap-3">
-                  <div className="grid h-12 w-12 shrink-0 place-items-center overflow-hidden rounded-full bg-orange-50 text-base font-semibold text-orange-600">
+                  <div className="grid h-12 w-12 shrink-0 place-items-center overflow-hidden rounded-full bg-trust-50 text-base font-semibold text-trust-600">
                     {driver.avatar_url ? (
                       <img src={driver.avatar_url} alt={driver.full_name} className="h-full w-full object-cover" />
                     ) : (
@@ -185,7 +185,7 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
                   <a
                     href={`tel:${driver.phone}`}
                     aria-label={`Call ${driver.full_name} at ${driver.phone}`}
-                    className="mt-4 inline-flex items-center gap-2 rounded-lg border border-gray-200 px-3.5 py-2 text-xs font-semibold text-gray-700 transition hover:border-orange-200 hover:text-orange-600"
+                    className="mt-4 inline-flex items-center gap-2 rounded-lg border border-gray-200 px-3.5 py-2 text-xs font-semibold text-gray-700 transition hover:border-trust-200 hover:text-trust-600"
                   >
                     Call {driver.phone}
                   </a>
@@ -203,7 +203,7 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
             ) : null}
 
             <section className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm sm:p-6">
-              <p className="mb-4 text-xs font-semibold uppercase tracking-[0.16em] text-orange-600">Status timeline</p>
+              <p className="mb-4 text-xs font-semibold uppercase tracking-[0.16em] text-trust-600">Status timeline</p>
               <OrderStatusTimeline history={history} />
             </section>
           </div>
@@ -218,6 +218,6 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
           </div>
         </div>
       </div>
-    </main>
+    </div>
   );
 }

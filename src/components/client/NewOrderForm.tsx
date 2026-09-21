@@ -166,7 +166,7 @@ function NewOrderFormInner() {
   };
 
   const inputClassName =
-    'w-full rounded-lg border border-ink-400/30 bg-white px-3.5 py-3 text-sm text-ink-900 outline-none transition placeholder:text-ink-400 focus:border-orange-600 focus:ring-2 focus:ring-orange-100';
+    'w-full rounded-lg border border-ink-400/30 bg-white px-3.5 py-3 text-sm text-ink-900 outline-none transition placeholder:text-ink-400 focus:border-trust-600 focus:ring-2 focus:ring-trust-100';
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
@@ -185,7 +185,7 @@ function NewOrderFormInner() {
       <div className="grid gap-6 lg:grid-cols-[minmax(0,0.92fr)_minmax(440px,1.08fr)] lg:items-start">
         <section className="rounded-2xl border border-ink-400/15 bg-white p-5 shadow-sm sm:p-6 lg:sticky lg:top-6">
           <div className="mb-6">
-            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-orange-600">Order details</p>
+            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-trust-600">Order details</p>
             <h2 className="mt-2 font-display text-2xl font-semibold text-ink-900">Where should we pick up and drop off?</h2>
             <p className="mt-2 text-sm leading-6 text-ink-600">
               Add the route, what you are moving, and the truck size you need. Drivers will send competitive bids.
@@ -196,7 +196,7 @@ function NewOrderFormInner() {
             <label className="block">
               <span className="mb-2 block text-sm font-medium text-ink-700">Pickup address</span>
               <div className="relative">
-                <span className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-orange-600">●</span>
+                <span className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-trust-600">●</span>
                 <input
                   value={pickupAddress}
                   onChange={(event) => {
@@ -228,7 +228,7 @@ function NewOrderFormInner() {
             <label className="block">
               <span className="mb-2 block text-sm font-medium text-ink-700">Drop-off address</span>
               <div className="relative">
-                <span className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-orange-600">●</span>
+                <span className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-trust-600">●</span>
                 <input
                   value={dropoffAddress}
                   onChange={(event) => {
@@ -261,7 +261,7 @@ function NewOrderFormInner() {
                 type="checkbox"
                 checked={fragile}
                 onChange={(event) => setFragile(event.target.checked)}
-                className="mt-1 h-4 w-4 rounded border-ink-400/40 text-orange-600 focus:ring-orange-100"
+                className="mt-1 h-4 w-4 rounded border-ink-400/40 text-trust-600 focus:ring-trust-100"
               />
               <span>
                 <span className="block text-sm font-medium text-ink-700">Fragile items</span>
@@ -279,7 +279,7 @@ function NewOrderFormInner() {
                   name="schedule-mode"
                   checked={scheduleMode === 'asap'}
                   onChange={handleScheduleAsap}
-                  className="h-4 w-4 border-ink-400/40 text-orange-600 focus:ring-orange-100"
+                  className="h-4 w-4 border-ink-400/40 text-trust-600 focus:ring-trust-100"
                 />
                 As soon as possible
               </label>
@@ -289,7 +289,7 @@ function NewOrderFormInner() {
                   name="schedule-mode"
                   checked={scheduleMode === 'scheduled'}
                   onChange={handleScheduleLater}
-                  className="h-4 w-4 border-ink-400/40 text-orange-600 focus:ring-orange-100"
+                  className="h-4 w-4 border-ink-400/40 text-trust-600 focus:ring-trust-100"
                 />
                 Schedule for later
               </label>
@@ -320,7 +320,7 @@ function NewOrderFormInner() {
                 type="file"
                 accept={PHOTO_ACCEPT}
                 onChange={handlePhotoChange}
-                className="block w-full text-sm text-ink-700 file:mr-3 file:rounded-lg file:border-0 file:bg-orange-50 file:px-3 file:py-2 file:text-sm file:font-medium file:text-orange-700"
+                className="block w-full text-sm text-ink-700 file:mr-3 file:rounded-lg file:border-0 file:bg-trust-50 file:px-3 file:py-2 file:text-sm file:font-medium file:text-trust-700"
                 aria-label="Photo of items to move"
               />
               {photo ? <p className="mt-2 text-xs text-ink-500">{photo.name}</p> : null}
@@ -346,8 +346,8 @@ function NewOrderFormInner() {
             </label>
           </div>
 
-          <div className="mt-6 rounded-xl border border-orange-100 bg-orange-50/70 p-4">
-            <p className="text-sm font-semibold text-orange-700">How bidding works</p>
+          <div className="mt-6 rounded-xl border border-trust-100 bg-trust-50/70 p-4">
+            <p className="text-sm font-semibold text-trust-700">How bidding works</p>
             <p className="mt-1 text-xs leading-5 text-ink-600">
               Your order becomes visible to approved drivers. Review their price and profile before accepting one bid.
             </p>
@@ -395,7 +395,7 @@ function NewOrderFormInner() {
         <button
           type="submit"
           disabled={!isFormComplete || isPending}
-          className="w-full rounded-lg bg-orange-600 px-6 py-3 text-sm font-semibold text-white transition hover:bg-orange-700 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto sm:min-w-48"
+          className="w-full rounded-lg bg-trust-600 px-6 py-3 text-sm font-semibold text-white transition-[background-color,transform] duration-160 ease-out hover:bg-trust-700 active:scale-[0.97] disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto sm:min-w-48"
         >
           {isPending ? 'Posting order…' : 'Find Drivers'}
         </button>

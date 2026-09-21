@@ -41,19 +41,19 @@ export default function ClientShell({
       : pathname === href || pathname.startsWith(`${href}/`);
 
   const sidebar = (
-    <div className="flex h-full flex-col border-r border-[#f6e6df] bg-[#fffdfc] text-[#101828]">
-      <div className="flex h-[116px] items-center border-b border-[#f6e6df] px-8">
+    <div className="flex h-full flex-col border-r border-[#C2E4D2]/60 bg-white text-[#101828]">
+      <div className="flex h-[116px] items-center border-b border-[#C2E4D2]/60 px-8">
         <Link
           href="/client"
           className="flex items-center gap-4"
           onClick={() => setOpen(false)}
         >
-          <span className="grid h-12 w-12 place-items-center rounded-xl bg-gradient-to-br from-[#ff6a2a] to-[#ff8b55] text-xl font-black text-white shadow-[0_8px_22px_rgba(255,106,42,.22)]">
+          <span className="grid h-12 w-12 place-items-center rounded-xl bg-[#1F5F3F] text-xl font-black text-white shadow-[0_8px_22px_rgba(31,95,63,.22)]">
             T
           </span>
           <div>
             <p className="text-[25px] font-black leading-none tracking-[-.04em]">
-              Tani<span className="text-[#ff5b18]">Afrika</span>
+              Tani<span className="text-[#1F5F3F]">Afrika</span>
             </p>
             <p className="mt-2 text-[11px] font-semibold uppercase tracking-[.2em] text-[#667085]">
               Client portal
@@ -72,8 +72,8 @@ export default function ClientShell({
               onClick={() => setOpen(false)}
               className={`flex items-center gap-4 rounded-2xl px-4 py-4 text-[15px] font-medium transition ${
                 active
-                  ? 'bg-[#fff1e9] font-bold text-[#ff5b18]'
-                  : 'text-[#101828] hover:bg-[#fff8f4] hover:text-[#ff5b18]'
+                  ? 'bg-[#E8F5EE] font-bold text-[#1F5F3F]'
+                  : 'text-[#101828] hover:bg-[#F3FAF4] hover:text-[#1F5F3F]'
               }`}
             >
               <ClientIcon name={item.icon} className="h-6 w-6" />
@@ -83,12 +83,12 @@ export default function ClientShell({
         })}
       </nav>
 
-      <div className="m-5 overflow-hidden rounded-2xl border border-[#f2ded5] bg-white">
+      <div className="m-5 overflow-hidden rounded-2xl border border-[#C2E4D2]/60 bg-white">
         <Link
           href="/client/profile"
-          className="flex items-center gap-3 border-b border-[#f2ded5] p-4 transition hover:bg-[#fffaf7]"
+          className="flex items-center gap-3 border-b border-[#C2E4D2]/60 p-4 transition hover:bg-[#F3FAF4]"
         >
-          <div className="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-[#fff0e8] text-sm font-black text-[#ff5b18]">
+          <div className="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-[#E8F5EE] text-sm font-black text-[#1F5F3F]">
             {initials}
           </div>
           <div className="min-w-0 flex-1">
@@ -100,13 +100,13 @@ export default function ClientShell({
 
         <Link
           href="/client/messages"
-          className="flex items-center gap-3 px-5 py-4 text-sm font-medium text-[#344054] transition hover:bg-[#fffaf7] hover:text-[#ff5b18]"
+          className="flex items-center gap-3 px-5 py-4 text-sm font-medium text-[#344054] transition hover:bg-[#F3FAF4] hover:text-[#1F5F3F]"
         >
           <ClientIcon name="support" className="h-5 w-5" />
           Help &amp; support
         </Link>
 
-        <div className="border-t border-[#f2ded5] px-5 py-1 [&_button]:flex [&_button]:w-full [&_button]:items-center [&_button]:justify-start [&_button]:gap-3 [&_button]:bg-transparent [&_button]:px-0 [&_button]:py-4 [&_button]:text-sm [&_button]:font-medium [&_button]:text-[#344054] hover:[&_button]:text-[#ff5b18]">
+        <div className="border-t border-[#C2E4D2]/60 px-5 py-1 [&_button]:flex [&_button]:w-full [&_button]:items-center [&_button]:justify-start [&_button]:gap-3 [&_button]:bg-transparent [&_button]:px-0 [&_button]:py-4 [&_button]:text-sm [&_button]:font-medium [&_button]:text-[#344054] hover:[&_button]:text-[#1F5F3F]">
           <LogoutButton />
         </div>
       </div>
@@ -114,7 +114,7 @@ export default function ClientShell({
   );
 
   return (
-    <div className="min-h-screen bg-[#fffdfc] text-[#101828]">
+    <div className="min-h-screen bg-[#F3FAF4] text-[#101828]">
       <aside className="fixed inset-y-0 left-0 z-40 hidden w-[304px] lg:block">
         {sidebar}
       </aside>
@@ -133,12 +133,12 @@ export default function ClientShell({
       ) : null}
 
       <div className="lg:pl-[304px]">
-        <header className="sticky top-0 z-30 border-b border-[#f6e6df] bg-white/95 backdrop-blur-xl">
+        <header className="sticky top-0 z-30 border-b border-[#C2E4D2]/60 bg-white/95 backdrop-blur-xl">
           <div className="flex h-[104px] items-center justify-between gap-4 px-4 sm:px-8 xl:px-10">
             <div className="flex min-w-0 items-center gap-3">
               <button
                 onClick={() => setOpen(true)}
-                className="grid h-11 w-11 place-items-center rounded-xl border border-[#f2ded5] bg-white text-[#344054] shadow-sm lg:hidden"
+                className="grid h-11 w-11 place-items-center rounded-xl border border-[#C2E4D2]/60 bg-white text-[#344054] shadow-sm lg:hidden"
                 aria-label="Open navigation"
               >
                 <ClientIcon name="menu" className="h-5 w-5" />
@@ -156,13 +156,13 @@ export default function ClientShell({
             <div className="flex items-center gap-3">
               <Link
                 href="/client/orders/new"
-                className="hidden items-center gap-3 rounded-xl bg-[#ff5b18] px-5 py-3.5 text-sm font-bold text-white shadow-[0_8px_20px_rgba(255,91,24,.2)] transition hover:bg-[#f04e0c] sm:inline-flex"
+                className="hidden items-center gap-3 rounded-xl bg-[#1F5F3F] px-5 py-3.5 text-sm font-bold text-white shadow-[0_8px_20px_rgba(31,95,63,.18)] transition-[background-color,transform] duration-160 ease-out hover:bg-[#14422B] active:scale-[0.97] sm:inline-flex"
               >
                 <ClientIcon name="plus" className="h-5 w-5" />
                 New delivery
               </Link>
               <button
-                className="relative grid h-14 w-14 place-items-center rounded-xl border border-[#f2ded5] bg-white text-[#344054] shadow-sm"
+                className="relative grid h-14 w-14 place-items-center rounded-xl border border-[#C2E4D2]/60 bg-white text-[#344054] shadow-sm"
                 aria-label="Notifications"
               >
                 <ClientIcon name="bell" className="h-6 w-6" />

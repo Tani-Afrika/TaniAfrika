@@ -50,7 +50,7 @@ export default function BidMessageThread({ orderId, bidId, currentUserId, messag
               <div key={message.id} className={`flex ${isMine ? 'justify-end' : 'justify-start'}`}>
                 <div
                   className={`max-w-[80%] rounded-2xl px-3 py-2 text-sm leading-5 ${
-                    isMine ? 'bg-maroon-600 text-white' : 'bg-white text-ink-800 shadow-sm'
+                    isMine ? 'bg-trust-600 text-white' : 'bg-white text-ink-800 shadow-sm'
                   }`}
                 >
                   <p>{message.message}</p>
@@ -77,13 +77,13 @@ export default function BidMessageThread({ orderId, bidId, currentUserId, messag
             }
           }}
           placeholder="Ask the driver a question…"
-          className="flex-1 rounded-lg border border-ink-400/30 bg-white px-3 py-2 text-sm outline-none focus:border-maroon-600 focus:ring-2 focus:ring-maroon-100"
+          className="flex-1 rounded-lg border border-ink-400/30 bg-white px-3 py-2 text-sm outline-none focus:border-trust-600 focus:ring-2 focus:ring-trust-100"
         />
         <button
           type="button"
           onClick={handleSend}
           disabled={!draft.trim() || isPending}
-          className="rounded-lg bg-maroon-600 px-3.5 py-2 text-xs font-semibold text-white transition hover:bg-maroon-700 disabled:cursor-not-allowed disabled:opacity-60"
+          className="rounded-lg bg-trust-600 px-3.5 py-2 text-xs font-semibold text-white transition hover:bg-trust-700 disabled:cursor-not-allowed disabled:opacity-60"
         >
           Send
         </button>
