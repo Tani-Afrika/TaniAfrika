@@ -38,6 +38,15 @@ function PinDrop({ value, onChange }: Pick<LocationPickerProps, 'value' | 'onCha
   });
 
   useEffect(() => {
+    const frame = window.requestAnimationFrame(() => map.invalidateSize());
+    const timeout = window.setTimeout(() => map.invalidateSize(), 200);
+    return () => {
+      window.cancelAnimationFrame(frame);
+      window.clearTimeout(timeout);
+    };
+  }, [map]);
+
+  useEffect(() => {
     if (value) {
       map.flyTo([value.lat, value.lng], Math.max(map.getZoom(), 14), {
         duration: 0.5,
@@ -78,10 +87,16 @@ export function LocationPicker({
       </div>
 
       <div className="h-[280px] sm:h-[360px] lg:h-[480px]">
-        <MapContainer center={center} zoom={13} scrollWheelZoom className="h-full w-full">
+        <MapContainer
+          center={center}
+          zoom={13}
+          scrollWheelZoom
+          className="h-full w-full"
+          style={{ height: '100%', width: '100%' }}
+        >
           <TileLayer
-            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>'
+            url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
           />
           <PinDrop value={value} onChange={onChange} />
         </MapContainer>

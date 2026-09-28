@@ -3,7 +3,6 @@
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { DEV_ROLE_COOKIE, MOCK_USERS, type DevRole } from '@/lib/auth/dev-session';
-import { createAdminClient } from '@/lib/supabase/admin';
 
 export async function loginAsDevUser(roleKey: DevRole): Promise<{
   success: boolean;
@@ -24,37 +23,9 @@ export async function loginAsDevUser(roleKey: DevRole): Promise<{
     httpOnly: false,
   });
 
-  // If service role key is available, ensure profile exists in database for relational queries
-  if (process.env.SUPABASE_SERVICE_ROLE_KEY) {
-    try {
-      const adminClient = createAdminClient();
-      await adminClient.from('profiles').upsert(
-        {
-          id: user.id,
-          role: user.role,
-          full_name: user.full_name,
-          approval_status: user.approval_status,
-          account_status: 'active',
-          is_active: true,
-        },
-        { onConflict: 'id' }
-      );
-
-      if (user.role === 'driver') {
-        await adminClient.from('driver_profiles').upsert(
-          {
-            user_id: user.id,
-            approval_status: user.approval_status,
-            verification_status: user.approval_status === 'approved' ? 'verified' : 'pending',
-          },
-          { onConflict: 'user_id' }
-        );
-      }
-    } catch {
-      // Graceful fallback
-    }
-  }
-
+  // The four Quick Demo people already exist in Auth and profiles.
+  // Do not upsert approval here: that would mark Sam as pending in the
+  // database and hide open orders from him.
   return { success: true, redirect: user.redirectUrl };
 }
 

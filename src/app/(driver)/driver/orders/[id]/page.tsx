@@ -16,7 +16,7 @@ export default async function DriverOrderDetailPage({ params }: { params: Promis
   const { id } = await params;
   const detail = await getDriverOrderDetail(id);
   if (!detail) notFound();
-  const { order, ownBid, client, history, messages, currentUserId } = detail;
+  const { order, ownBid, client, history, messages, currentUserId, canBid } = detail;
   const assignedToMe = order.driver_id === currentUserId;
   const active = assignedToMe && ['assigned', 'driver_en_route', 'arrived', 'loading', 'picked_up', 'in_transit'].includes(order.status);
 
@@ -173,7 +173,7 @@ export default async function DriverOrderDetailPage({ params }: { params: Promis
         </div>
 
         <aside className="space-y-4 xl:sticky xl:top-[88px] xl:self-start">
-          {order.status === 'pending' && !ownBid ? (
+          {order.status === 'pending' && !ownBid && canBid ? (
             <section className="native-card rounded-2xl border border-slate-200/80 bg-white p-4 shadow-xs sm:p-5">
               <h2 className="text-base font-bold text-slate-950">Place your bid</h2>
               <p className="mt-1 text-xs text-slate-500">
@@ -182,6 +182,15 @@ export default async function DriverOrderDetailPage({ params }: { params: Promis
               <div className="mt-3.5">
                 <BidForm orderId={order.id} />
               </div>
+            </section>
+          ) : null}
+
+          {order.status === 'pending' && !ownBid && !canBid ? (
+            <section className="native-card rounded-2xl border border-amber-200 bg-amber-50 p-4 shadow-xs sm:p-5">
+              <h2 className="text-base font-bold text-slate-950">Waiting for approval</h2>
+              <p className="mt-1 text-xs leading-5 text-slate-600">
+                You can see this delivery. Bidding stays closed until an admin approves your driver account.
+              </p>
             </section>
           ) : null}
 

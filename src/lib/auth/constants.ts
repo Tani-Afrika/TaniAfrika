@@ -17,7 +17,7 @@ export interface DevSessionUser {
 export const MOCK_USERS: Record<DevRole, DevSessionUser> = {
   admin: {
     id: 'a0000000-0000-0000-0000-000000000001',
-    email: 'admin@taniafrika.local',
+    email: 'admin@taniafrika.com',
     full_name: 'Wilfred Admin',
     role: 'admin',
     approval_status: 'approved',
@@ -26,7 +26,7 @@ export const MOCK_USERS: Record<DevRole, DevSessionUser> = {
   },
   approved_driver: {
     id: 'd0000000-0000-0000-0000-000000000001',
-    email: 'driver@taniafrika.local',
+    email: 'driver@taniafrika.com',
     full_name: 'John Driver (Approved)',
     role: 'driver',
     approval_status: 'approved',
@@ -35,7 +35,7 @@ export const MOCK_USERS: Record<DevRole, DevSessionUser> = {
   },
   pending_driver: {
     id: 'd0000000-0000-0000-0000-000000000002',
-    email: 'pending.driver@taniafrika.local',
+    email: 'pending.driver@taniafrika.com',
     full_name: 'Sam Driver (Pending)',
     role: 'driver',
     approval_status: 'pending',
@@ -44,8 +44,8 @@ export const MOCK_USERS: Record<DevRole, DevSessionUser> = {
   },
   client: {
     id: 'c0000000-0000-0000-0000-000000000001',
-    email: 'client@taniafrika.local',
-    full_name: 'Alice Client',
+    email: 'client@taniafrika.com',
+    full_name: 'Nicholas Client',
     role: 'client',
     approval_status: 'approved',
     redirectUrl: '/client',

@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "leaflet/dist/leaflet.css";
 
 @theme {
   /* Reliable Neighbour Brand Primary: Trust Green */
@@ -144,4 +145,18 @@ body {
     animation-duration: 0.01ms !important;
     transition-duration: 0.01ms !important;
   }
+}
+
+/* Tailwind preflight sets img { max-width: 100%; height: auto }, which
+   collapses Leaflet tiles so the map looks empty. */
+.leaflet-container {
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  background: var(--color-trust-100);
+}
+
+.leaflet-container img {
+  max-width: none !important;
+  max-height: none !important;
 }

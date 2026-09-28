@@ -2,8 +2,8 @@
 
 import { redirect } from 'next/navigation';
 
+import { getPortalActor } from '@/lib/auth/portal-actor';
 import { VEHICLE_TYPE_LABELS } from '@/lib/format';
-import { createClient } from '@/lib/supabase/server';
 import type { VehicleType } from '@/types/supabase';
 
 const MAX_PHOTO_BYTES = 15 * 1024 * 1024;
@@ -38,14 +38,11 @@ export async function createClientOrder(
   input: CreateClientOrderInput,
   photo: File | null,
 ): Promise<CreateClientOrderResult> {
-  const supabase = await createClient();
+  const actor = await getPortalActor();
+  const supabase = actor.supabase;
+  const userId = actor.userId;
 
-  const {
-    data: { user },
-    error: authError,
-  } = await supabase.auth.getUser();
-
-  if (authError || !user) {
+  if (!userId || (actor.usingDemo && actor.devSession?.role !== 'client')) {
     return { ok: false, error: 'Your session has expired. Please sign in again.' };
   }
 
@@ -100,7 +97,7 @@ export async function createClientOrder(
   const { data, error } = await supabase
     .from('orders')
     .insert({
-      client_id: user.id,
+      client_id: userId,
       pickup_address: pickupAddress,
       pickup_lat: input.pickupLat,
       pickup_lng: input.pickupLng,
@@ -163,7 +160,7 @@ export async function createClientOrder(
 
     const { error: attachmentError } = await supabase.from('order_attachments').insert({
       order_id: data.id,
-      uploaded_by: user.id,
+      uploaded_by: userId,
       attachment_type: 'goods_photo',
       storage_path: storagePath,
     });
