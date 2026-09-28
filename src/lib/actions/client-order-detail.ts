@@ -2,6 +2,7 @@
 
 import { revalidatePath } from 'next/cache';
 
+import { getPortalActor } from '@/lib/auth/portal-actor';
 import { createClient } from '@/lib/supabase/server';
 import type { Order, OrderStatusHistory } from '@/types/supabase';
 
@@ -82,19 +83,17 @@ const toNumberOrNull = (value: unknown): number | null => {
  * belong to the caller (the page should call notFound() in that case).
  */
 export async function getClientOrderDetail(orderId: string): Promise<ClientOrderDetail | null> {
-  const supabase = await createClient();
+  const actor = await getPortalActor();
+  const supabase = actor.supabase;
+  const userId = actor.userId;
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) return null;
+  if (!userId || (actor.usingDemo && actor.devSession?.role !== 'client')) return null;
 
   const { data: order, error: orderError } = await supabase
     .from('orders')
     .select('*')
     .eq('id', orderId)
-    .eq('client_id', user.id)
+    .eq('client_id', userId)
     .single();
 
   if (orderError || !order) return null;
@@ -216,7 +215,7 @@ export async function getClientOrderDetail(orderId: string): Promise<ClientOrder
     .from('reviews')
     .select('id, rating, comment')
     .eq('order_id', orderId)
-    .eq('reviewer_id', user.id)
+    .eq('reviewer_id', userId)
     .maybeSingle();
 
   const orderRow = order as Order & {
@@ -245,17 +244,16 @@ export async function getClientOrderDetail(orderId: string): Promise<ClientOrder
 }
 
 export async function acceptBid(orderId: string, bidId: string): Promise<ActionResult> {
-  const supabase = await createClient();
+  const actor = await getPortalActor();
+  if (!actor.userId || (actor.usingDemo && actor.devSession?.role !== 'client')) {
+    return { success: false, error: 'Not authenticated.' };
+  }
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  if (actor.usingDemo) {
+    return acceptDemoBid(actor.supabase, actor.userId, orderId, bidId);
+  }
 
-  if (!user) return { success: false, error: 'Not authenticated.' };
-
-  // Atomic database RPC locks the order and bid, rejects competing bids,
-  // reserves the driver and moves the order to payment_pending.
-  const { error } = await supabase.rpc('accept_bid', {
+  const { error } = await actor.supabase.rpc('accept_bid', {
     p_order_id: orderId,
     p_bid_id: bidId,
   });
@@ -265,6 +263,123 @@ export async function acceptBid(orderId: string, bidId: string): Promise<ActionR
   }
 
   revalidatePath(`/client/orders/${orderId}`);
+  return { success: true };
+}
+
+const ACTIVE_DRIVER_STATUSES = [
+  'payment_pending',
+  'assigned',
+  'driver_en_route',
+  'arrived',
+  'loading',
+  'picked_up',
+  'in_transit',
+  'delivered',
+];
+
+async function acceptDemoBid(
+  supabase: Awaited<ReturnType<typeof getPortalActor>>['supabase'],
+  clientId: string,
+  orderId: string,
+  bidId: string,
+): Promise<ActionResult> {
+  const { data: order, error: orderError } = await supabase
+    .from('orders')
+    .select('id, client_id, status, service_type_id, vehicle_type_required')
+    .eq('id', orderId)
+    .eq('client_id', clientId)
+    .single();
+
+  if (orderError || !order) return { success: false, error: 'Order not found.' };
+  if (order.status !== 'pending') {
+    return { success: false, error: 'This order is no longer accepting bids.' };
+  }
+
+  const { data: bid, error: bidError } = await supabase
+    .from('bids')
+    .select('id, driver_id, amount, status, vehicle_id')
+    .eq('id', bidId)
+    .eq('order_id', orderId)
+    .single();
+
+  if (bidError || !bid || bid.status !== 'pending') {
+    return { success: false, error: 'Bid is no longer available.' };
+  }
+
+  const { data: busy } = await supabase
+    .from('orders')
+    .select('id')
+    .eq('driver_id', bid.driver_id)
+    .in('status', ACTIVE_DRIVER_STATUSES)
+    .neq('id', orderId)
+    .limit(1);
+
+  if (busy && busy.length > 0) {
+    return { success: false, error: 'The driver is no longer available.' };
+  }
+
+  const { data: vehicle } = await supabase
+    .from('vehicles')
+    .select('id')
+    .eq('driver_id', bid.driver_id)
+    .eq('is_active', true)
+    .eq('is_verified', true)
+    .order('updated_at', { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  if (!vehicle) {
+    return { success: false, error: 'The selected driver has no verified active vehicle.' };
+  }
+
+  const amount = Number(bid.amount);
+  const amountMinor = Math.round(amount * 100);
+  const feeMinor = Math.round(amountMinor * 0.1);
+  const now = new Date().toISOString();
+
+  const { error: rejectError } = await supabase
+    .from('bids')
+    .update({ status: 'rejected', updated_at: now })
+    .eq('order_id', orderId)
+    .neq('id', bidId)
+    .eq('status', 'pending');
+
+  if (rejectError) return { success: false, error: rejectError.message };
+
+  const { error: acceptError } = await supabase
+    .from('bids')
+    .update({
+      status: 'accepted',
+      accepted_at: now,
+      updated_at: now,
+      vehicle_id: vehicle.id,
+    })
+    .eq('id', bidId);
+
+  if (acceptError) return { success: false, error: acceptError.message };
+
+  const { error: orderUpdateError } = await supabase
+    .from('orders')
+    .update({
+      accepted_bid_id: bidId,
+      driver_id: bid.driver_id,
+      vehicle_id: vehicle.id,
+      price_agreed: amount,
+      total_amount_minor: amountMinor,
+      platform_fee_minor: feeMinor,
+      driver_earnings_minor: amountMinor - feeMinor,
+      status: 'payment_pending',
+      updated_at: now,
+    })
+    .eq('id', orderId)
+    .eq('status', 'pending');
+
+  if (orderUpdateError) return { success: false, error: orderUpdateError.message };
+
+  revalidatePath(`/client/orders/${orderId}`);
+  revalidatePath('/driver');
+  revalidatePath('/driver/orders');
+  revalidatePath('/admin/orders');
   return { success: true };
 }
 

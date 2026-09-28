@@ -1,9 +1,8 @@
 import Link from 'next/link';
 
+import { getPortalActor } from '@/lib/auth/portal-actor';
 import { ClientIcon } from '@/components/client/ClientIcons';
 import { formatDate } from '@/lib/format';
-import { createClient } from '@/lib/supabase/server';
-import { getDevSession } from '@/lib/auth/dev-session';
 import type { OrderStatus } from '@/types/supabase';
 
 export const dynamic = 'force-dynamic';
@@ -25,11 +24,10 @@ const STATUS: Record<OrderStatus, { label: string; className: string }> = {
 };
 
 export default async function ClientOrdersPage() {
-  const devSession = await getDevSession();
-  const supabase = await createClient();
-  const { data: { user: authUser } } = await supabase.auth.getUser();
-  const user = devSession ? { id: devSession.id, email: devSession.email } : authUser;
-  if (!user) return null;
+  const actor = await getPortalActor();
+  if (!actor.userId || (actor.usingDemo && actor.devSession?.role !== 'client')) return null;
+  const user = { id: actor.userId };
+  const supabase = actor.supabase;
 
   const { data, error } = await supabase.from('orders').select('id, status, pickup_address, dropoff_address, goods_description, created_at').eq('client_id', user.id).order('created_at', { ascending: false });
   const orders = (data ?? []) as Array<{ id: string; status: OrderStatus; pickup_address: string; dropoff_address: string; goods_description: string; created_at: string }>;

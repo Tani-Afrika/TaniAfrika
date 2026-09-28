@@ -116,18 +116,18 @@ export type DriverProfileData = {
 
 async function getAuthedDriver(options: { allowPending?: boolean } = {}) {
   const devSession = await getDevSession();
-  const dbClient = process.env.SUPABASE_SERVICE_ROLE_KEY ? createAdminClient() : await createClient();
 
-  if (devSession && devSession.role === 'driver') {
+  if (devSession && devSession.role === 'driver' && process.env.SUPABASE_SERVICE_ROLE_KEY) {
     return {
-      supabase: dbClient,
+      supabase: createAdminClient(),
       user: { id: devSession.id, email: devSession.email } as any,
       approvalStatus: devSession.approval_status,
       rejectionReason: null,
+      demo: true,
     };
   }
 
-  const supabase = dbClient;
+  const supabase = await createClient();
   const { data: { user }, error: authError } = await supabase.auth.getUser();
 
   if (authError || !user) {
@@ -136,6 +136,7 @@ async function getAuthedDriver(options: { allowPending?: boolean } = {}) {
       user: { id: '00000000-0000-0000-0000-000000000000', email: 'driver@taniafrika.com' } as any,
       approvalStatus: 'approved',
       rejectionReason: null,
+      demo: false,
     };
   }
 
@@ -151,6 +152,7 @@ async function getAuthedDriver(options: { allowPending?: boolean } = {}) {
       user,
       approvalStatus: profile?.approval_status ?? 'approved',
       rejectionReason: null,
+      demo: false,
     };
   }
 
@@ -165,6 +167,7 @@ async function getAuthedDriver(options: { allowPending?: boolean } = {}) {
     user,
     approvalStatus: profile.approval_status,
     rejectionReason: driverProfile?.rejection_reason ?? null,
+    demo: false,
   };
 }
 
@@ -282,7 +285,7 @@ export async function getActiveDriverOrder(): Promise<DriverOrderSummary | null>
 
 export async function getDriverOrderDetail(orderId: string) {
   try {
-    const { supabase, user } = await getAuthedDriver();
+    const { supabase, user, approvalStatus } = await getAuthedDriver();
     const { data: order, error } = await supabase
       .from('orders')
       .select('*')
@@ -311,7 +314,7 @@ export async function getDriverOrderDetail(orderId: string) {
       ? await supabase.from('bid_messages').select('*').eq('bid_id', ownBid.id).order('created_at', { ascending: true })
       : { data: [] };
 
-    return { order, ownBid, client, history: history ?? [], messages: messages ?? [], currentUserId: user.id };
+    return { order, ownBid, client, history: history ?? [], messages: messages ?? [], currentUserId: user.id, canBid: approvalStatus === 'approved' };
   } catch (error: any) {
     console.warn('[getDriverOrderDetail] Handled error:', error?.message || error);
     return null;
@@ -344,8 +347,23 @@ export async function getDriverEarnings() {
 
 export async function placeDriverBid(input: { orderId: string; amount: number; message?: string }): Promise<{ success: boolean; error?: string }> {
   try {
-    const { supabase, user } = await getAuthedDriver();
+    const { supabase, user, approvalStatus } = await getAuthedDriver();
+    if (approvalStatus !== 'approved') {
+      return { success: false, error: 'Your account is still waiting for approval. You can see open deliveries, but you cannot bid yet.' };
+    }
     if (!Number.isFinite(input.amount) || input.amount <= 0) return { success: false, error: 'Enter a valid bid amount.' };
+
+    const { data: vehicle } = await supabase
+      .from('vehicles')
+      .select('id')
+      .eq('driver_id', user.id)
+      .eq('is_active', true)
+      .eq('is_verified', true)
+      .limit(1)
+      .maybeSingle();
+    if (!vehicle) {
+      return { success: false, error: 'You need a verified vehicle before you can bid.' };
+    }
 
     const { error } = await supabase.from('bids').insert({
       order_id: input.orderId,
@@ -382,13 +400,46 @@ export async function updateDriverOrderStatus(
   nextStatus: Extract<OrderStatus, 'driver_en_route' | 'arrived' | 'loading' | 'picked_up' | 'in_transit' | 'delivered'>,
 ): Promise<{ success: boolean; error?: string }> {
   try {
-    const { supabase } = await getAuthedDriver();
-    const { error } = await supabase.rpc('update_order_status', { p_order_id: orderId, p_new_status: nextStatus });
-    if (error) return { success: false, error: error.message };
+    const { supabase, user, demo } = await getAuthedDriver();
+    if (demo) {
+      const allowed: Record<string, string[]> = {
+        assigned: ['driver_en_route', 'picked_up'],
+        driver_en_route: ['arrived'],
+        arrived: ['loading'],
+        loading: ['picked_up'],
+        picked_up: ['in_transit'],
+        in_transit: ['delivered'],
+      };
+      const { data: order, error: orderError } = await supabase
+        .from('orders')
+        .select('id, status, driver_id')
+        .eq('id', orderId)
+        .single();
+      if (orderError || !order) return { success: false, error: 'Order not found.' };
+      if (order.driver_id !== user.id) return { success: false, error: 'This delivery is not assigned to you.' };
+      if (!allowed[order.status]?.includes(nextStatus)) {
+        return { success: false, error: 'That status change is not allowed from the current step.' };
+      }
+      const now = new Date().toISOString();
+      const patch: Record<string, string> = { status: nextStatus, updated_at: now };
+      if (nextStatus === 'driver_en_route') patch.driver_en_route_at = now;
+      if (nextStatus === 'arrived') patch.arrived_at = now;
+      if (nextStatus === 'picked_up') patch.picked_up_at = now;
+      if (nextStatus === 'delivered') patch.delivered_at = now;
+      const { error: updateError } = await supabase
+        .from('orders')
+        .update(patch)
+        .eq('id', orderId);
+      if (updateError) return { success: false, error: updateError.message };
+    } else {
+      const { error } = await supabase.rpc('update_order_status', { p_order_id: orderId, p_new_status: nextStatus });
+      if (error) return { success: false, error: error.message };
+    }
     revalidatePath('/driver');
     revalidatePath('/driver/active');
     revalidatePath(`/driver/orders/${orderId}`);
     revalidatePath('/driver/earnings');
+    revalidatePath(`/client/orders/${orderId}`);
     return { success: true };
   } catch (error) {
     return { success: false, error: error instanceof Error ? error.message : 'Could not update the delivery.' };
