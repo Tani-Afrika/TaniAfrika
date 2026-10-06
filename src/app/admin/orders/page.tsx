@@ -198,7 +198,7 @@ export default async function OrdersPage({ searchParams }: OrdersPageProps) {
                 <tr key={order.id} className="transition hover:bg-trust-light/30">
                   <td className="max-w-xs px-5 py-4">
                     <Link
-                      href={`/orders/${order.id}`}
+                      href={`/admin/orders/${order.id}`}
                       className="block font-semibold text-trust hover:underline"
                     >
                       <span className="block truncate">
@@ -247,7 +247,7 @@ export default async function OrdersPage({ searchParams }: OrdersPageProps) {
           {orders.map((order) => (
             <Link
               key={order.id}
-              href={`/orders/${order.id}`}
+              href={`/admin/orders/${order.id}`}
               className="native-card flex flex-col justify-between rounded-2xl border border-slate-200/80 bg-white p-3.5 shadow-xs transition hover:border-trust/40 hover:bg-trust-light/10 native-press"
             >
               <div>

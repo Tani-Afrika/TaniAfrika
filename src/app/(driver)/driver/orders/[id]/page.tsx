@@ -16,7 +16,7 @@ export default async function DriverOrderDetailPage({ params }: { params: Promis
   const { id } = await params;
   const detail = await getDriverOrderDetail(id);
   if (!detail) notFound();
-  const { order, ownBid, client, history, messages, currentUserId, canBid } = detail;
+  const { order, ownBid, client, history, messages, currentUserId, canBid, vehicles } = detail;
   const assignedToMe = order.driver_id === currentUserId;
   const active = assignedToMe && ['assigned', 'driver_en_route', 'arrived', 'loading', 'picked_up', 'in_transit'].includes(order.status);
 
@@ -180,7 +180,7 @@ export default async function DriverOrderDetailPage({ params }: { params: Promis
                 Choose a fair delivery fee and tell the customer when you can collect the parcel.
               </p>
               <div className="mt-3.5">
-                <BidForm orderId={order.id} />
+                <BidForm orderId={order.id} vehicles={vehicles} />
               </div>
             </section>
           ) : null}
@@ -202,6 +202,11 @@ export default async function DriverOrderDetailPage({ params }: { params: Promis
               <p className="mt-1.5 text-2xl font-bold text-slate-950">
                 {formatCurrency(Number(ownBid.amount))}
               </p>
+              {ownBid.estimated_pickup_at ? (
+                <p className="mt-1.5 text-xs text-slate-500">
+                  ETA pickup {formatDate(ownBid.estimated_pickup_at)}
+                </p>
+              ) : null}
               {ownBid.message ? (
                 <p className="mt-2 text-xs leading-5 text-slate-600">{ownBid.message}</p>
               ) : null}

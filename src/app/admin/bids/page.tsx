@@ -106,7 +106,7 @@ export default async function BidsPage() {
 
                 {/* Related order, condensed to one row */}
                 <Link
-                  href={`/orders/${bid.order_id}`}
+                  href={`/admin/orders/${bid.order_id}`}
                   className="group mt-2.5 flex items-center justify-between gap-2.5 rounded-xl border border-ink-200/80 px-3 py-2 transition hover:border-trust/30 hover:bg-trust-light/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-trust/20 native-press"
                 >
                   <div className="min-w-0">
