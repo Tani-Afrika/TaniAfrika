@@ -3,6 +3,7 @@
 > **Document Status:** Active Team Ledger  
 > **Current Milestone:** Staging Runtime Enablement & Driver Vertical Delivery  
 > **Baseline Date:** 14 September 2026  
+> **Updated:** 6 October 2026 — staging handshake loop closed in app code (W4–W7 + W5b)  
 > **Lead Engineers:** Wilfred Osozi (Driver & Platform), Nicholas Obonyo (Client)
 
 ---
@@ -26,12 +27,13 @@ TaniAfrika is transitioning from backend foundation validation into runtime enab
 |---|---|---|---|---|
 | **W1** | **Edge Functions & Test Users** | `supabase/functions/**` | Deploy 9 functions to staging; schedule 4 cron jobs; seed 1 client, 1 pending driver, 1 approved driver, 1 admin. | 🟡 Ready for Staging Deploy |
 | **W2** | **Driver Profile & Uploads** | `src/app/(driver)/driver/profile/**` | Upload `national_id`, `driving_licence`, `profile_photo` to `driver-documents`; register vehicle + logbook/insurance; pending drivers view `/driver` but cannot bid. | ✅ Completed |
-| **W3** | **Admin Driver Verification** | `src/app/(dashboard)/drivers/**` | Admin sets `vehicles.is_verified = true`, reviews `driver_documents.verification_status`, and provides `rejection_reason` on reject. | ✅ Completed |
-| **W4** | **Job Feed & Bidding** | `src/app/(driver)/driver/orders/**` | Filter pending orders matching driver's active vehicle; `BidForm` attaches `vehicle_id`, integer KES, and `estimated_pickup_at`. | ⚪ Queued |
-| **W5** | **Admin Test Payment Action** | `src/app/(dashboard)/orders/[id]/**` | Admin-only "Confirm test payment" invoking `record_payment_success` via service-role to advance order from `payment_pending` $\rightarrow$ `assigned`. | 🟢 Next Up (Handshake Blocker) |
-| **W6** | **Active Job & Status Chain** | `src/app/(driver)/driver/active/**` | Strict driver status sequence: `assigned` $\rightarrow$ `driver_en_route` $\rightarrow$ `arrived` $\rightarrow$ `loading` $\rightarrow$ `picked_up` $\rightarrow$ `in_transit` $\rightarrow$ `delivered`. Photo proof to `order-evidence`. | ⚪ Queued |
-| **W7** | **Driver Earnings Breakdown** | `src/app/(driver)/driver/earnings/**` | Display `price_agreed`, `platform_fee_minor`, `driver_earnings_minor` (divided by 100 KES). Show "Paid to M-Pesa" only when payout record exists. | ⚪ Queued |
-| **W8** | **Reliable Neighbour Styling** | `src/app/(driver)/**`, `src/app/(dashboard)/**` | Remove legacy orange (`#ef4d16`) and maroon. Apply Trust Green (`#1F5F3F`), Cream (`#F7F1E5`), and Amber (`#D4A244`). | 🟢 In Progress |
+| **W3** | **Admin Driver Verification** | `src/app/admin/drivers/**` | Admin sets `vehicles.is_verified = true`, reviews `driver_documents.verification_status`, and provides `rejection_reason` on reject. | ✅ Completed |
+| **W4** | **Job Feed & Bidding** | `src/app/(driver)/driver/orders/**` | Filter pending orders matching driver's active vehicle; `BidForm` attaches `vehicle_id`, integer KES, and `estimated_pickup_at`. | ✅ Completed |
+| **W5** | **Admin Test Payment Action** | `src/app/admin/orders/[id]/**` | Admin-only "Confirm test payment" invoking `record_payment_success` via service-role to advance order from `payment_pending` $\rightarrow$ `assigned`. | ✅ Completed |
+| **W5b** | **Admin Test Payout Action** | `src/app/admin/orders/[id]/**` | Admin-only "Confirm test payout" for `delivered` orders; queues escrow release and posts `record_payout_success` so order reaches `completed` without live M-Pesa. | ✅ Completed |
+| **W6** | **Active Job & Status Chain** | `src/app/(driver)/driver/active/**`, `orders/[id]` | Strict driver status sequence: `assigned` $\rightarrow$ `driver_en_route` $\rightarrow$ `arrived` $\rightarrow$ `loading` $\rightarrow$ `picked_up` $\rightarrow$ `in_transit` $\rightarrow$ `delivered`. Photo proof to `order-evidence`. | ✅ Completed |
+| **W7** | **Driver Earnings Breakdown** | `src/app/(driver)/driver/earnings/**` | Display `price_agreed`, `platform_fee_minor`, `driver_earnings_minor` (divided by 100 KES). Show "Paid to M-Pesa" only when payout record exists. | ✅ Completed |
+| **W8** | **Reliable Neighbour Styling** | `src/app/(driver)/**`, `src/app/admin/**` | Remove legacy orange (`#ef4d16`) and maroon. Apply Trust Green (`#1F5F3F`), Cream (`#F7F1E5`), and Amber (`#D4A244`). | ✅ Completed |
 
 ### Nicholas Obonyo — Client Vertical (Reference Only — Do Not Edit)
 
@@ -71,6 +73,15 @@ TaniAfrika is transitioning from backend foundation validation into runtime enab
 ---
 
 ## 4. Chronological Change Log
+
+### [2026-10-06] — Staging handshake loop (admin payout + driver ACs)
+* **Admin deep-links:** Dashboard, orders list, and bids now open `/admin/orders/[id]` (previously `/orders/[id]` 404).
+* **W5b Confirm Test Payout:** Admin action on `delivered` orders queues escrow release and posts `record_payout_success` (with service-role fallbacks) so orders reach `completed` without live M-Pesa.
+* **W4 Bidding:** `BidForm` requires verified `vehicle_id` + `estimated_pickup_at`.
+* **W6 Photo proof:** Pickup and delivery status steps require `order-evidence` + `order_attachments` (`pickup_proof` / `delivery_proof`).
+* **W7 Earnings:** Shows agreed price, platform fee, driver share, and Paid to M-Pesa when a payout succeeded.
+* **Client polish:** Orders search filters locally; Messages lists real bid threads linking to order detail.
+* **Tracker:** Marked W4–W8 and W5b completed in this ledger. **W1** (Edge Function deploy + cron + seed) remains the open staging runtime item.
 
 ### [2026-09-14] — Design System & Engineering Alignment
 * **Added `AGENT.md`:** Standardized operational directive and constraints for all AI models working on the repository.
