@@ -314,7 +314,24 @@ export async function getDriverOrderDetail(orderId: string) {
       ? await supabase.from('bid_messages').select('*').eq('bid_id', ownBid.id).order('created_at', { ascending: true })
       : { data: [] };
 
-    return { order, ownBid, client, history: history ?? [], messages: messages ?? [], currentUserId: user.id, canBid: approvalStatus === 'approved' };
+    const { data: vehicles } = await supabase
+      .from('vehicles')
+      .select('id, plate_number, vehicle_type, make, model')
+      .eq('driver_id', user.id)
+      .eq('is_active', true)
+      .eq('is_verified', true)
+      .order('created_at', { ascending: false });
+
+    return {
+      order,
+      ownBid,
+      client,
+      history: history ?? [],
+      messages: messages ?? [],
+      currentUserId: user.id,
+      canBid: approvalStatus === 'approved',
+      vehicles: vehicles ?? [],
+    };
   } catch (error: any) {
     console.warn('[getDriverOrderDetail] Handled error:', error?.message || error);
     return null;
@@ -326,40 +343,103 @@ export async function getDriverEarnings() {
     const { supabase, user } = await getAuthedDriver();
     const { data, error } = await supabase
       .from('orders')
-      .select('id,pickup_address,dropoff_address,driver_earnings_minor,delivered_at,created_at')
+      .select(
+        'id,pickup_address,dropoff_address,price_agreed,platform_fee_minor,driver_earnings_minor,delivered_at,completed_at,created_at,currency',
+      )
       .eq('driver_id', user.id)
-      .eq('status', 'completed')
+      .in('status', ['delivered', 'completed'])
       .order('delivered_at', { ascending: false });
     if (error) {
       console.warn('[getDriverEarnings] Query note:', error.message);
-      return { rows: [], total: 0 };
+      return { rows: [], total: 0, feesTotal: 0, paidTotal: 0 };
     }
-    const rows = (data ?? []).map((row) => ({
-      ...row,
-      price_agreed: Number(row.driver_earnings_minor ?? 0) / 100,
-    }));
-    return { rows, total: rows.reduce((sum, row) => sum + row.price_agreed, 0) };
+
+    const orderIds = (data ?? []).map((row) => row.id);
+    const payoutByOrder = new Map<string, { status: string; succeeded_at: string | null }>();
+    if (orderIds.length) {
+      const { data: payouts } = await supabase
+        .from('payouts')
+        .select('order_id,status,succeeded_at')
+        .eq('driver_id', user.id)
+        .in('order_id', orderIds);
+      for (const payout of payouts ?? []) {
+        const existing = payoutByOrder.get(payout.order_id);
+        if (!existing || payout.status === 'succeeded') {
+          payoutByOrder.set(payout.order_id, {
+            status: payout.status,
+            succeeded_at: payout.succeeded_at,
+          });
+        }
+      }
+    }
+
+    const rows = (data ?? []).map((row) => {
+      const priceAgreed = Number(row.price_agreed ?? 0);
+      const platformFee = Number(row.platform_fee_minor ?? 0) / 100;
+      const driverEarnings = Number(row.driver_earnings_minor ?? 0) / 100;
+      const payout = payoutByOrder.get(row.id);
+      return {
+        id: row.id,
+        pickup_address: row.pickup_address,
+        dropoff_address: row.dropoff_address,
+        price_agreed: priceAgreed,
+        platform_fee: platformFee,
+        driver_earnings: driverEarnings,
+        delivered_at: row.delivered_at,
+        completed_at: row.completed_at,
+        created_at: row.created_at,
+        payout_status: payout?.status ?? null,
+        payout_succeeded_at: payout?.succeeded_at ?? null,
+        paid_to_mpesa: payout?.status === 'succeeded',
+      };
+    });
+
+    return {
+      rows,
+      total: rows.reduce((sum, row) => sum + row.driver_earnings, 0),
+      feesTotal: rows.reduce((sum, row) => sum + row.platform_fee, 0),
+      paidTotal: rows.filter((row) => row.paid_to_mpesa).reduce((sum, row) => sum + row.driver_earnings, 0),
+    };
   } catch (error: any) {
     console.warn('[getDriverEarnings] Handled error:', error?.message || error);
-    return { rows: [], total: 0 };
+    return { rows: [], total: 0, feesTotal: 0, paidTotal: 0 };
   }
 }
 
-export async function placeDriverBid(input: { orderId: string; amount: number; message?: string }): Promise<{ success: boolean; error?: string }> {
+export async function placeDriverBid(input: {
+  orderId: string;
+  amount: number;
+  message?: string;
+  vehicleId: string;
+  estimatedPickupAt: string;
+}): Promise<{ success: boolean; error?: string }> {
   try {
     const { supabase, user, approvalStatus } = await getAuthedDriver();
     if (approvalStatus !== 'approved') {
       return { success: false, error: 'Your account is still waiting for approval. You can see open deliveries, but you cannot bid yet.' };
     }
-    if (!Number.isFinite(input.amount) || input.amount <= 0) return { success: false, error: 'Enter a valid bid amount.' };
+    if (!Number.isFinite(input.amount) || input.amount <= 0) {
+      return { success: false, error: 'Enter a valid bid amount.' };
+    }
+    if (!input.vehicleId) {
+      return { success: false, error: 'Select the vehicle you will use for this delivery.' };
+    }
+
+    const pickupAt = new Date(input.estimatedPickupAt);
+    if (Number.isNaN(pickupAt.getTime())) {
+      return { success: false, error: 'Enter a valid estimated pickup time.' };
+    }
+    if (pickupAt.getTime() < Date.now() - 60_000) {
+      return { success: false, error: 'Estimated pickup must be in the future.' };
+    }
 
     const { data: vehicle } = await supabase
       .from('vehicles')
       .select('id')
+      .eq('id', input.vehicleId)
       .eq('driver_id', user.id)
       .eq('is_active', true)
       .eq('is_verified', true)
-      .limit(1)
       .maybeSingle();
     if (!vehicle) {
       return { success: false, error: 'You need a verified vehicle before you can bid.' };
@@ -370,12 +450,15 @@ export async function placeDriverBid(input: { orderId: string; amount: number; m
       driver_id: user.id,
       amount: input.amount,
       message: input.message?.trim() || null,
+      vehicle_id: vehicle.id,
+      estimated_pickup_at: pickupAt.toISOString(),
     });
     if (error) return { success: false, error: error.message };
     revalidatePath('/driver');
     revalidatePath('/driver/orders');
     revalidatePath('/driver/bids');
     revalidatePath(`/driver/orders/${input.orderId}`);
+    revalidatePath(`/client/orders/${input.orderId}`);
     return { success: true };
   } catch (error) {
     return { success: false, error: error instanceof Error ? error.message : 'Could not submit your bid.' };
@@ -398,9 +481,61 @@ export async function withdrawDriverBid(bidId: string, orderId: string): Promise
 export async function updateDriverOrderStatus(
   orderId: string,
   nextStatus: Extract<OrderStatus, 'driver_en_route' | 'arrived' | 'loading' | 'picked_up' | 'in_transit' | 'delivered'>,
+  proofFile?: File | null,
 ): Promise<{ success: boolean; error?: string }> {
   try {
     const { supabase, user, demo } = await getAuthedDriver();
+
+    const needsProof = nextStatus === 'picked_up' || nextStatus === 'delivered';
+    if (needsProof) {
+      if (!proofFile || proofFile.size === 0) {
+        return {
+          success: false,
+          error:
+            nextStatus === 'picked_up'
+              ? 'Upload a pickup proof photo before confirming pickup.'
+              : 'Upload a delivery proof photo before marking delivered.',
+        };
+      }
+
+      const ALLOWED: Record<string, string> = {
+        'image/jpeg': 'jpg',
+        'image/png': 'png',
+        'image/webp': 'webp',
+      };
+      const extension = ALLOWED[proofFile.type];
+      if (!extension) {
+        return { success: false, error: 'Use a JPG, PNG, or WebP photo for proof.' };
+      }
+      if (proofFile.size > 15 * 1024 * 1024) {
+        return { success: false, error: 'Proof photo must be 15MB or smaller.' };
+      }
+
+      const attachmentType = nextStatus === 'picked_up' ? 'pickup_proof' : 'delivery_proof';
+      const storagePath = `${orderId}/${attachmentType}-${Date.now()}.${extension}`;
+      const buffer = Buffer.from(await proofFile.arrayBuffer());
+
+      const { error: uploadError } = await supabase.storage
+        .from('order-evidence')
+        .upload(storagePath, buffer, {
+          contentType: proofFile.type,
+          upsert: false,
+        });
+      if (uploadError) {
+        return { success: false, error: uploadError.message ?? 'Could not upload proof photo.' };
+      }
+
+      const { error: attachmentError } = await supabase.from('order_attachments').insert({
+        order_id: orderId,
+        uploaded_by: user.id,
+        attachment_type: attachmentType,
+        storage_path: storagePath,
+      });
+      if (attachmentError) {
+        return { success: false, error: attachmentError.message ?? 'Could not attach proof photo.' };
+      }
+    }
+
     if (demo) {
       const allowed: Record<string, string[]> = {
         assigned: ['driver_en_route', 'picked_up'],
@@ -440,6 +575,7 @@ export async function updateDriverOrderStatus(
     revalidatePath(`/driver/orders/${orderId}`);
     revalidatePath('/driver/earnings');
     revalidatePath(`/client/orders/${orderId}`);
+    revalidatePath(`/admin/orders/${orderId}`);
     return { success: true };
   } catch (error) {
     return { success: false, error: error instanceof Error ? error.message : 'Could not update the delivery.' };

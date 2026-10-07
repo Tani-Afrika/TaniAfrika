@@ -6,38 +6,41 @@ import { CheckIcon, WalletIcon } from '@/components/driver/DriverIcons';
 export const dynamic = 'force-dynamic';
 
 export default async function EarningsPage() {
-  const { rows, total } = await getDriverEarnings();
-  const avg = rows.length ? total / rows.length : 0;
+  const { rows, total, feesTotal, paidTotal } = await getDriverEarnings();
 
   return (
     <div className="mx-auto max-w-[1300px]">
       <PageHeading
         eyebrow="Income overview"
         title="Earnings"
-        description="Track income from completed TaniAfrika deliveries."
+        description="Track agreed price, platform fee, and payout status for each delivery."
       />
 
-      <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 sm:gap-3.5">
+      <div className="grid grid-cols-2 gap-2 sm:grid-cols-4 sm:gap-3.5">
         <StatCard
           icon={WalletIcon}
           value={formatCurrency(total)}
-          label="Total earnings"
-          helper="All completed deliveries"
+          label="Driver earnings"
+          helper="Your share after fees"
         />
         <StatCard
           icon={CheckIcon}
           value={rows.length}
-          label="Completed"
-          helper="Successfully delivered"
+          label="Deliveries"
+          helper="Delivered or completed"
         />
-        <div className="col-span-2 sm:col-span-1">
-          <StatCard
-            icon={WalletIcon}
-            value={formatCurrency(avg)}
-            label="Average delivery"
-            helper="Mean earning per order"
-          />
-        </div>
+        <StatCard
+          icon={WalletIcon}
+          value={formatCurrency(feesTotal)}
+          label="Platform fees"
+          helper="Commission withheld"
+        />
+        <StatCard
+          icon={WalletIcon}
+          value={formatCurrency(paidTotal)}
+          label="Paid to M-Pesa"
+          helper="Confirmed payouts only"
+        />
       </div>
 
       <section className="native-card mt-4 overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-xs sm:mt-5">
@@ -52,7 +55,7 @@ export default async function EarningsPage() {
             {rows.map((row) => (
               <div
                 key={row.id}
-                className="grid grid-cols-1 items-center gap-1.5 px-4 py-3 sm:grid-cols-[1fr_auto] sm:gap-4 sm:px-5 sm:py-4"
+                className="grid grid-cols-1 gap-2 px-4 py-3 sm:grid-cols-[1fr_auto] sm:items-center sm:gap-4 sm:px-5 sm:py-4"
               >
                 <div className="min-w-0">
                   <p className="truncate text-xs font-semibold text-slate-900 sm:text-sm">
@@ -61,11 +64,27 @@ export default async function EarningsPage() {
                   <p className="mt-0.5 text-[11px] text-slate-400">
                     Delivered {formatDate(row.delivered_at ?? row.created_at)}
                   </p>
+                  <div className="mt-2 flex flex-wrap gap-x-3 gap-y-1 text-[11px] text-slate-500">
+                    <span>Agreed {formatCurrency(row.price_agreed)}</span>
+                    <span>Fee {formatCurrency(row.platform_fee)}</span>
+                    <span>Your share {formatCurrency(row.driver_earnings)}</span>
+                  </div>
                 </div>
 
-                <p className="text-sm font-bold text-trust sm:text-right sm:text-base">
-                  +{formatCurrency(row.price_agreed)}
-                </p>
+                <div className="sm:text-right">
+                  <p className="text-sm font-bold text-trust sm:text-base">
+                    +{formatCurrency(row.driver_earnings)}
+                  </p>
+                  <p
+                    className={`mt-1 text-[11px] font-semibold ${
+                      row.paid_to_mpesa ? 'text-emerald-700' : 'text-amber-700'
+                    }`}
+                  >
+                    {row.paid_to_mpesa
+                      ? `Paid to M-Pesa · ${formatDate(row.payout_succeeded_at)}`
+                      : 'Awaiting payout'}
+                  </p>
+                </div>
               </div>
             ))}
           </div>
@@ -74,7 +93,7 @@ export default async function EarningsPage() {
             <EmptyState
               icon={WalletIcon}
               title="No earnings yet"
-              description="Completed deliveries will appear here with the agreed delivery amount."
+              description="Completed deliveries will appear here with agreed price, fees, and payout status."
             />
           </div>
         )}

@@ -10,6 +10,7 @@ import {
 } from '@/lib/format';
 import { getOrderById } from '@/lib/queries';
 import ConfirmPaymentButton from '@/components/admin/ConfirmPaymentButton';
+import ConfirmPayoutButton from '@/components/admin/ConfirmPayoutButton';
 
 export const dynamic = 'force-dynamic';
 
@@ -80,6 +81,10 @@ export default async function OrderDetailPage({
 
       {order.status === 'payment_pending' && (
         <ConfirmPaymentButton orderId={order.id} />
+      )}
+
+      {order.status === 'delivered' && (
+        <ConfirmPayoutButton orderId={order.id} />
       )}
 
       <div className="grid gap-5 xl:grid-cols-3">

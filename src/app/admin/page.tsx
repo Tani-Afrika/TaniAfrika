@@ -88,7 +88,7 @@ export default async function DashboardPage() {
               {stats.recentOrders.map((order) => (
                 <li key={order.id}>
                   <Link
-                    href={`/orders/${order.id}`}
+                    href={`/admin/orders/${order.id}`}
                     className="-mx-2 flex items-center justify-between gap-2.5 rounded-xl px-2 py-2.5 transition hover:bg-trust-light/40 native-press sm:gap-3 sm:py-3"
                   >
                     <div className="min-w-0">
